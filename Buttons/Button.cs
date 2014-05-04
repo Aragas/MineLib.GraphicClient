@@ -2,16 +2,19 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MineLib.GraphicClient.MonoGame.Screens
+namespace MineLib.GraphicClient.MonoGame.Buttons
 {
     enum ButtonPosition
     {
         LeftTop,        Top,        RightTop,
         LeftTop2,       Top2,       RightTop2,
         LeftTop3,       Top3,       RightTop3,
+
         LeftCenter,     Center,     RightCenter,
+
+        LeftBottom4,    Bottom4,    RightBottom4,
         LeftBottom3,    Bottom3,    RightBottom3,
-        LeftBottom2,    Bottom2,   RightBottom2,
+        LeftBottom2,    Bottom2,    RightBottom2,
         LeftBottom,     Bottom,     RightBottom,
     }
 
@@ -105,19 +108,26 @@ namespace MineLib.GraphicClient.MonoGame.Screens
                     return new Vector2(rectangle.Width,     rectangle.Center.Y);
 
 
-                case ButtonPosition.LeftBottom3:
+                case ButtonPosition.LeftBottom4:
                     return new Vector2(0,                   rectangle.Center.Y + rectangle.Center.Y / 2);
-                case ButtonPosition.Bottom3:
+                case ButtonPosition.Bottom4:
                     return new Vector2(rectangle.Center.X,  rectangle.Center.Y + rectangle.Center.Y / 2);
-                case ButtonPosition.RightBottom3:
+                case ButtonPosition.RightBottom4:
                     return new Vector2(rectangle.Width,     rectangle.Center.Y + rectangle.Center.Y / 2);
 
-                case ButtonPosition.LeftBottom2:
+                case ButtonPosition.LeftBottom3:
                     return new Vector2(0,                   rectangle.Center.Y + rectangle.Center.Y);
-                case ButtonPosition.Bottom2:
+                case ButtonPosition.Bottom3:
                     return new Vector2(rectangle.Center.X,  rectangle.Center.Y + rectangle.Center.Y);
-                case ButtonPosition.RightBottom2:
+                case ButtonPosition.RightBottom3:
                     return new Vector2(rectangle.Width,     rectangle.Center.Y + rectangle.Center.Y);
+
+                case ButtonPosition.LeftBottom2:
+                    return new Vector2(0,                   rectangle.Center.Y + rectangle.Center.Y + rectangle.Center.Y / 4);
+                case ButtonPosition.Bottom2:
+                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y + rectangle.Center.Y + rectangle.Center.Y / 4);
+                case ButtonPosition.RightBottom2:
+                    return new Vector2(rectangle.Width,     rectangle.Center.Y + rectangle.Center.Y + rectangle.Center.Y / 4);
 
                 case ButtonPosition.LeftBottom:
                     return new Vector2(0,                   rectangle.Center.Y + rectangle.Center.Y + rectangle.Center.Y / 2);

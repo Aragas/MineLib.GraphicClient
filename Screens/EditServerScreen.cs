@@ -6,7 +6,7 @@ using MineLib.GraphicClient.MonoGame.Buttons;
 
 namespace MineLib.GraphicClient.MonoGame.Screens
 {
-    public class MainScreen : Screen
+    class EditServerScreen : Screen
     {
         bool _contentLoaded = false;
 
@@ -15,13 +15,17 @@ namespace MineLib.GraphicClient.MonoGame.Screens
 
         Texture2D _mainMenuTexture;
 
-        Button _buttonServerList;
-        Button _buttonOption;
-        Button _buttonExit;
+        Button _buttonConnect;
+        Button _buttonAdd;
+        Button _buttonDirectConnection;
+
+        Button _buttonAddServer;
+        Button _buttonEditServer;
+        Button _buttonReturn;
 
         SoundEffect _effect;
 
-        public MainScreen(GameClient gameClient)
+        public EditServerScreen(GameClient gameClient)
         {
             _client = gameClient;
         }
@@ -40,32 +44,24 @@ namespace MineLib.GraphicClient.MonoGame.Screens
             Texture2D buttonPressed = _client.Content.Load<Texture2D>("ButtonPressed");
             SpriteFont buttonFont = _client.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonServerList = new Button(button, buttonPressed, buttonFont, "Search Server", _screenRectangle, ButtonPosition.Center);
-            _buttonServerList.OnButtonPressed += OnServerListButtonPressed;
-            _buttonOption = new Button(button, buttonPressed, buttonFont, "Options", _screenRectangle, ButtonPosition.Bottom4);
-            _buttonOption.OnButtonPressed += OnOptionButtonPressed;
-            _buttonExit = new Button(button, buttonPressed, buttonFont, "Exit", _screenRectangle, ButtonPosition.Bottom3);
-            _buttonExit.OnButtonPressed += OnExitButtonPressed;
+            _buttonAdd = new Button(button, buttonPressed, buttonFont, "Add", _screenRectangle, ButtonPosition.Bottom2);
+            _buttonAdd.OnButtonPressed += OnAddButtonPressed;
+            _buttonReturn = new Button(button, buttonPressed, buttonFont, "Return", _screenRectangle, ButtonPosition.Bottom);
+            _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
 
             _contentLoaded = true;
         }
 
-        void OnServerListButtonPressed()
+        void OnAddButtonPressed()
         {
             _effect.Play();
             _client.CurrentScreen = new ServerListScreen(_client);
         }
 
-        void OnOptionButtonPressed()
+        void OnReturnButtonPressed()
         {
             _effect.Play();
-            _client.CurrentScreen = new OptionScreen();
-        }
-
-        void OnExitButtonPressed()
-        {
-            _effect.Play();
-            _client.Exit();
+            _client.CurrentScreen = new ServerListScreen(_client);
         }
 
         public override void Update(GameTime gameTime)
@@ -73,9 +69,8 @@ namespace MineLib.GraphicClient.MonoGame.Screens
             if (!_contentLoaded)
                 LoadContent();
 
-            _buttonServerList.Update(Mouse.GetState());
-            _buttonOption.Update(Mouse.GetState());
-            _buttonExit.Update(Mouse.GetState());
+            _buttonAdd.Update(Mouse.GetState());
+            _buttonReturn.Update(Mouse.GetState());
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -87,9 +82,8 @@ namespace MineLib.GraphicClient.MonoGame.Screens
             spriteBatch.Draw(_mainMenuTexture, new Rectangle(0, 0, _screenRectangle.Width, _screenRectangle.Height), Color.White);
 
             // Buttons
-            _buttonServerList.Draw(spriteBatch);
-            _buttonOption.Draw(spriteBatch);
-            _buttonExit.Draw(spriteBatch);
+            _buttonAdd.Draw(spriteBatch);
+            _buttonReturn.Draw(spriteBatch);
         }
     }
 }

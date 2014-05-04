@@ -38,10 +38,16 @@
     <Compile Include="GameClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Screens\Button.cs" />
+    <Compile Include="Screens\AddServerScreen.cs" />
+    <Compile Include="Buttons\Button.cs" />
+    <Compile Include="Buttons\Button2.cs" />
+    <Compile Include="Screens\DirectConnectionScreen.cs" />
+    <Compile Include="Screens\EditServerScreen.cs" />
     <Compile Include="Screens\GameScreen.cs" />
+    <Compile Include="Screens\OptionScreen.cs" />
     <Compile Include="Screens\Screen.cs" />
     <Compile Include="Screens\MainScreen.cs" />
+    <Compile Include="Screens\ServerListScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
