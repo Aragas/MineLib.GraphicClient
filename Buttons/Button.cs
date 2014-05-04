@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -28,6 +29,7 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
         public bool IsDown;
 
         bool _eventCalled;
+        bool _justCreated = true;
 
         Texture2D _texture;
         Texture2D _texturePressed;
@@ -38,7 +40,6 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
         Color _fontColor = new Color(255, 255, 255, 255);
         Color _fontColorPressed = new Color(255, 255, 156, 255);
 
-
         Vector2 _imageCenter;
 
         Vector2 _buttonPosition;
@@ -48,6 +49,8 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
         Vector2 _textSize;
 
         Rectangle _screen;
+
+        Stopwatch _stopwatch;
 
         public Button(Texture2D button, Texture2D buttonPressed, Rectangle rectangle, ButtonPosition level)
         {
@@ -146,9 +149,24 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
 
             Rectangle mouseRectangle = new Rectangle(mouse.X, mouse.Y, 1, 1);
 
+            #region Preventing too soon clicks on new screen on the same position that the old button was
+            if (_justCreated)
+            {
+                _stopwatch = new Stopwatch();
+                _stopwatch.Start();
+                _justCreated = false;
+            }
+
+            if (_stopwatch.ElapsedMilliseconds < 100)
+                return;
+            else
+                _stopwatch.Stop();
+            #endregion
+
             if (mouseRectangle.Intersects(_buttonRectangle))
             {
                 IsDown = true;
+
                 if (mouse.LeftButton == ButtonState.Pressed)
                 {
                     IsClicked = true;
@@ -160,8 +178,11 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
                     }
                 }
                 else
+                {
+                    IsClicked = false;
                     _eventCalled = false;
-                
+                }
+
             }
             else
             {
@@ -169,7 +190,6 @@ namespace MineLib.GraphicClient.MonoGame.Buttons
                 IsClicked = false;
                 _eventCalled = false;
             }
-
         }
 
         public void Draw(SpriteBatch spriteBatch)
