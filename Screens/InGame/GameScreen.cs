@@ -70,7 +70,6 @@ namespace MineLib.GraphicClient.Screens
 
                 Minecraft.SendPacket(new ClientStatusPacket {Status = ClientStatus.Respawn});
 
-                Connected = true;
                 return this;
             }
             catch (Exception)
