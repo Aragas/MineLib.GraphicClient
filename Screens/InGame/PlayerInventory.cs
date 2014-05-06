@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MineLib.GraphicClient.MonoGame.Screens
+namespace MineLib.GraphicClient.Screens
 {
-    class GameScreen : Screen
+    class PlayerInventory : InventoryScreen
     {
+
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 #endregion
 
-namespace MineLib.GraphicClient.MonoGame
+namespace MineLib.GraphicClient
 {
 #if WINDOWS || LINUX
     /// <summary>
@@ -19,7 +19,11 @@ namespace MineLib.GraphicClient.MonoGame
         static void Main()
         {
             using (var game = new GameClient())
+            {
                 game.Run();
+                game.Quit();
+            }
+
         }
     }
 #endif

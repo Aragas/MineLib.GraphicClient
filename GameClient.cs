@@ -1,30 +1,30 @@
-﻿#region Using Statements
-using System;
-using System.Collections.Generic;
+﻿using System.IO;
+using Ionic.Zip;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
-using MineLib.GraphicClient.MonoGame.Screens;
+using MineLib.GraphicClient.Screens;
 
-#endregion
 
-namespace MineLib.GraphicClient.MonoGame
+namespace MineLib.GraphicClient
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class GameClient : Game
     {
-        public int ScreenWidth = 800, ScreenHeigh = 600;
-
-        public Screen CurrentScreen;
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        public Screen CurrentScreen { get; private set; }
+        public Screen PreviousScreen;
+
+        public ZipFile MinecraftFiles;
+        public MinecraftTexturesStorage MinecraftTexturesStorage;
+
+        // Client settings, temporary storage
+        public string Login = "TestBot";
+        public string Password = "";
+        public bool OnlineMode = false;
 
         public GameClient()
             : base()
@@ -32,89 +32,94 @@ namespace MineLib.GraphicClient.MonoGame
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             //graphics.IsFullScreen = true;
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            //graphics.PreferredBackBufferWidth = 1280;
+            //graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
 
             
-            CurrentScreen = new MainScreen(this);
+            CurrentScreen = new MainMenuScreen(this);
         }
 
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+        public void SetScreen(Screen screen)
+        {
+            DisposePreviousScreen();
+
+            PreviousScreen = CurrentScreen;
+            CurrentScreen = screen;
+        }
+
+        public void DisposePreviousScreen()
+        {
+            if (PreviousScreen != null)
+            {
+                PreviousScreen.Dispose();
+                PreviousScreen = null;
+            }
+        }
+
+
         protected override void Initialize()
         {
-            var t = "";
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            string path = Content.RootDirectory;
+            if (File.Exists(Path.Combine(path, "minecraft.jar")))
+            {
+                MinecraftFiles = new ZipFile(Path.Combine(path, "minecraft.jar"));
+                MinecraftTexturesStorage = new MinecraftTexturesStorage(this, MinecraftFiles);
+
+                // Load textures or somethin'
+                MinecraftTexturesStorage.GetGUITextures();
+            }
+
             // TODO: use this.Content to load your game content here
 
-            //graphics.PreferredBackBufferWidth = ScreenWidth;
-            //graphics.PreferredBackBufferHeight = ScreenHeigh;
-            //graphics.IsFullScreen = true;
             IsMouseVisible = true;
-
-            //CurrentScreen.LoadContent();
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
+            //    Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //    Quit();
 
-            // TODO: Add your update logic here
             CurrentScreen.Update(gameTime);
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            #region 2D render
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
             CurrentScreen.Draw(spriteBatch);
 
             spriteBatch.End();
-
-            // TODO: Add your drawing code here
+            #endregion
 
             base.Draw(gameTime);
         }
+
+        public void Quit()
+        {
+            CurrentScreen.Dispose();
+
+            Exit();
+        }
+
     }
 }
