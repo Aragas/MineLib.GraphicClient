@@ -8,10 +8,7 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class ServerListScreen : Screen
     {
-        public override GameClient GameClient { get; set; }
-
-        Rectangle _screenRectangle;
-
+        #region Resources
         Texture2D _mainMenuTexture;
 
         ButtonNormal _buttonConnect;
@@ -23,6 +20,7 @@ namespace MineLib.GraphicClient.Screens
         ButtonNormal _buttonReturn;
 
         SoundEffect _effect;
+        #endregion
 
         string ServerIP = "127.0.0.1";
         short ServerPort = 25565;
@@ -36,26 +34,24 @@ namespace MineLib.GraphicClient.Screens
         {
             base.LoadContent();
 
-            _screenRectangle = GameClient.Window.ClientBounds;
-
-            GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
+            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
             _mainMenuTexture = GameClient.Content.Load<Texture2D>("MainMenu");
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonConnect = new ButtonNormal(guiTextures, buttonFont, "Connect", _screenRectangle, ButtonNormalPosition.LeftBottom2);
+            _buttonConnect = new ButtonNormal(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonNormalPosition.LeftBottom2);
             _buttonConnect.OnButtonPressed += OnConnectButtonPressed;
-            _buttonRefresh = new ButtonNormal(guiTextures, buttonFont, "Refresh", _screenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonRefresh = new ButtonNormal(widgetsTexture, buttonFont, "Refresh", ScreenRectangle, ButtonNormalPosition.Bottom2);
             _buttonRefresh.OnButtonPressed += OnRefreshButtonPressed;
-            _buttonDirectConnection = new ButtonNormal(guiTextures, buttonFont, "Direct Connection", _screenRectangle, ButtonNormalPosition.RightBottom2);
+            _buttonDirectConnection = new ButtonNormal(widgetsTexture, buttonFont, "Direct Connection", ScreenRectangle, ButtonNormalPosition.RightBottom2);
             _buttonDirectConnection.OnButtonPressed += OnDirectConnectionButtonPressed;
 
-            _buttonAddServer = new ButtonNormal(guiTextures, buttonFont, "Add Server", _screenRectangle, ButtonNormalPosition.LeftBottom);
+            _buttonAddServer = new ButtonNormal(widgetsTexture, buttonFont, "Add Server", ScreenRectangle, ButtonNormalPosition.LeftBottom);
             _buttonAddServer.OnButtonPressed += OnAddServerButtonPressed;
-            _buttonEditServer = new ButtonNormal(guiTextures, buttonFont, "Edit Server", _screenRectangle, ButtonNormalPosition.Bottom);
+            _buttonEditServer = new ButtonNormal(widgetsTexture, buttonFont, "Edit Server", ScreenRectangle, ButtonNormalPosition.Bottom);
             _buttonEditServer.OnButtonPressed += OnEditServerButtonPressed;
-            _buttonReturn = new ButtonNormal(guiTextures, buttonFont, "Return", _screenRectangle, ButtonNormalPosition.RightBottom);
+            _buttonReturn = new ButtonNormal(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonNormalPosition.RightBottom);
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
@@ -115,7 +111,7 @@ namespace MineLib.GraphicClient.Screens
             base.Draw(spriteBatch);
 
             // Background
-            spriteBatch.Draw(_mainMenuTexture, _screenRectangle, Color.White);
+            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
             // Buttons
             _buttonConnect.Draw(spriteBatch);

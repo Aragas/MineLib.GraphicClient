@@ -6,19 +6,16 @@ using MineLib.ClientWrapper;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GUIScreen : Screen
+    sealed class GUIScreen : InGameScreen
     {
-        public override GameClient GameClient { get; set; }
-
-        Rectangle _screenRectangle;
-
-        Minecraft Minecraft;
-
+        #region Resources
         Texture2D _crosshairTexture;
 
         Texture2D _widgetTexture;
         Texture2D _iconsTexture;
+        #endregion
 
+        #region Sprite rectangles
         Rectangle _itemListRectangle = new Rectangle(0, 0, 182, 22);
         Rectangle _selectedItemListRectangle = new Rectangle(0, 22, 24, 24);
 
@@ -32,14 +29,11 @@ namespace MineLib.GraphicClient.Screens
         Rectangle _foodEmptyRectangle = new Rectangle(16, 27, 9, 9);
         Rectangle _foodRectangle = new Rectangle(52, 27, 9, 9);
         Rectangle _foodHalfRectangle = new Rectangle(61, 27, 9, 9);
+        #endregion
 
         int previousScrollValue;
         int mousevalue = 1;
 
-        //float exp = 0.5f; // max 1.0f
-        //float health = 11f; // max 20.0f
-        //short food = 11; // max 20
-         
         float scale = 3f;
 
         public GUIScreen(GameClient gameClient, Minecraft minecraft)
@@ -51,8 +45,6 @@ namespace MineLib.GraphicClient.Screens
         public override void LoadContent()
         {
             base.LoadContent();
-
-            _screenRectangle = GameClient.Window.ClientBounds;
 
             _crosshairTexture = GameClient.Content.Load<Texture2D>("Crosshair");
 
@@ -154,32 +146,32 @@ namespace MineLib.GraphicClient.Screens
             switch (position)
             {
                 case 1:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 4f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 4f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 2:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 3f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 3f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 3:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 2f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 2f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 4:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 1f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale - 20 * 1f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 5:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 6:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 1f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 1f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 7:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 2f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 2f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 8:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 3f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 3f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
                 case 9:
-                    return new Vector2(_screenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 4f * scale,
-                            _screenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
+                    return new Vector2(ScreenRectangle.Center.X - (_selectedItemListRectangle.Width * 0.5f) * scale + 20 * 4f * scale,
+                            ScreenRectangle.Height - _selectedItemListRectangle.Height * scale + 1 * scale);
             }
             return Vector2.Zero;
         }
@@ -190,7 +182,7 @@ namespace MineLib.GraphicClient.Screens
 
             #region Crosshair
             spriteBatch.Draw(_crosshairTexture,
-                    new Vector2(_screenRectangle.Center.X, _screenRectangle.Center.Y), // Center of screen
+                    new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y), // Center of screen
                     null, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -201,13 +193,13 @@ namespace MineLib.GraphicClient.Screens
                     );
             #endregion
 
-            float startXPos = _screenRectangle.Center.X - _itemListRectangle.Center.X * scale;
-            float endXPos = _screenRectangle.Center.X + _itemListRectangle.Center.X * scale;
+            float startXPos = ScreenRectangle.Center.X - _itemListRectangle.Center.X * scale;
+            float endXPos = ScreenRectangle.Center.X + _itemListRectangle.Center.X * scale;
 
             #region ItemList
             // ItemList
             spriteBatch.Draw(_widgetTexture,
-                    new Vector2(startXPos, _screenRectangle.Height - _itemListRectangle.Height * scale), // Center of screen
+                    new Vector2(startXPos, ScreenRectangle.Height - _itemListRectangle.Height * scale), // Center of screen
                     _itemListRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -233,7 +225,7 @@ namespace MineLib.GraphicClient.Screens
             #region Exp
             // EmptyExp
             spriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos, _screenRectangle.Height - _expEmptyRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
+                new Vector2(startXPos, ScreenRectangle.Height - _expEmptyRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
                     _expEmptyRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -247,7 +239,7 @@ namespace MineLib.GraphicClient.Screens
             float exp = Minecraft.Player.Experience.ExperienceBar;
             _expRectangle.Width = (int)(_expRectangle.Width * exp);
             spriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos, _screenRectangle.Height - _expRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
+                new Vector2(startXPos, ScreenRectangle.Height - _expRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
                     _expRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -264,7 +256,7 @@ namespace MineLib.GraphicClient.Screens
             for (int i = 0; i < 10; i++)
             {
                 spriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, _screenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
+                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartEmptyRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -283,7 +275,7 @@ namespace MineLib.GraphicClient.Screens
             for (int i = 0; i < fullHearts; i++)
             {
                 spriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, _screenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
+                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -298,7 +290,7 @@ namespace MineLib.GraphicClient.Screens
             if (fullHearts1 > fullHearts)
             {
                 spriteBatch.Draw(_iconsTexture,
-                    new Vector2(startXPos + _heartEmptyRectangle.Width * fullHearts * heartScale, _screenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
+                    new Vector2(startXPos + _heartEmptyRectangle.Width * fullHearts * heartScale, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartHalfRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -317,7 +309,7 @@ namespace MineLib.GraphicClient.Screens
             for (int i = 0; i < 10; i++)
             {
                 spriteBatch.Draw(_iconsTexture,
-                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, _screenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
+                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodEmptyRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -336,7 +328,7 @@ namespace MineLib.GraphicClient.Screens
             for (int i = 0; i < fullFood; i++)
             {
                 spriteBatch.Draw(_iconsTexture,
-                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, _screenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
+                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation
@@ -351,7 +343,7 @@ namespace MineLib.GraphicClient.Screens
             if (fullFood1 > fullFood)
             {
                 spriteBatch.Draw(_iconsTexture,
-                    new Vector2(foodXPos + _foodEmptyRectangle.Width * fullHearts * foodScale, _screenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
+                    new Vector2(foodXPos + _foodEmptyRectangle.Width * fullHearts * foodScale, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodHalfRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation

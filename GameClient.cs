@@ -16,9 +16,8 @@ namespace MineLib.GraphicClient
         SpriteBatch spriteBatch;
 
         public Screen CurrentScreen { get; private set; }
-        public Screen PreviousScreen;
+        public Screen PreviousScreen { get; private set; }
 
-        public ZipFile MinecraftFiles;
         public MinecraftTexturesStorage MinecraftTexturesStorage;
 
         // Client settings, temporary storage
@@ -69,19 +68,20 @@ namespace MineLib.GraphicClient
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            IsMouseVisible = true;
+
+            #region Load resources from minecraft.jar
             string path = Content.RootDirectory;
             if (File.Exists(Path.Combine(path, "minecraft.jar")))
             {
-                MinecraftFiles = new ZipFile(Path.Combine(path, "minecraft.jar"));
-                MinecraftTexturesStorage = new MinecraftTexturesStorage(this, MinecraftFiles);
+                ZipFile minecraftFiles = new ZipFile(Path.Combine(path, "minecraft.jar"));
+                MinecraftTexturesStorage = new MinecraftTexturesStorage(this, minecraftFiles);
 
                 // Load textures or somethin'
                 MinecraftTexturesStorage.GetGUITextures();
             }
+            #endregion
 
-            // TODO: use this.Content to load your game content here
-
-            IsMouseVisible = true;
         }
 
         protected override void UnloadContent()

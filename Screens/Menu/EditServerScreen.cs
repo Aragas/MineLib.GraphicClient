@@ -8,10 +8,7 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class EditServerScreen : Screen
     {
-        public override GameClient GameClient { get; set; }
-
-        Rectangle _screenRectangle;
-
+        #region Resources
         Texture2D _mainMenuTexture;
 
         ButtonNormal _buttonConnect;
@@ -23,6 +20,7 @@ namespace MineLib.GraphicClient.Screens
         ButtonNormal _buttonReturn;
 
         SoundEffect _effect;
+        #endregion
 
         public EditServerScreen(GameClient gameClient)
         {
@@ -33,17 +31,15 @@ namespace MineLib.GraphicClient.Screens
         {
             base.LoadContent();
 
-            _screenRectangle = GameClient.Window.ClientBounds;
-
-            GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
+            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
             _mainMenuTexture = GameClient.Content.Load<Texture2D>("MainMenu");
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonAdd = new ButtonNormal(guiTextures, buttonFont, "Add", _screenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonAdd = new ButtonNormal(widgetsTexture, buttonFont, "Add", ScreenRectangle, ButtonNormalPosition.Bottom2);
             _buttonAdd.OnButtonPressed += OnAddButtonPressed;
-            _buttonReturn = new ButtonNormal(guiTextures, buttonFont, "Return", _screenRectangle, ButtonNormalPosition.Bottom);
+            _buttonReturn = new ButtonNormal(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonNormalPosition.Bottom);
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
@@ -72,7 +68,7 @@ namespace MineLib.GraphicClient.Screens
             base.Draw(spriteBatch);
 
             // Background
-            spriteBatch.Draw(_mainMenuTexture, _screenRectangle, Color.White);
+            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
             // Buttons
             _buttonAdd.Draw(spriteBatch);

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MineLib.GraphicClient.Screens
 {
-    class PlayerInventory : InventoryScreen
+    class PlayerInventory : InGameScreen
     {
 
     }

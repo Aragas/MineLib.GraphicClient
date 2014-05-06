@@ -45,19 +45,19 @@ namespace MineLib.GraphicClient.GUIButtons
 
         Stopwatch _stopwatch;
 
-        public ButtonNormal(GUITextures guiTextures, SpriteFont font, string text, Rectangle rectangle,
+        public ButtonNormal(Texture2D widgetsTexture, SpriteFont font, string text, Rectangle rectangle,
             ButtonNormalPosition level)
         {
-            _texture = guiTextures.Widgets;
+            _texture = widgetsTexture;
 
             _font = font;
             _text = text;
 
-            Vector2 buttonSize = new Vector2(rectangle.Width / 3, (rectangle.Width / 3 * buttonHeight) / buttonWidth);
+            Vector2 buttonSize = new Vector2(rectangle.Width/3, (rectangle.Width/3*buttonHeight)/buttonWidth);
             Vector2 buttonPosition = GetPosition(level, rectangle);
 
-            _buttonRectangle = new Rectangle((int)(buttonPosition.X - buttonPosition.X / 3),
-                (int)(buttonPosition.Y), (int)buttonSize.X, (int)buttonSize.Y);
+            _buttonRectangle = new Rectangle((int) (buttonPosition.X - buttonPosition.X/3),
+                (int) (buttonPosition.Y), (int) buttonSize.X, (int) buttonSize.Y);
         }
 
         static Vector2 GetPosition(ButtonNormalPosition level, Rectangle rectangle)

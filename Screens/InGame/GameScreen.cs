@@ -23,20 +23,11 @@ public static class Vector3Converter
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GameScreen : Screen, IDisposable
+    sealed class GameScreen : InGameScreen, IDisposable
     {
-        public override GameClient GameClient { get; set; }
-
-        Rectangle _screenRectangle;
-
-        Minecraft Minecraft;
-
-        public bool IsActive = true;
-        public bool Connected = false;
-
-        Screen guiScreen;
-        InventoryScreen inventoryScreen;
-        Screen gameOptionScreen;
+        InGameScreen GUIScreen;
+        InGameScreen InventoryScreen;
+        InGameScreen GameOptionScreen;
 
         public GameScreen(GameClient gameClient, string username, string password, bool onlineMode = false)
         {
@@ -44,7 +35,9 @@ namespace MineLib.GraphicClient.Screens
 
             Minecraft = new Minecraft(username, password, onlineMode);
 
-            guiScreen = new GUIScreen(GameClient, Minecraft);
+            GUIScreen = new GUIScreen(GameClient, Minecraft);
+            InventoryScreen = null;
+            GameOptionScreen = null;
         }
 
         public GameScreen Connect(string serverip, short port)
@@ -92,7 +85,6 @@ namespace MineLib.GraphicClient.Screens
         {
             base.LoadContent();
 
-            _screenRectangle = GameClient.Window.ClientBounds;
         }
 
         void PlayerMove(Vector3 position, double crouch = 1.62, bool onGround = true)
@@ -131,6 +123,7 @@ namespace MineLib.GraphicClient.Screens
             if(Minecraft.Crashed)
                 SetScreen(new ServerListScreen(GameClient));
 
+            #region Escape handling
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 if (!_escKeyboardIsDown)
@@ -138,7 +131,9 @@ namespace MineLib.GraphicClient.Screens
                     if (IsActive)
                     {
                         IsActive = false;
-                        gameOptionScreen = new GameOptionScreen(GameClient);
+
+                        if (GameOptionScreen == null)
+                            GameOptionScreen = new GameOptionScreen(GameClient);
                     }
                     else
                         IsActive = true;
@@ -147,62 +142,65 @@ namespace MineLib.GraphicClient.Screens
             }
             else
                 _escKeyboardIsDown = false;
+            #endregion
 
-
-            if (IsActive)
+            if (Connected)
             {
-                #region PlayerKeyboard
-
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                if (IsActive)
                 {
-                    if (!_wKeyboardIsDown)
+                    #region PlayerKeyboard
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.W))
                     {
-                        PlayerMove(Vector3.Backward);
+                        if (!_wKeyboardIsDown)
+                        {
+                            PlayerMove(Vector3.Backward);
+                        }
+                        _wKeyboardIsDown = true;
                     }
-                    _wKeyboardIsDown = true;
+                    else
+                        _wKeyboardIsDown = false;
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.A))
+                        ;
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.S))
+                        ;
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.D))
+                        ;
+
+                    #endregion
+
+                    GUIScreen.Update(gameTime);
                 }
-                else
-                    _wKeyboardIsDown = false;
 
-                if (Keyboard.GetState().IsKeyDown(Keys.A))
-                    ;
-
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
-                    ;
-
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                    ;
-
-                #endregion
-
-                guiScreen.Update(gameTime);
+                if (InventoryScreen != null)
+                    InventoryScreen.Update(gameTime);
             }
 
-            if (inventoryScreen != null)
-                inventoryScreen.Update(gameTime);
-
-            if (gameOptionScreen != null)
-                gameOptionScreen.Update(gameTime);
+            if (GameOptionScreen != null)
+                GameOptionScreen.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
+            // Draw previous screen unless we are connected.
             if (Connected)
             {
-                guiScreen.Draw(spriteBatch);
+                GUIScreen.Draw(spriteBatch);
 
                 if (!IsActive)
                 {
-                    if (inventoryScreen != null)
-                        inventoryScreen.Draw(spriteBatch);
-                    if (gameOptionScreen != null)
-                        gameOptionScreen.Draw(spriteBatch);
+                    if (InventoryScreen != null)
+                        InventoryScreen.Draw(spriteBatch);
+                    if (GameOptionScreen != null)
+                        GameOptionScreen.Draw(spriteBatch);
                 }
             }
             else
-                //GameClient.GraphicsDevice.Clear(Color.Black);
                 GameClient.PreviousScreen.Draw(spriteBatch);
         }
 

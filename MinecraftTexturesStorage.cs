@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Ionic.Zip;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -55,15 +56,19 @@ namespace MineLib.GraphicClient
 
     public class MinecraftTexturesStorage
     {
+        // -- Debugging
+        public List<string> UnhandledFiles = new List<string>();
+        // -- Debugging
+
         GameClient Client;
-        ZipFile Minecraft;
+        ZipFile MinecraftJar;
 
         public GUITextures GUITextures;
 
         public MinecraftTexturesStorage(GameClient client,ZipFile minecraft)
         {
             Client = client;
-            Minecraft = minecraft;
+            MinecraftJar = minecraft;
         }
 
         public GUITextures GetGUITextures()
@@ -71,7 +76,7 @@ namespace MineLib.GraphicClient
             GUITextures =  new GUITextures();
             MemoryStream ms = new MemoryStream();
             string selectCriteria = "name = assets/minecraft/textures/gui/*";
-            foreach (ZipEntry entry in Minecraft.SelectEntries(selectCriteria))
+            foreach (ZipEntry entry in MinecraftJar.SelectEntries(selectCriteria))
             {
                 switch (entry.FileName)
                 {
@@ -290,6 +295,10 @@ namespace MineLib.GraphicClient
                         GUITextures.Book = Texture2D.FromStream(Client.GraphicsDevice, ms);
                         break;
                     #endregion
+
+                    default:
+                        UnhandledFiles.Add(entry.FileName);
+                        break;
                 }
             }
             return GUITextures;

@@ -6,17 +6,17 @@ using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GameOptionScreen : Screen
+    sealed class GameOptionScreen : InGameScreen
     {
-        public override GameClient GameClient { get; set; }
-
-        Rectangle _screenRectangle;
+        #region Resources
+        Texture2D _backgroundTexture;
 
         ButtonNormal _buttonBackToGame;
         ButtonNormal _buttonOptions;
         ButtonNormal _buttonDisconnect;
 
         SoundEffect _effect;
+        #endregion
 
         public GameOptionScreen(GameClient client)
         {
@@ -25,20 +25,21 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            _screenRectangle = GameClient.Window.ClientBounds;
+            _backgroundTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
+            _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 170) });
 
-            GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
+            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonBackToGame = new ButtonNormal(guiTextures, buttonFont, "Back To Game", _screenRectangle, ButtonNormalPosition.Top3);
+            _buttonBackToGame = new ButtonNormal(widgetsTexture, buttonFont, "Back To Game", ScreenRectangle, ButtonNormalPosition.Top3);
             _buttonBackToGame.OnButtonPressed += OnBackToGameButtonPressed;
 
-            _buttonOptions = new ButtonNormal(guiTextures, buttonFont, "Options", _screenRectangle, ButtonNormalPosition.Bottom4);
+            _buttonOptions = new ButtonNormal(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonNormalPosition.Bottom4);
             _buttonOptions.OnButtonPressed += OnOptionsButtonPressed;
 
-            _buttonDisconnect = new ButtonNormal(guiTextures, buttonFont, "Disconnect", _screenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonDisconnect = new ButtonNormal(widgetsTexture, buttonFont, "Disconnect", ScreenRectangle, ButtonNormalPosition.Bottom2);
             _buttonDisconnect.OnButtonPressed += OnDisconnectButtonPressed;
         }
 
@@ -74,9 +75,7 @@ namespace MineLib.GraphicClient.Screens
             base.Draw(spriteBatch);
 
             // Backgroung
-            Texture2D text = new Texture2D(GameClient.GraphicsDevice, 1, 1);
-            text.SetData(new[] { new Color(0, 0, 0, 170)});
-            spriteBatch.Draw(text, _screenRectangle, Color.White);
+            spriteBatch.Draw(_backgroundTexture, ScreenRectangle, Color.White);
 
             // Bug: No response
             // Buttons

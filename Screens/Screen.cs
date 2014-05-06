@@ -3,17 +3,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.Screens
 {
-    abstract public class Screen
+    public abstract class Screen
     {
-        public virtual GameClient GameClient { get; set; }
+        public GameClient GameClient { get; set; }
+
         public MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; }}
+        public Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; }}
 
-        public virtual bool IsActive { get; set; }
-        public virtual bool ContentLoaded { get; set; }
+        public bool IsActive { get; set; }
+        public bool ContentLoaded { get; set; }
 
-        public void SetScreen(Screen screen) { GameClient.SetScreen(screen);}
-        public void SetScreenAndDisposePreviousScreen(Screen screen) { GameClient.SetScreen(screen); GameClient.DisposePreviousScreen(); }
-        public void DisposePreviousScreen() { GameClient.DisposePreviousScreen(); }
+        protected void SetScreen(Screen screen) { GameClient.SetScreen(screen);}
+        protected void SetScreenAndDisposePreviousScreen(Screen screen) { GameClient.SetScreen(screen); GameClient.DisposePreviousScreen(); }
+        protected void DisposePreviousScreen() { GameClient.DisposePreviousScreen(); }
 
         public virtual void LoadContent() { ContentLoaded = true; }
         public virtual void Update(GameTime gameTime) { if(!ContentLoaded) { LoadContent();} }
