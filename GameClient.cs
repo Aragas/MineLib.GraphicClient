@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.Screens;
 
+using Screen = MineLib.GraphicClient.Screens.Screen;
+
 
 namespace MineLib.GraphicClient
 {
@@ -34,9 +36,8 @@ namespace MineLib.GraphicClient
             //graphics.PreferredBackBufferWidth = 1280;
             //graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
-
             
-            CurrentScreen = new MainMenuScreen(this);
+            CurrentScreen = new MainMenuScreen(this) {IsActive = true};
         }
 
 
@@ -90,16 +91,15 @@ namespace MineLib.GraphicClient
 
         protected override void Update(GameTime gameTime)
         {
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
-            //    Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Quit();
+            base.Update(gameTime);
 
             CurrentScreen.Update(gameTime);
-            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             #region 2D render
@@ -110,8 +110,6 @@ namespace MineLib.GraphicClient
 
             spriteBatch.End();
             #endregion
-
-            base.Draw(gameTime);
         }
 
         public void Quit()

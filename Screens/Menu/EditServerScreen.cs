@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -11,13 +10,8 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
         Texture2D _mainMenuTexture;
 
-        ButtonNormal _buttonConnect;
-        ButtonNormal _buttonAdd;
-        ButtonNormal _buttonDirectConnection;
-
-        ButtonNormal _buttonAddServer;
-        ButtonNormal _buttonEditServer;
-        ButtonNormal _buttonReturn;
+        GUIButton _buttonAdd;
+        GUIButton _buttonReturn;
 
         SoundEffect _effect;
         #endregion
@@ -37,9 +31,9 @@ namespace MineLib.GraphicClient.Screens
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonAdd = new ButtonNormal(widgetsTexture, buttonFont, "Add", ScreenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonAdd = new Button(widgetsTexture, buttonFont, "Add", ScreenRectangle, ButtonEnum.Bottom2);
             _buttonAdd.OnButtonPressed += OnAddButtonPressed;
-            _buttonReturn = new ButtonNormal(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonNormalPosition.Bottom);
+            _buttonReturn = new Button(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonEnum.Bottom);
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
@@ -59,20 +53,26 @@ namespace MineLib.GraphicClient.Screens
         {
             base.Update(gameTime);
 
-            _buttonAdd.Update(Mouse.GetState());
-            _buttonReturn.Update(Mouse.GetState());
+            if (IsActive)
+            {
+                _buttonAdd.Update(gameTime);
+                _buttonReturn.Update(gameTime);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
-            // Background
-            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            if (IsActive)
+            {
+                // Background
+                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-            // Buttons
-            _buttonAdd.Draw(spriteBatch);
-            _buttonReturn.Draw(spriteBatch);
+                // Buttons
+                _buttonAdd.Draw(spriteBatch);
+                _buttonReturn.Draw(spriteBatch);
+            }
         }
     }
 }

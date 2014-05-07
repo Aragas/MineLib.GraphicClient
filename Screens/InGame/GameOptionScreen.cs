@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -11,9 +11,9 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
         Texture2D _backgroundTexture;
 
-        ButtonNormal _buttonBackToGame;
-        ButtonNormal _buttonOptions;
-        ButtonNormal _buttonDisconnect;
+        GUIButton _buttonBackToGame;
+        GUIButton _buttonOptions;
+        GUIButton _buttonDisconnect;
 
         SoundEffect _effect;
         #endregion
@@ -33,13 +33,13 @@ namespace MineLib.GraphicClient.Screens
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonBackToGame = new ButtonNormal(widgetsTexture, buttonFont, "Back To Game", ScreenRectangle, ButtonNormalPosition.Top3);
+            _buttonBackToGame = new Button(widgetsTexture, buttonFont, "Back To Game", ScreenRectangle, ButtonEnum.Top3);
             _buttonBackToGame.OnButtonPressed += OnBackToGameButtonPressed;
 
-            _buttonOptions = new ButtonNormal(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonNormalPosition.Bottom4);
+            _buttonOptions = new Button(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonEnum.Bottom4);
             _buttonOptions.OnButtonPressed += OnOptionsButtonPressed;
 
-            _buttonDisconnect = new ButtonNormal(widgetsTexture, buttonFont, "Disconnect", ScreenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonDisconnect = new Button(widgetsTexture, buttonFont, "Disconnect", ScreenRectangle, ButtonEnum.Bottom2);
             _buttonDisconnect.OnButtonPressed += OnDisconnectButtonPressed;
         }
 
@@ -64,10 +64,13 @@ namespace MineLib.GraphicClient.Screens
         {
             base.Update(gameTime);
 
+            //if(gameTime.IsRunningSlowly)
+            //    throw new Exception("");
+
             // Bug: No response
-            _buttonBackToGame.Update(Mouse.GetState());
-            _buttonOptions.Update(Mouse.GetState());
-            _buttonDisconnect.Update(Mouse.GetState());
+            _buttonBackToGame.Update(gameTime);
+            _buttonOptions.Update(gameTime);
+            _buttonDisconnect.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -11,13 +10,13 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
         Texture2D _mainMenuTexture;
 
-        ButtonNormal _buttonConnect;
-        ButtonNormal _buttonRefresh;
-        ButtonNormal _buttonDirectConnection;
+        GUIButton _buttonConnect;
+        GUIButton _buttonRefresh;
+        GUIButton _buttonDirectConnection;
 
-        ButtonNormal _buttonAddServer;
-        ButtonNormal _buttonEditServer;
-        ButtonNormal _buttonReturn;
+        GUIButton _buttonAddServer;
+        GUIButton _buttonEditServer;
+        GUIButton _buttonReturn;
 
         SoundEffect _effect;
         #endregion
@@ -40,18 +39,18 @@ namespace MineLib.GraphicClient.Screens
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonConnect = new ButtonNormal(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonNormalPosition.LeftBottom2);
+            _buttonConnect = new Button(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonEnum.LeftBottom2);
             _buttonConnect.OnButtonPressed += OnConnectButtonPressed;
-            _buttonRefresh = new ButtonNormal(widgetsTexture, buttonFont, "Refresh", ScreenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonRefresh = new Button(widgetsTexture, buttonFont, "Refresh", ScreenRectangle, ButtonEnum.Bottom2);
             _buttonRefresh.OnButtonPressed += OnRefreshButtonPressed;
-            _buttonDirectConnection = new ButtonNormal(widgetsTexture, buttonFont, "Direct Connection", ScreenRectangle, ButtonNormalPosition.RightBottom2);
+            _buttonDirectConnection = new Button(widgetsTexture, buttonFont, "Direct Connection", ScreenRectangle, ButtonEnum.RightBottom2);
             _buttonDirectConnection.OnButtonPressed += OnDirectConnectionButtonPressed;
 
-            _buttonAddServer = new ButtonNormal(widgetsTexture, buttonFont, "Add Server", ScreenRectangle, ButtonNormalPosition.LeftBottom);
+            _buttonAddServer = new Button(widgetsTexture, buttonFont, "Add Server", ScreenRectangle, ButtonEnum.LeftBottom);
             _buttonAddServer.OnButtonPressed += OnAddServerButtonPressed;
-            _buttonEditServer = new ButtonNormal(widgetsTexture, buttonFont, "Edit Server", ScreenRectangle, ButtonNormalPosition.Bottom);
+            _buttonEditServer = new Button(widgetsTexture, buttonFont, "Edit Server", ScreenRectangle, ButtonEnum.Bottom);
             _buttonEditServer.OnButtonPressed += OnEditServerButtonPressed;
-            _buttonReturn = new ButtonNormal(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonNormalPosition.RightBottom);
+            _buttonReturn = new Button(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonEnum.RightBottom);
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
@@ -97,30 +96,36 @@ namespace MineLib.GraphicClient.Screens
         {
             base.Update(gameTime);
 
-            _buttonConnect.Update(Mouse.GetState());
-            _buttonRefresh.Update(Mouse.GetState());
-            _buttonDirectConnection.Update(Mouse.GetState());
+            if (IsActive)
+            {
+                _buttonConnect.Update(gameTime);
+                _buttonRefresh.Update(gameTime);
+                _buttonDirectConnection.Update(gameTime);
 
-            _buttonAddServer.Update(Mouse.GetState());
-            _buttonEditServer.Update(Mouse.GetState());
-            _buttonReturn.Update(Mouse.GetState());
+                _buttonAddServer.Update(gameTime);
+                _buttonEditServer.Update(gameTime);
+                _buttonReturn.Update(gameTime);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
-            // Background
-            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            if (IsActive)
+            {
+                // Background
+                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-            // Buttons
-            _buttonConnect.Draw(spriteBatch);
-            _buttonRefresh.Draw(spriteBatch);
-            _buttonDirectConnection.Draw(spriteBatch);
+                // Buttons
+                _buttonConnect.Draw(spriteBatch);
+                _buttonRefresh.Draw(spriteBatch);
+                _buttonDirectConnection.Draw(spriteBatch);
 
-            _buttonAddServer.Draw(spriteBatch);
-            _buttonEditServer.Draw(spriteBatch);
-            _buttonReturn.Draw(spriteBatch);
+                _buttonAddServer.Draw(spriteBatch);
+                _buttonEditServer.Draw(spriteBatch);
+                _buttonReturn.Draw(spriteBatch);
+            }
         }
     }
 }

@@ -23,21 +23,29 @@ public static class Vector3Converter
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GameScreen : InGameScreen, IDisposable
+    sealed class GameScreen : InGameScreen
     {
         InGameScreen GUIScreen;
         InGameScreen InventoryScreen;
-        InGameScreen GameOptionScreen;
+        GameOptionScreen GameOptionScreen;
+
+        public new Minecraft Minecraft = null;
+        public new bool Connected = true;
+        public new bool Crashed = false;
+
+        bool disposed;
 
         public GameScreen(GameClient gameClient, string username, string password, bool onlineMode = false)
         {
             GameClient = gameClient;
 
-            Minecraft = new Minecraft(username, password, onlineMode);
+            //Minecraft = new Minecraft(username, password, onlineMode);
 
             GUIScreen = new GUIScreen(GameClient, Minecraft);
             InventoryScreen = null;
             GameOptionScreen = null;
+
+            IsActive = true;
         }
 
         public GameScreen Connect(string serverip, short port)
@@ -115,24 +123,26 @@ namespace MineLib.GraphicClient.Screens
 
         bool _escKeyboardIsDown;
         bool _wKeyboardIsDown;
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if(Minecraft.Crashed)
+            if (Crashed)
                 SetScreen(new ServerListScreen(GameClient));
 
             #region Escape handling
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 if (!_escKeyboardIsDown)
                 {
                     if (IsActive)
                     {
-                        IsActive = false;
-
                         if (GameOptionScreen == null)
                             GameOptionScreen = new GameOptionScreen(GameClient);
+
+                        IsActive = false;
                     }
                     else
                         IsActive = true;
@@ -141,45 +151,44 @@ namespace MineLib.GraphicClient.Screens
             }
             else
                 _escKeyboardIsDown = false;
+
             #endregion
 
-            if (Connected)
+            if (Connected && IsActive)
             {
-                if (IsActive)
+                #region PlayerKeyboard
+
+                if (Keyboard.GetState().IsKeyDown(Keys.W))
                 {
-                    #region PlayerKeyboard
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    if (!_wKeyboardIsDown)
                     {
-                        if (!_wKeyboardIsDown)
-                        {
-                            PlayerMove(Vector3.Backward);
-                        }
-                        _wKeyboardIsDown = true;
+                        PlayerMove(Vector3.Backward);
                     }
-                    else
-                        _wKeyboardIsDown = false;
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.A))
-                        ;
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.S))
-                        ;
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.D))
-                        ;
-
-                    #endregion
-
-                    GUIScreen.Update(gameTime);
+                    _wKeyboardIsDown = true;
                 }
+                else
+                    _wKeyboardIsDown = false;
 
-                if (InventoryScreen != null)
-                    InventoryScreen.Update(gameTime);
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                    ;
+
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    ;
+
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                    ;
+
+                #endregion
+
+                GUIScreen.Update(gameTime);
             }
 
-            if (GameOptionScreen != null)
+            if (InventoryScreen != null && !IsActive)
+                InventoryScreen.Update(gameTime);
+
+            if (GameOptionScreen != null && !IsActive)
                 GameOptionScreen.Update(gameTime);
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -189,15 +198,19 @@ namespace MineLib.GraphicClient.Screens
             // Draw previous screen unless we are connected.
             if (Connected)
             {
+                if (!disposed)
+                {
+                    DisposePreviousScreen();
+                    disposed = true;
+                }
+
                 GUIScreen.Draw(spriteBatch);
 
-                if (!IsActive)
-                {
-                    if (InventoryScreen != null)
-                        InventoryScreen.Draw(spriteBatch);
-                    if (GameOptionScreen != null)
-                        GameOptionScreen.Draw(spriteBatch);
-                }
+                if (InventoryScreen != null && !IsActive)
+                    InventoryScreen.Draw(spriteBatch);
+
+                if (GameOptionScreen != null && !IsActive)
+                    GameOptionScreen.Draw(spriteBatch);
             }
             else
                 GameClient.PreviousScreen.Draw(spriteBatch);

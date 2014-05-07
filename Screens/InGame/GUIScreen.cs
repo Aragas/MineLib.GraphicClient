@@ -36,6 +36,10 @@ namespace MineLib.GraphicClient.Screens
 
         float scale = 3f;
 
+        float exp = 0.4f;
+        float health = 10f;
+        short food = 10;
+
         public GUIScreen(GameClient gameClient, Minecraft minecraft)
         {
             GameClient = gameClient;
@@ -236,7 +240,7 @@ namespace MineLib.GraphicClient.Screens
                     );
 
             // Exp
-            float exp = Minecraft.Player.Experience.ExperienceBar;
+            // TODO: float exp = Minecraft.Player.Experience.ExperienceBar;
             _expRectangle.Width = (int)(_expRectangle.Width * exp);
             spriteBatch.Draw(_iconsTexture,
                 new Vector2(startXPos, ScreenRectangle.Height - _expRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
@@ -268,7 +272,7 @@ namespace MineLib.GraphicClient.Screens
             }
 
             // Draw Heart
-            float health = Minecraft.Player.Health.Health;
+            // TODO: float health = Minecraft.Player.Health.Health;
             int fullHearts = (int)Math.Floor(health*0.5f);
             int fullHearts1 = (int)Math.Ceiling(health * 0.5f);
 
@@ -321,7 +325,7 @@ namespace MineLib.GraphicClient.Screens
             }
 
             // Draw Food
-            short food = Minecraft.Player.Health.Food;
+            // TODO: short food = Minecraft.Player.Health.Food;
             int fullFood = (int)Math.Floor(food * 0.5f);
             int fullFood1 = (int)Math.Ceiling(food * 0.5f);
 

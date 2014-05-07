@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -11,8 +10,8 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
         Texture2D _mainMenuTexture;
 
-        ButtonNormal _buttonConnect;
-        ButtonNormal _buttonReturn;
+        GUIButton _buttonConnect;
+        GUIButton _buttonReturn;
 
         SoundEffect _effect;
         #endregion
@@ -35,9 +34,9 @@ namespace MineLib.GraphicClient.Screens
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonConnect = new ButtonNormal(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonNormalPosition.Bottom2);
+            _buttonConnect = new Button(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonEnum.Bottom2);
             _buttonConnect.OnButtonPressed += OnConnectButtonPressed;
-            _buttonReturn = new ButtonNormal(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonNormalPosition.Bottom);
+            _buttonReturn = new Button(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonEnum.Bottom);
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
@@ -57,20 +56,26 @@ namespace MineLib.GraphicClient.Screens
         {
             base.Update(gameTime);
 
-            _buttonConnect.Update(Mouse.GetState());
-            _buttonReturn.Update(Mouse.GetState());
+            if (IsActive)
+            {
+                _buttonConnect.Update(gameTime);
+                _buttonReturn.Update(gameTime);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
-            // Background
-            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            if (IsActive)
+            {
+                // Background
+                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-            // Buttons
-            _buttonConnect.Draw(spriteBatch);
-            _buttonReturn.Draw(spriteBatch);
+                // Buttons
+                _buttonConnect.Draw(spriteBatch);
+                _buttonReturn.Draw(spriteBatch);
+            }
         }
     }
 }

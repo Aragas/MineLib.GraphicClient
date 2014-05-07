@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -11,9 +10,9 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
         Texture2D _mainMenuTexture;
 
-        ButtonNormal _buttonServerList;
-        ButtonNormal _buttonOption;
-        ButtonNormal _buttonExit;
+        GUIButton _buttonServerList;
+        GUIButton _buttonOption;
+        GUIButton _buttonExit;
 
         SoundEffect _effect;
         #endregion
@@ -34,11 +33,11 @@ namespace MineLib.GraphicClient.Screens
             _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
             SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonServerList = new ButtonNormal(widgetsTexture, buttonFont, "Search Server", ScreenRectangle, ButtonNormalPosition.Top4);
+            _buttonServerList = new Button(widgetsTexture, buttonFont, "Search Server", ScreenRectangle, ButtonEnum.Top4);
             _buttonServerList.OnButtonPressed += OnServerListButtonPressed;
-            _buttonOption = new ButtonNormal(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonNormalPosition.Bottom4);
+            _buttonOption = new Button(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonEnum.Bottom4);
             _buttonOption.OnButtonPressed += OnOptionButtonPressed;
-            _buttonExit = new ButtonNormal(widgetsTexture, buttonFont, "Exit", ScreenRectangle, ButtonNormalPosition.Bottom3);
+            _buttonExit = new Button(widgetsTexture, buttonFont, "Exit", ScreenRectangle, ButtonEnum.Bottom3);
             _buttonExit.OnButtonPressed += OnExitButtonPressed;
         }
 
@@ -64,22 +63,28 @@ namespace MineLib.GraphicClient.Screens
         {
             base.Update(gameTime);
 
-            _buttonServerList.Update(Mouse.GetState());
-            _buttonOption.Update(Mouse.GetState());
-            _buttonExit.Update(Mouse.GetState());
+            if (IsActive)
+            {
+                _buttonServerList.Update(gameTime);
+                _buttonOption.Update(gameTime);
+                _buttonExit.Update(gameTime);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
-            // Background
-            spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            if (IsActive)
+            {
+                // Background
+                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-            // Buttons
-            _buttonServerList.Draw(spriteBatch);
-            _buttonOption.Draw(spriteBatch);
-            _buttonExit.Draw(spriteBatch);
+                // Buttons
+                _buttonServerList.Draw(spriteBatch);
+                _buttonOption.Draw(spriteBatch);
+                _buttonExit.Draw(spriteBatch);
+            }
         }
     }
 }
