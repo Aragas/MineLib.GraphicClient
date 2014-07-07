@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -25,6 +25,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
+            base.LoadContent();
+
             _backgroundTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
             _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 170) });
 
@@ -46,7 +48,7 @@ namespace MineLib.GraphicClient.Screens
         void OnBackToGameButtonPressed()
         {
             _effect.Play();
-            GameClient.CurrentScreen.IsActive = true;
+            //GameClient.CurrentScreen.IsActive = true;
         }
 
         void OnOptionsButtonPressed()
@@ -57,15 +59,25 @@ namespace MineLib.GraphicClient.Screens
         void OnDisconnectButtonPressed()
         {
             _effect.Play();
-            SetScreenAndDisposePreviousScreen(new ServerListScreen(GameClient));
+            AddScreen(new ServerListScreen(GameClient));
+            ExitScreen();
+        }
+
+        public override void HandleInput(InputState input)
+        {
+            base.HandleInput(input);
+
+            if(input.IsNewKeyPress(Keys.Escape))
+                ExitScreen();
+
+            _buttonBackToGame.HandleInput(input);
+            _buttonOptions.HandleInput(input);
+            _buttonDisconnect.HandleInput(input);
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            //if(gameTime.IsRunningSlowly)
-            //    throw new Exception("");
 
             // Bug: No response
             _buttonBackToGame.Update(gameTime);
@@ -73,18 +85,22 @@ namespace MineLib.GraphicClient.Screens
             _buttonDisconnect.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            base.Draw(gameTime);
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
             // Backgroung
-            spriteBatch.Draw(_backgroundTexture, ScreenRectangle, Color.White);
+            SpriteBatch.Draw(_backgroundTexture, ScreenRectangle, Color.White);
 
-            // Bug: No response
             // Buttons
-            _buttonBackToGame.Draw(spriteBatch);
-            _buttonOptions.Draw(spriteBatch);
-            _buttonDisconnect.Draw(spriteBatch);
+            _buttonBackToGame.Draw(SpriteBatch);
+            _buttonOptions.Draw(SpriteBatch);
+            _buttonDisconnect.Draw(SpriteBatch);
+
+            SpriteBatch.End();
         }
     }
 }

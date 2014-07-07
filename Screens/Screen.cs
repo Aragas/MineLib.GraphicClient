@@ -5,6 +5,9 @@ using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
 {
+    // TODO: Delete all base calls, now it is a game component
+    // TODO: Use AddScreenAndExit
+    // TODO: Implement UnloadContent
     public abstract class Screen
     {
         public GameClient GameClient { get; set; }
@@ -14,27 +17,34 @@ namespace MineLib.GraphicClient.Screens
         public MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; }}
         public Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; }}
 
-        public bool IsActive { get; set; }
         public bool ContentLoaded { get; set; }
+        public ScreenManagerComponent ScreenManager { get { return GameClient.ScreenManager; } }
+        public ScreenState ScreenState { get; set; }
+        public SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; }}
 
-        protected void SetScreen(Screen screen) { IsActive = false; GameClient.SetScreen(screen); GameClient.CurrentScreen.IsActive = true;}
-        protected void SetScreenAndDisposePreviousScreen(Screen screen) { IsActive = false; GameClient.SetScreen(screen); GameClient.CurrentScreen.IsActive = true; GameClient.DisposePreviousScreen(); }
-        protected void DisposePreviousScreen() { GameClient.DisposePreviousScreen(); }
+        protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
+        protected void AddScreenAndExit(Screen screen) { ScreenManager.AddScreen(screen); ExitScreen(); }
 
         public virtual void LoadContent() { ContentLoaded = true; }
+        public virtual void HandleInput(InputState input) { if (!ContentLoaded) { LoadContent(); } }
         public virtual void Update(GameTime gameTime) { if(!ContentLoaded) { LoadContent();} }
-        public virtual void Draw(SpriteBatch spriteBatch) { if (!ContentLoaded) { LoadContent(); } }
+        public virtual void Draw(GameTime gameTime) { if (!ContentLoaded) { LoadContent(); } }
         public virtual void Dispose() 
         {
             //foreach (GUIButton button in Buttons)
             //{
             //    button.Dispose();
             //}
-            //GameClient = null;
             //ButtonList = null;
         }
 
         public void Exit() { GameClient.Exit(); }
+
+        public virtual void ExitScreen()
+        {
+            // If the screen has a zero transition time, remove it immediately.
+            ScreenManager.RemoveScreen(this);
+        }
     }
 
 

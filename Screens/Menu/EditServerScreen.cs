@@ -40,39 +40,40 @@ namespace MineLib.GraphicClient.Screens
         void OnAddButtonPressed()
         {
             _effect.Play();
-            SetScreen(new ServerListScreen(GameClient));
+            AddScreen(new ServerListScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
         {
             _effect.Play();
-            SetScreen(new ServerListScreen(GameClient));
+            AddScreen(new ServerListScreen(GameClient));
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if (IsActive)
-            {
-                _buttonAdd.Update(gameTime);
-                _buttonReturn.Update(gameTime);
-            }
+            _buttonAdd.Update(gameTime);
+            _buttonReturn.Update(gameTime);
+
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            base.Draw(gameTime);
 
-            if (IsActive)
-            {
-                // Background
-                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
-                // Buttons
-                _buttonAdd.Draw(spriteBatch);
-                _buttonReturn.Draw(spriteBatch);
-            }
+            // Background
+            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+
+            // Buttons
+            _buttonAdd.Draw(SpriteBatch);
+            _buttonReturn.Draw(SpriteBatch);
+
+            SpriteBatch.End();
+
         }
     }
 }

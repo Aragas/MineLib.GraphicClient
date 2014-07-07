@@ -40,26 +40,11 @@ namespace MineLib.GraphicClient.GUIButtons
                 (int) (buttonPosition.Y), (int) buttonSize.X, (int) buttonSize.Y);
         }
 
-        public override void Update(GameTime gameTime)
+        public override void HandleInput(InputState input)
         {
-            base.Update(gameTime);
-
-            #region Preventing too soon clicks on new screen on the same position that the old button was
-            if (JustCreated)
-            {
-                CreationTime = gameTime.TotalGameTime;
-                JustCreated = false;
-            }
-
-            if (!NoMoreChecks && gameTime.TotalGameTime - CreationTime < CoolDown)
-                return;
-            else
-                NoMoreChecks = true;
-            
-            #endregion
-
             #region Mouse handling
-            MouseState mouse = Mouse.GetState();
+
+            MouseState mouse = input.CurrentMouseState;
             Rectangle mouseRectangle = new Rectangle(mouse.X, mouse.Y, 1, 1);
 
             if (ButtonRectangle.Intersects(mouseRectangle))
@@ -81,10 +66,29 @@ namespace MineLib.GraphicClient.GUIButtons
                         EventCalled = false;
                 }
                 else
-                    IsClicked = false;              
+                    IsClicked = false;
             }
             else
                 IsDown = false;
+            #endregion
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            #region Preventing too soon clicks on new screen on the same position that the old button was
+            if (JustCreated)
+            {
+                CreationTime = gameTime.TotalGameTime;
+                JustCreated = false;
+            }
+
+            if (!NoMoreChecks && gameTime.TotalGameTime - CreationTime < CoolDown)
+                return;
+            else
+                NoMoreChecks = true;
+            
             #endregion
         }
 

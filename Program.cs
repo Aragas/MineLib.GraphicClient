@@ -12,7 +12,6 @@ namespace MineLib.GraphicClient
             using (var game = new GameClient())
             {
                 game.Run();
-                game.Quit();
             }
 
         }

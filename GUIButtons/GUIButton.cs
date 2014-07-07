@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.GUIButtons
 {
+    // TODO: Create GUIButtonManager similar to ScreenManager
     public abstract class GUIButton
     {
         public bool IsClicked;
@@ -26,6 +27,8 @@ namespace MineLib.GraphicClient.GUIButtons
 
         protected const int ButtonWidth = 200;
         protected const int ButtonHeight = 20;
+
+        public virtual void HandleInput(InputState input) { }
 
         public virtual void Update(GameTime gameTime) { }
 
@@ -124,5 +127,6 @@ namespace MineLib.GraphicClient.GUIButtons
         }
 
         public virtual event Action OnButtonPressed;
+
     }
 }

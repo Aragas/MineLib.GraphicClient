@@ -53,11 +53,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AudioManagerComponent.cs" />
+    <Compile Include="FPSCounterComponent.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GUIButtons\GUIButton.cs" />
     <Compile Include="MinecraftTexturesStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="InputState.cs" />
+    <Compile Include="Screens\ScreenManagerComponent.cs" />
     <Compile Include="Screens\InGameScreen.cs" />
     <Compile Include="Screens\Menu\AddServerScreen.cs" />
     <Compile Include="GUIButtons\ButtonNormal.cs" />
@@ -116,6 +120,7 @@
       <Name>MineLib.Network</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

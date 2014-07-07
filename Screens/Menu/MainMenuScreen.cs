@@ -24,7 +24,7 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            base.LoadContent();
+            //base.LoadContent();
 
             Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
@@ -44,13 +44,15 @@ namespace MineLib.GraphicClient.Screens
         void OnServerListButtonPressed()
         {
             _effect.Play();
-            SetScreen(new ServerListScreen(GameClient));
+            AddScreen(new ServerListScreen(GameClient));
+            ExitScreen();
         }
 
         void OnOptionButtonPressed()
         {
             _effect.Play();
-            SetScreen(new OptionScreen());
+            AddScreen(new OptionScreen());
+            ExitScreen();
         }
 
         void OnExitButtonPressed()
@@ -59,32 +61,39 @@ namespace MineLib.GraphicClient.Screens
             Exit();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void HandleInput(InputState input)
         {
-            base.Update(gameTime);
-
-            if (IsActive)
-            {
-                _buttonServerList.Update(gameTime);
-                _buttonOption.Update(gameTime);
-                _buttonExit.Update(gameTime);
-            }
+            _buttonServerList.HandleInput(input);
+            _buttonOption.HandleInput(input);
+            _buttonExit.HandleInput(input);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Update(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            //base.Update(gameTime);
 
-            if (IsActive)
-            {
-                // Background
-                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            _buttonServerList.Update(gameTime);
+            _buttonOption.Update(gameTime);
+            _buttonExit.Update(gameTime);
+        }
 
-                // Buttons
-                _buttonServerList.Draw(spriteBatch);
-                _buttonOption.Draw(spriteBatch);
-                _buttonExit.Draw(spriteBatch);
-            }
+        public override void Draw(GameTime gameTime)
+        {
+            //base.Draw(gameTime);
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
+
+            // Background
+            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+
+            // Buttons
+            _buttonServerList.Draw(SpriteBatch);
+            _buttonOption.Draw(SpriteBatch);
+            _buttonExit.Draw(SpriteBatch);
+
+            SpriteBatch.End();
+
         }
     }
 }

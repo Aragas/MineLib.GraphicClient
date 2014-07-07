@@ -180,12 +180,15 @@ namespace MineLib.GraphicClient.Screens
             return Vector2.Zero;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            base.Draw(gameTime);
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
             #region Crosshair
-            spriteBatch.Draw(_crosshairTexture,
+            SpriteBatch.Draw(_crosshairTexture,
                     new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y), // Center of screen
                     null, // Source rectangle
                     Color.White, // Color
@@ -202,7 +205,7 @@ namespace MineLib.GraphicClient.Screens
 
             #region ItemList
             // ItemList
-            spriteBatch.Draw(_widgetTexture,
+            SpriteBatch.Draw(_widgetTexture,
                     new Vector2(startXPos, ScreenRectangle.Height - _itemListRectangle.Height * scale), // Center of screen
                     _itemListRectangle, // Source rectangle
                     Color.White, // Color
@@ -214,7 +217,7 @@ namespace MineLib.GraphicClient.Screens
                     );
 
             // SelectedItem
-            spriteBatch.Draw(_widgetTexture,
+            SpriteBatch.Draw(_widgetTexture,
                     GetItemPosition(mousevalue, scale),
                     _selectedItemListRectangle, // Source rectangle
                     Color.White, // Color
@@ -228,7 +231,7 @@ namespace MineLib.GraphicClient.Screens
 
             #region Exp
             // EmptyExp
-            spriteBatch.Draw(_iconsTexture,
+            SpriteBatch.Draw(_iconsTexture,
                 new Vector2(startXPos, ScreenRectangle.Height - _expEmptyRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
                     _expEmptyRectangle, // Source rectangle
                     Color.White, // Color
@@ -242,7 +245,7 @@ namespace MineLib.GraphicClient.Screens
             // Exp
             // TODO: float exp = Minecraft.Player.Experience.ExperienceBar;
             _expRectangle.Width = (int)(_expRectangle.Width * exp);
-            spriteBatch.Draw(_iconsTexture,
+            SpriteBatch.Draw(_iconsTexture,
                 new Vector2(startXPos, ScreenRectangle.Height - _expRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
                     _expRectangle, // Source rectangle
                     Color.White, // Color
@@ -259,7 +262,7 @@ namespace MineLib.GraphicClient.Screens
             float heartScale = scale * 0.80f;
             for (int i = 0; i < 10; i++)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                 new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartEmptyRectangle, // Source rectangle
                     Color.White, // Color
@@ -278,7 +281,7 @@ namespace MineLib.GraphicClient.Screens
 
             for (int i = 0; i < fullHearts; i++)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                 new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartRectangle, // Source rectangle
                     Color.White, // Color
@@ -293,7 +296,7 @@ namespace MineLib.GraphicClient.Screens
             // Draw HalfHeart
             if (fullHearts1 > fullHearts)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                     new Vector2(startXPos + _heartEmptyRectangle.Width * fullHearts * heartScale, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
                     _heartHalfRectangle, // Source rectangle
                     Color.White, // Color
@@ -312,7 +315,7 @@ namespace MineLib.GraphicClient.Screens
             float foodXPos = endXPos - _foodEmptyRectangle.Width * 10 * foodScale;
             for (int i = 0; i < 10; i++)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                 new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodEmptyRectangle, // Source rectangle
                     Color.White, // Color
@@ -331,7 +334,7 @@ namespace MineLib.GraphicClient.Screens
 
             for (int i = 0; i < fullFood; i++)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                 new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodRectangle, // Source rectangle
                     Color.White, // Color
@@ -346,7 +349,7 @@ namespace MineLib.GraphicClient.Screens
             // Draw HalfFood
             if (fullFood1 > fullFood)
             {
-                spriteBatch.Draw(_iconsTexture,
+                SpriteBatch.Draw(_iconsTexture,
                     new Vector2(foodXPos + _foodEmptyRectangle.Width * fullHearts * foodScale, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
                     _foodHalfRectangle, // Source rectangle
                     Color.White, // Color
@@ -358,6 +361,8 @@ namespace MineLib.GraphicClient.Screens
                     );
             }
             #endregion
+
+            SpriteBatch.End();
         }
     }
 }

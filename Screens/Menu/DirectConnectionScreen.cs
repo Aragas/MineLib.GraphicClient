@@ -43,39 +43,45 @@ namespace MineLib.GraphicClient.Screens
         void OnConnectButtonPressed()
         {
             _effect.Play();
-            SetScreen(new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode).Connect(ServerIP, ServerPort));
+
+            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
+            bool status = gameScreen.Connect(ServerIP, ServerPort);
+            AddScreen(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
+
+            ExitScreen();
         }
 
         void OnReturnButtonPressed()
         {
             _effect.Play();
-            SetScreen(new ServerListScreen(GameClient));
+            AddScreen(new ServerListScreen(GameClient));
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if (IsActive)
-            {
-                _buttonConnect.Update(gameTime);
-                _buttonReturn.Update(gameTime);
-            }
+            _buttonConnect.Update(gameTime);
+            _buttonReturn.Update(gameTime);
+
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            base.Draw(gameTime);
 
-            if (IsActive)
-            {
-                // Background
-                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
-                // Buttons
-                _buttonConnect.Draw(spriteBatch);
-                _buttonReturn.Draw(spriteBatch);
-            }
+            // Background
+            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+
+            // Buttons
+            _buttonConnect.Draw(SpriteBatch);
+            _buttonReturn.Draw(SpriteBatch);
+
+            SpriteBatch.End();
+
         }
     }
 }

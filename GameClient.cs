@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.Screens;
 
-using Screen = MineLib.GraphicClient.Screens.Screen;
-
-
 namespace MineLib.GraphicClient
 {
     /// <summary>
@@ -14,11 +11,14 @@ namespace MineLib.GraphicClient
     /// </summary>
     public class GameClient : Game
     {
+        FPSCounterComponent fps;
+
+        public ScreenManagerComponent ScreenManager;
+
+        SpriteFont FPSFont;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
-        public Screen CurrentScreen { get; private set; }
-        public Screen PreviousScreen { get; private set; }
 
         public MinecraftTexturesStorage MinecraftTexturesStorage;
 
@@ -28,7 +28,6 @@ namespace MineLib.GraphicClient
         public bool OnlineMode = false;
 
         public GameClient()
-            : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -36,32 +35,18 @@ namespace MineLib.GraphicClient
             //graphics.PreferredBackBufferWidth = 1280;
             //graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
-            
-            CurrentScreen = new MainMenuScreen(this) {IsActive = true};
+
+            ScreenManager = new ScreenManagerComponent(this);
+            Components.Add(ScreenManager);
+
         }
-
-
-        public void SetScreen(Screen screen)
-        {
-            DisposePreviousScreen();
-
-            PreviousScreen = CurrentScreen;
-            CurrentScreen = screen;
-        }
-
-        public void DisposePreviousScreen()
-        {
-            if (PreviousScreen != null)
-            {
-                PreviousScreen.Dispose();
-                PreviousScreen = null;
-            }
-        }
-
 
         protected override void Initialize()
         {
             base.Initialize();
+
+            ScreenManager.AddScreen(new MainMenuScreen(this));
+
         }
 
         protected override void LoadContent()
@@ -70,6 +55,12 @@ namespace MineLib.GraphicClient
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             IsMouseVisible = true;
+
+            FPSFont = Content.Load<SpriteFont>("VolterGoldfish");
+
+            fps = new FPSCounterComponent(this, spriteBatch, FPSFont);
+            Components.Add(fps);
+
 
             #region Load resources from minecraft.jar
             string path = Content.RootDirectory;
@@ -93,30 +84,18 @@ namespace MineLib.GraphicClient
         {
             base.Update(gameTime);
 
-            CurrentScreen.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            #region 2D render
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
-                DepthStencilState.None, RasterizerState.CullNone);
+            spriteBatch.Begin();
 
-            CurrentScreen.Draw(spriteBatch);
+            base.Draw(gameTime);
 
             spriteBatch.End();
-            #endregion
-        }
 
-        public void Quit()
-        {
-            CurrentScreen.Dispose();
-
-            Exit();
         }
 
     }

@@ -31,7 +31,7 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            base.LoadContent();
+            //base.LoadContent();
 
             Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
@@ -58,7 +58,12 @@ namespace MineLib.GraphicClient.Screens
         void OnConnectButtonPressed()
         {
             _effect.Play();
-            SetScreen(new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode).Connect(ServerIP, ServerPort));
+
+            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
+            bool status = gameScreen.Connect(ServerIP, ServerPort);
+            AddScreen(!status? (Screen) gameScreen : new ServerListScreen(GameClient));
+
+            ExitScreen();
         }
 
         void OnRefreshButtonPressed()
@@ -69,63 +74,77 @@ namespace MineLib.GraphicClient.Screens
         void OnDirectConnectionButtonPressed()
         {
             _effect.Play();
-            SetScreen(new DirectConnectionScreen(GameClient));
+            AddScreen(new DirectConnectionScreen(GameClient));
+            ExitScreen();
         }
 
 
         void OnAddServerButtonPressed()
         {
             _effect.Play();
-            SetScreen(new AddServerScreen(GameClient));
+            ExitScreen();
+            AddScreen(new AddServerScreen(GameClient));
         }
 
         void OnEditServerButtonPressed()
         {
             _effect.Play();
-            SetScreen(new EditServerScreen(GameClient));
+            ExitScreen();
+            AddScreen(new EditServerScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
         {
             _effect.Play();
-            SetScreen(new MainMenuScreen(GameClient));
+            ExitScreen();
+            AddScreen(new MainMenuScreen(GameClient));
         }
 
+        public override void HandleInput(InputState input)
+        {
+            _buttonConnect.HandleInput(input);
+            _buttonRefresh.HandleInput(input);
+            _buttonDirectConnection.HandleInput(input);
+
+            _buttonAddServer.HandleInput(input);
+            _buttonEditServer.HandleInput(input);
+            _buttonReturn.HandleInput(input);
+        }
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
+            //base.Update(gameTime);
 
-            if (IsActive)
-            {
-                _buttonConnect.Update(gameTime);
-                _buttonRefresh.Update(gameTime);
-                _buttonDirectConnection.Update(gameTime);
+            _buttonConnect.Update(gameTime);
+            _buttonRefresh.Update(gameTime);
+            _buttonDirectConnection.Update(gameTime);
 
-                _buttonAddServer.Update(gameTime);
-                _buttonEditServer.Update(gameTime);
-                _buttonReturn.Update(gameTime);
-            }
+            _buttonAddServer.Update(gameTime);
+            _buttonEditServer.Update(gameTime);
+            _buttonReturn.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            base.Draw(spriteBatch);
+            //base.Draw(gameTime);
 
-            if (IsActive)
-            {
-                // Background
-                spriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
-                // Buttons
-                _buttonConnect.Draw(spriteBatch);
-                _buttonRefresh.Draw(spriteBatch);
-                _buttonDirectConnection.Draw(spriteBatch);
+            // Background
+            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-                _buttonAddServer.Draw(spriteBatch);
-                _buttonEditServer.Draw(spriteBatch);
-                _buttonReturn.Draw(spriteBatch);
-            }
+            // Buttons
+            _buttonConnect.Draw(SpriteBatch);
+            _buttonRefresh.Draw(SpriteBatch);
+            _buttonDirectConnection.Draw(SpriteBatch);
+
+            _buttonAddServer.Draw(SpriteBatch);
+            _buttonEditServer.Draw(SpriteBatch);
+            _buttonReturn.Draw(SpriteBatch);
+
+            SpriteBatch.End();
+
         }
     }
 }
