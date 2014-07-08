@@ -31,7 +31,6 @@ namespace MineLib.GraphicClient.Screens
         Rectangle _foodHalfRectangle = new Rectangle(61, 27, 9, 9);
         #endregion
 
-        int previousScrollValue;
         int mousevalue = 1;
 
         float scale = 3f;
@@ -44,13 +43,12 @@ namespace MineLib.GraphicClient.Screens
         {
             GameClient = gameClient;
             Minecraft = minecraft;
+            Name = "GUIScreen";
         }
 
         public override void LoadContent()
         {
-            base.LoadContent();
-
-            _crosshairTexture = GameClient.Content.Load<Texture2D>("Crosshair");
+            _crosshairTexture = Content.Load<Texture2D>("Crosshair");
 
             GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
 
@@ -58,23 +56,17 @@ namespace MineLib.GraphicClient.Screens
             _iconsTexture = guiTextures.Icons;
         }
 
-        bool _gamepadLeftShoulderIsDown;
-        bool _gamepadRightShoulderIsDown;
-
-        public override void Update(GameTime gameTime)
+        public override void HandleInput(InputState input)
         {
-            base.Update(gameTime);
-            MouseState currentMouseState = Mouse.GetState();
-
             #region ItemList MouseScrollWheel
-            if (currentMouseState.ScrollWheelValue < previousScrollValue)
+            if (input.MouseScrollDown)
             {
                 if (mousevalue < 9)
                     mousevalue++;
                 else
                     mousevalue = 1;
             }
-            else if (currentMouseState.ScrollWheelValue > previousScrollValue)
+            else if (input.MouseScrollUp)
             {
                 if (mousevalue > 1)
                     mousevalue--;
@@ -84,65 +76,59 @@ namespace MineLib.GraphicClient.Screens
             #endregion
 
             #region ItemList Keyboard
-            if (Keyboard.GetState().IsKeyDown(Keys.D1))
+            if (input.IsNewKeyPress(Keys.D1))
                 mousevalue = 1;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D2))
+            if (input.IsNewKeyPress(Keys.D2))
                 mousevalue = 2;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D3))
+            if (input.IsNewKeyPress(Keys.D3))
                 mousevalue = 3;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D4))
+            if (input.IsNewKeyPress(Keys.D4))
                 mousevalue = 4;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D5))
+            if (input.IsNewKeyPress(Keys.D5))
                 mousevalue = 5;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D6))
+            if (input.IsNewKeyPress(Keys.D6))
                 mousevalue = 6;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D7))
+            if (input.IsNewKeyPress(Keys.D7))
                 mousevalue = 7;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D8))
+            if (input.IsNewKeyPress(Keys.D8))
                 mousevalue = 8;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D9))
+            if (input.IsNewKeyPress(Keys.D9))
                 mousevalue = 9;
             #endregion
 
             #region ItemList GamepadShoulders
-            if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftShoulder))
-            {
-                if (!_gamepadLeftShoulderIsDown)
-                {
-                    if (mousevalue < 9)
-                        mousevalue++;
-                    else
-                        mousevalue = 1;
-                }
-                _gamepadLeftShoulderIsDown = true;
-            }
-            else
-                _gamepadLeftShoulderIsDown = false;
 
-            if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.LeftShoulder))
+            if (input.GUIMenuRight)
             {
-                if (!_gamepadRightShoulderIsDown)
-                {
-                    if (mousevalue > 1)
-                        mousevalue--;
-                    else
-                        mousevalue = 9;
-                }
-                _gamepadRightShoulderIsDown = true;
+                if (mousevalue < 9)
+                    mousevalue++;
+                else
+                    mousevalue = 1;
             }
-            else
-                _gamepadRightShoulderIsDown = false;
+
+            if (input.GUIMenuLeft)
+            {
+                if (mousevalue > 1)
+                    mousevalue--;
+                else
+                    mousevalue = 9;
+            }
+
             #endregion
 
-            previousScrollValue = currentMouseState.ScrollWheelValue;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+
         }
 
         Vector2 GetItemPosition(int position, float scale )
@@ -182,8 +168,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
                 DepthStencilState.None, RasterizerState.CullNone);
 

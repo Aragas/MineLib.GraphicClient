@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -20,18 +21,17 @@ namespace MineLib.GraphicClient.Screens
         public MainMenuScreen(GameClient gameClient)
         {
             GameClient = gameClient;
+            Name = "MainMenuScreen";
         }
 
         public override void LoadContent()
         {
-            //base.LoadContent();
-
             Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
             // Custom stuff TODO: Take from minecraft
-            _mainMenuTexture = GameClient.Content.Load<Texture2D>("MainMenu");
-            _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
+            _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
+            _effect = Content.Load<SoundEffect>("Button.Effect");
+            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
             _buttonServerList = new Button(widgetsTexture, buttonFont, "Search Server", ScreenRectangle, ButtonEnum.Top4);
             _buttonServerList.OnButtonPressed += OnServerListButtonPressed;
@@ -44,15 +44,13 @@ namespace MineLib.GraphicClient.Screens
         void OnServerListButtonPressed()
         {
             _effect.Play();
-            AddScreen(new ServerListScreen(GameClient));
-            ExitScreen();
+            AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
         void OnOptionButtonPressed()
         {
             _effect.Play();
-            AddScreen(new OptionScreen());
-            ExitScreen();
+            AddScreenAndExit(new OptionScreen(GameClient));
         }
 
         void OnExitButtonPressed()
@@ -63,6 +61,9 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
+            if (input.IsNewKeyPress(Keys.Escape))
+                Exit();
+
             _buttonServerList.HandleInput(input);
             _buttonOption.HandleInput(input);
             _buttonExit.HandleInput(input);
@@ -70,8 +71,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Update(GameTime gameTime)
         {
-            //base.Update(gameTime);
-
             _buttonServerList.Update(gameTime);
             _buttonOption.Update(gameTime);
             _buttonExit.Update(gameTime);
@@ -79,8 +78,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            //base.Draw(gameTime);
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
                 DepthStencilState.None, RasterizerState.CullNone);
 

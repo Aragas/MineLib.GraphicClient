@@ -22,7 +22,7 @@ public static class Vector3Converter
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GameScreen : Screen
+    sealed class GameScreen : InGameScreen
     {
         InGameScreen GUIScreen;
         InGameScreen InventoryScreen;
@@ -40,12 +40,7 @@ namespace MineLib.GraphicClient.Screens
 
             //Minecraft = new Minecraft(username, password, onlineMode);
 
-            GUIScreen = new GUIScreen(GameClient, Minecraft);
-            ScreenManager.AddScreen(GUIScreen);
-
-            InventoryScreen = null;
-
-            GameOptionScreen = new GameOptionScreen(GameClient);
+            Name = "GameScreen";
         }
 
         public bool Connect(string serverip, short port)
@@ -88,8 +83,17 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            base.LoadContent();
+            GUIScreen = new GUIScreen(GameClient, Minecraft);
+            ScreenManager.AddScreen(GUIScreen);
 
+            InventoryScreen = null;
+
+            GameOptionScreen = new GameOptionScreen(GameClient);
+        }
+
+        public override void UnloadContent()
+        {
+            Content.Unload();
         }
 
         void PlayerMove(Vector3 position, double crouch = 1.62, bool onGround = true)
@@ -122,9 +126,7 @@ namespace MineLib.GraphicClient.Screens
         public override void HandleInput(InputState input)
         {
             if (input.IsNewKeyPress(Keys.Escape))
-            {
-                ScreenManager.AddScreen(GameOptionScreen);
-            }
+                ScreenManager.AddScreen(GameOptionScreen);        
 
             if(input.IsNewKeyPress(Keys.W))
                 PlayerMove(Vector3.Backward);
@@ -132,20 +134,12 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
             if (Crashed)
-            {
-                AddScreen(new ServerListScreen(GameClient));
-                ExitScreen();
-            }
-
+                AddScreenAndCloseOthers(new ServerListScreen(GameClient));
         }
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             // Draw previous screen unless we are connected.
             if (Connected)
             {

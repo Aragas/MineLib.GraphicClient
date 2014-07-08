@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.ComponentModel.Design.Serialization;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,19 +22,21 @@ namespace MineLib.GraphicClient.Screens
         public GameOptionScreen(GameClient client)
         {
             GameClient = client;
+            Name = "GameOptionScreen";
         }
 
         public override void LoadContent()
         {
-            base.LoadContent();
+            ScreenManager.GetScreen("GameScreen").ToBackground();
+            ScreenManager.GetScreen("GUIScreen").ToBackground();
 
             _backgroundTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
             _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 170) });
 
             Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
-            _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
+            _effect = Content.Load<SoundEffect>("Button.Effect");
+            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
             _buttonBackToGame = new Button(widgetsTexture, buttonFont, "Back To Game", ScreenRectangle, ButtonEnum.Top3);
             _buttonBackToGame.OnButtonPressed += OnBackToGameButtonPressed;
@@ -43,12 +46,13 @@ namespace MineLib.GraphicClient.Screens
 
             _buttonDisconnect = new Button(widgetsTexture, buttonFont, "Disconnect", ScreenRectangle, ButtonEnum.Bottom2);
             _buttonDisconnect.OnButtonPressed += OnDisconnectButtonPressed;
+
         }
 
         void OnBackToGameButtonPressed()
         {
             _effect.Play();
-            //GameClient.CurrentScreen.IsActive = true;
+            ExitScreen();
         }
 
         void OnOptionsButtonPressed()
@@ -59,15 +63,12 @@ namespace MineLib.GraphicClient.Screens
         void OnDisconnectButtonPressed()
         {
             _effect.Play();
-            AddScreen(new ServerListScreen(GameClient));
-            ExitScreen();
+            AddScreenAndCloseOthers(new ServerListScreen(GameClient));
         }
 
         public override void HandleInput(InputState input)
         {
-            base.HandleInput(input);
-
-            if(input.IsNewKeyPress(Keys.Escape))
+            if (input.IsNewKeyPress(Keys.Escape))
                 ExitScreen();
 
             _buttonBackToGame.HandleInput(input);
@@ -77,9 +78,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
-            // Bug: No response
             _buttonBackToGame.Update(gameTime);
             _buttonOptions.Update(gameTime);
             _buttonDisconnect.Update(gameTime);
@@ -87,8 +85,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
                 DepthStencilState.None, RasterizerState.CullNone);
 
@@ -101,6 +97,14 @@ namespace MineLib.GraphicClient.Screens
             _buttonDisconnect.Draw(SpriteBatch);
 
             SpriteBatch.End();
+        }
+
+        public override void ExitScreen()
+        {
+            ScreenManager.GetScreen("GameScreen").ToActive();
+            ScreenManager.GetScreen("GUIScreen").ToActive();
+
+            base.ExitScreen();
         }
     }
 }

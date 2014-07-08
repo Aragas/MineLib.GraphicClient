@@ -12,10 +12,10 @@ namespace MineLib.GraphicClient.Screens
     /// </summary>
     public enum ScreenState
     {
-        TransitionOn,
         Active,
-        TransitionOff,
-        Hidden
+        Background,
+        Hidden,
+        JustNowActive
     }
 
     /// <summary>
@@ -40,6 +40,7 @@ namespace MineLib.GraphicClient.Screens
         IGraphicsDeviceService graphicsDeviceService;
 
         ContentManager content;
+        ContentManager gameContent;
         SpriteBatch spriteBatch;
         SpriteFont font;
         Texture2D blankTexture;
@@ -78,6 +79,11 @@ namespace MineLib.GraphicClient.Screens
         public ContentManager Content
         {
             get { return content; }
+        }
+
+        public ContentManager GameContent
+        {
+            get { return gameContent; }
         }
 
         /// <summary>
@@ -129,6 +135,7 @@ namespace MineLib.GraphicClient.Screens
             : base(game)
         {
             content = new ContentManager(game.Services, "Content");
+            gameContent = new ContentManager(game.Services, "Content");
 
             graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
                                                         typeof(IGraphicsDeviceService));
@@ -174,7 +181,7 @@ namespace MineLib.GraphicClient.Screens
             // Tell each of the screens to unload their content.
             foreach (Screen screen in screens)
             {
-                //screen.UnloadContent();
+                screen.UnloadContent();
             }
         }
 
@@ -199,9 +206,6 @@ namespace MineLib.GraphicClient.Screens
             foreach (Screen screen in screens)
                 screensToUpdate.Add(screen);
 
-            bool otherScreenHasFocus = !Game.IsActive;
-            bool coveredByOtherScreen = false;
-
             // Loop as long as there are screens waiting to be updated.
             while (screensToUpdate.Count > 0)
             {
@@ -211,23 +215,18 @@ namespace MineLib.GraphicClient.Screens
                 screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
 
                 // Update the screen.
-                screen.Update(gameTime);//, otherScreenHasFocus, coveredByOtherScreen);
+                 screen.Update(gameTime);
 
-                if (screen.ScreenState == ScreenState.TransitionOn ||
-                    screen.ScreenState == ScreenState.Active)
-                {
-                    // If this is the first active screen we came across,
-                    // give it a chance to handle input and update presence.
-                    if (!otherScreenHasFocus)
-                    {
-                        // TODO: Implement focus stuff
-                        screen.HandleInput(input);
+                 if (screen.ScreenState == ScreenState.JustNowActive)
+                 {
+                     // Skip one HandleInput, now we won't get a ESC button loop
+                     screen.ScreenState = ScreenState.Active;
+                     return;
+                 }
 
-                        //screen.UpdatePresence(); // presence support
-
-                        otherScreenHasFocus = true;
-                    }
-                }
+                if (screen.ScreenState == ScreenState.Active)
+                    screen.HandleInput(input);
+                
             }
 
             // Print debug trace?
@@ -267,7 +266,6 @@ namespace MineLib.GraphicClient.Screens
                     continue;
 
                 screen.Draw(gameTime);
-                //screen.Draw(spriteBatch);
             }
         }
 
@@ -295,9 +293,6 @@ namespace MineLib.GraphicClient.Screens
         /// </summary>
         public void AddScreen(Screen screen)
         {
-            // TODO: Make this happen 
-            //screen.ScreenManager = this;
-
             // If we have a graphics device, tell the screen to load content.
             if ((graphicsDeviceService != null) &&
                 (graphicsDeviceService.GraphicsDevice != null))
@@ -320,11 +315,38 @@ namespace MineLib.GraphicClient.Screens
             if ((graphicsDeviceService != null) &&
                 (graphicsDeviceService.GraphicsDevice != null))
             {
-                //screen.UnloadContent();
+                screen.UnloadContent();
             }
 
             screens.Remove(screen);
             screensToUpdate.Remove(screen);
+        }
+
+        public void CloseOtherScreens(Screen currentScreen)
+        {
+            foreach (Screen screen in screens)
+            {
+                // If we have a graphics device, tell the screen to unload content.
+                if ((graphicsDeviceService != null) &&
+                    (graphicsDeviceService.GraphicsDevice != null))
+                {
+                    screen.UnloadContent();
+                }
+            }
+            screens.Clear();
+            screensToUpdate.Clear();
+
+            AddScreen(currentScreen);
+        }
+
+        public Screen GetScreen(string name)
+        {
+            foreach (Screen screen in screens)
+            {
+                if (screen.Name == name)
+                    return screen;
+            }
+            return null;
         }
 
         /// <summary>

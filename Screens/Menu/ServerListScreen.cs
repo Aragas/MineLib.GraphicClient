@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIButtons;
 
 namespace MineLib.GraphicClient.Screens
@@ -27,17 +28,16 @@ namespace MineLib.GraphicClient.Screens
         public ServerListScreen(GameClient gameClient)
         {
             GameClient = gameClient;
+            Name = "ServerListScreen";
         }
 
         public override void LoadContent()
         {
-            //base.LoadContent();
-
             Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
 
-            _mainMenuTexture = GameClient.Content.Load<Texture2D>("MainMenu");
-            _effect = GameClient.Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = GameClient.Content.Load<SpriteFont>("VolterGoldfish");
+            _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
+            _effect = Content.Load<SoundEffect>("Button.Effect");
+            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
             _buttonConnect = new Button(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonEnum.LeftBottom2);
             _buttonConnect.OnButtonPressed += OnConnectButtonPressed;
@@ -54,6 +54,13 @@ namespace MineLib.GraphicClient.Screens
             _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
         }
 
+        public override void UnloadContent()
+        {
+            // Unload content only if we are in game
+            if (ScreenManager.GetScreen("GameScreen") != null)
+                ScreenManager.Content.Unload();
+        }
+
 
         void OnConnectButtonPressed()
         {
@@ -61,9 +68,7 @@ namespace MineLib.GraphicClient.Screens
 
             GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
             bool status = gameScreen.Connect(ServerIP, ServerPort);
-            AddScreen(!status? (Screen) gameScreen : new ServerListScreen(GameClient));
-
-            ExitScreen();
+            AddScreenAndExit(!status ? (Screen)gameScreen : new ServerListScreen(GameClient));
         }
 
         void OnRefreshButtonPressed()
@@ -74,34 +79,33 @@ namespace MineLib.GraphicClient.Screens
         void OnDirectConnectionButtonPressed()
         {
             _effect.Play();
-            AddScreen(new DirectConnectionScreen(GameClient));
-            ExitScreen();
+            AddScreenAndExit(new DirectConnectionScreen(GameClient));
         }
 
 
         void OnAddServerButtonPressed()
         {
             _effect.Play();
-            ExitScreen();
-            AddScreen(new AddServerScreen(GameClient));
+            AddScreenAndExit(new AddServerScreen(GameClient));
         }
 
         void OnEditServerButtonPressed()
         {
             _effect.Play();
-            ExitScreen();
-            AddScreen(new EditServerScreen(GameClient));
+            AddScreenAndExit(new EditServerScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
         {
             _effect.Play();
-            ExitScreen();
-            AddScreen(new MainMenuScreen(GameClient));
+            AddScreenAndExit(new MainMenuScreen(GameClient));
         }
 
         public override void HandleInput(InputState input)
         {
+            if (input.IsNewKeyPress(Keys.Escape))
+                AddScreenAndExit(new MainMenuScreen(GameClient));
+
             _buttonConnect.HandleInput(input);
             _buttonRefresh.HandleInput(input);
             _buttonDirectConnection.HandleInput(input);
@@ -113,8 +117,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Update(GameTime gameTime)
         {
-            //base.Update(gameTime);
-
             _buttonConnect.Update(gameTime);
             _buttonRefresh.Update(gameTime);
             _buttonDirectConnection.Update(gameTime);
@@ -126,8 +128,6 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            //base.Draw(gameTime);
-
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
                 DepthStencilState.None, RasterizerState.CullNone);
 
@@ -144,7 +144,6 @@ namespace MineLib.GraphicClient.Screens
             _buttonReturn.Draw(SpriteBatch);
 
             SpriteBatch.End();
-
         }
     }
 }

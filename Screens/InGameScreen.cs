@@ -1,4 +1,5 @@
-﻿using MineLib.ClientWrapper;
+﻿using Microsoft.Xna.Framework.Content;
+using MineLib.ClientWrapper;
 
 namespace MineLib.GraphicClient.Screens
 {

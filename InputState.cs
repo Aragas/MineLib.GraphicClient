@@ -28,6 +28,40 @@ namespace MineLib.GraphicClient
 
         #region Properties
 
+        public bool MouseScrollUp
+        {
+            get
+            {
+                return CurrentMouseState.ScrollWheelValue > LastMouseState.ScrollWheelValue;
+            }
+        }
+
+        public bool MouseScrollDown
+        {
+            get
+            {
+                return CurrentMouseState.ScrollWheelValue < LastMouseState.ScrollWheelValue;
+            }
+        }
+
+        public bool GUIMenuLeft
+        {
+            get
+            {
+                return CurrentGamePadState.Buttons.LeftShoulder == ButtonState.Pressed &&
+                       LastGamePadState.Buttons.LeftShoulder == ButtonState.Released;
+            }
+        }
+
+        public bool GUIMenuRight
+        {
+            get
+            {
+                return CurrentGamePadState.Buttons.RightShoulder == ButtonState.Pressed &&
+                       LastGamePadState.Buttons.RightShoulder == ButtonState.Released;
+            }
+        }
+
         /// <summary>
         /// Checks for a "menu up" input action (on either keyboard or gamepad).
         /// </summary>
