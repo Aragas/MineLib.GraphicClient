@@ -5,37 +5,37 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.Screens
+namespace MineLib.GraphicClient.GUIButtons
 {
-    public enum ScreenState
+    public enum GUIButtonState
     {
         Active,
-        Background,
+        NonPressable,
         Hidden,
         JustNowActive
     }
 
-    public class ScreenManagerComponent : DrawableGameComponent
+    public class GUIButtonManagerComponent : DrawableGameComponent
     {
         #region Fields
 
-        List<Screen> screens = new List<Screen>();
-        List<Screen> screensToUpdate = new List<Screen>();
-        List<Screen> screensToDraw = new List<Screen>();
+        List<GUIButton> buttons = new List<GUIButton>();
+        List<GUIButton> buttonsToUpdate = new List<GUIButton>();
+        List<GUIButton> buttonsToDraw = new List<GUIButton>();
 
+        // TODO: Maybe make one (global?) input manager
         InputState input = new InputState();
 
         IGraphicsDeviceService graphicsDeviceService;
 
         ContentManager content;
-        ContentManager gameContent;
         SpriteBatch spriteBatch;
+        SpriteFont font;
         Rectangle titleSafeArea;
 
         bool traceEnabled;
 
         #endregion
-
 
         #region Properties
 
@@ -47,11 +47,6 @@ namespace MineLib.GraphicClient.Screens
         public ContentManager Content
         {
             get { return content; }
-        }
-
-        public ContentManager GameContent
-        {
-            get { return gameContent; }
         }
 
         public SpriteBatch SpriteBatch
@@ -72,14 +67,12 @@ namespace MineLib.GraphicClient.Screens
 
         #endregion
 
-
         #region Initialization
 
-        public ScreenManagerComponent(Game game)
+        public GUIButtonManagerComponent(Game game)
             : base(game)
         {
             content = new ContentManager(game.Services, "Content");
-            gameContent = new ContentManager(game.Services, "Content");
 
             graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
                                                         typeof(IGraphicsDeviceService));
@@ -90,13 +83,11 @@ namespace MineLib.GraphicClient.Screens
 
         protected override void LoadContent()
         {
-            // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Tell each of the screens to load their content.
-            foreach (Screen screen in screens)
+            foreach (GUIButton button in buttons)
             {
-                screen.LoadContent();
+                button.LoadContent();
             }
 
             // update the title-safe area
@@ -111,54 +102,57 @@ namespace MineLib.GraphicClient.Screens
 
         protected override void UnloadContent()
         {
-            // Unload content belonging to the screen manager.
+            // Unload content belonging to the GUIButton manager.
             content.Unload();
 
-            // Tell each of the screens to unload their content.
-            foreach (Screen screen in screens)
+            foreach (GUIButton button in buttons)
             {
-                screen.UnloadContent();
+                button.UnloadContent();
             }
         }
 
         #endregion
 
-
         #region Update and Draw
 
         public override void Update(GameTime gameTime)
         {
-            // Read the keyboard and gamepad.
+            // Read the keyboard, gamepad and mouse.
             input.Update();
 
             // Make a copy of the master screen list, to avoid confusion if
             // the process of updating one screen adds or removes others
             // (or it happens on another thread)
-            screensToUpdate.Clear();
+            buttonsToUpdate.Clear();
 
-            foreach (Screen screen in screens)
-                screensToUpdate.Add(screen);
+            foreach (GUIButton button in buttons)
+                buttonsToUpdate.Add(button);
 
             // Loop as long as there are screens waiting to be updated.
-            while (screensToUpdate.Count > 0)
+            while (buttonsToUpdate.Count > 0)
             {
                 // Pop the topmost screen off the waiting list.
-                Screen screen = screensToUpdate[screensToUpdate.Count - 1];
+                GUIButton button = buttonsToUpdate[buttonsToUpdate.Count - 1];
 
-                screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
+                buttonsToUpdate.RemoveAt(buttonsToUpdate.Count - 1);
 
                 // Update the screen.
-                 screen.Update(gameTime);
+                 button.Update(gameTime);
 
-                 if (screen.ScreenState == ScreenState.JustNowActive)
+                 if (button.GUIButtonState == GUIButtonState.NonPressable)
                  {
-                     // Skip one HandleInput, now we won't get a ESC button loop
-                     screen.ScreenState = ScreenState.Active;
-                     return;
+                     continue;
                  }
 
-                if (screen.ScreenState == ScreenState.Active)
-                    screen.HandleInput(input);
+                 if (button.GUIButtonState == GUIButtonState.JustNowActive)
+                 {
+                     // Skip one HandleInput, now we won't get a ESC button loop
+                     button.GUIButtonState = GUIButtonState.Active;
+                     continue;
+                 }
+
+                 if (button.GUIButtonState == GUIButtonState.Active)
+                    button.HandleInput(input);
                 
             }
 
@@ -169,12 +163,12 @@ namespace MineLib.GraphicClient.Screens
 
         void TraceScreens()
         {
-            List<string> screenNames = new List<string>();
+            List<string> buttonNames = new List<string>();
 
-            foreach (Screen screen in screens)
-                screenNames.Add(screen.GetType().Name);
+            foreach (GUIButton button in buttons)
+                buttonNames.Add(button.GetType().Name);
 
-            Debug.WriteLine(string.Join(", ", screenNames.ToArray()));
+            Debug.WriteLine(string.Join(", ", buttonNames.ToArray()));
         }
 
         public override void Draw(GameTime gameTime)
@@ -182,82 +176,76 @@ namespace MineLib.GraphicClient.Screens
             // Make a copy of the master screen list, to avoid confusion if
             // the process of drawing one screen adds or removes others
             // (or it happens on another thread
-            screensToDraw.Clear();
+            buttonsToDraw.Clear();
 
-            foreach (Screen screen in screens)
-                screensToDraw.Add(screen);
+            foreach (GUIButton button in buttons)
+                buttonsToDraw.Add(button);
 
-            foreach (Screen screen in screensToDraw)
+            foreach (GUIButton button in buttonsToDraw)
             {
-                if (screen.ScreenState == ScreenState.Hidden)
+                if (button.GUIButtonState == GUIButtonState.Hidden)
                     continue;
 
-                screen.Draw(gameTime);
+                button.Draw(gameTime);
             }
         }
 
         #endregion
 
-
         #region Public Methods
 
-        public void AddScreen(Screen screen)
+        public void AddButton(GUIButton button)
         {
             // If we have a graphics device, tell the screen to load content.
             if ((graphicsDeviceService != null) &&
                 (graphicsDeviceService.GraphicsDevice != null))
             {
-                screen.LoadContent();
+                button.LoadContent();
             }
 
-            screens.Add(screen);
+            buttons.Add(button);
         }
 
-        public void RemoveScreen(Screen screen)
+        public void RemoveButton(GUIButton button)
         {
             // If we have a graphics device, tell the screen to unload content.
             if ((graphicsDeviceService != null) &&
                 (graphicsDeviceService.GraphicsDevice != null))
             {
-                screen.UnloadContent();
+                button.UnloadContent();
             }
 
-            screens.Remove(screen);
-            screensToUpdate.Remove(screen);
+            buttons.Remove(button);
+            buttonsToUpdate.Remove(button);
         }
 
-        public void CloseOtherScreens(Screen currentScreen)
+        public GUIButton GetButton(string name)
         {
-            foreach (Screen screen in screens)
+            foreach (GUIButton button in buttons)
             {
-                // If we have a graphics device, tell the screen to unload content.
-                if ((graphicsDeviceService != null) &&
-                    (graphicsDeviceService.GraphicsDevice != null))
-                {
-                    screen.UnloadContent();
-                }
-            }
-            screens.Clear();
-            screensToUpdate.Clear();
-
-            AddScreen(currentScreen);
-        }
-
-        public Screen GetScreen(string name)
-        {
-            foreach (Screen screen in screens)
-            {
-                if (screen.Name == name)
-                    return screen;
+                if (button.Name == name)
+                    return button;
             }
             return null;
         }
 
-        public Screen[] GetScreens()
+        public GUIButton[] GetButtons()
         {
-            return screens.ToArray();
+            return buttons.ToArray();
+        }
+
+        public void Clear()
+        {
+            foreach (GUIButton button in buttons)
+            {
+                button.UnloadContent();
+            }
+
+            buttons.Clear();
+            buttonsToUpdate.Clear();
         }
 
         #endregion
+
     }
 }

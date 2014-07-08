@@ -9,12 +9,10 @@ namespace MineLib.GraphicClient.Screens
     sealed class AddServerScreen : Screen
     {
         #region Resources
+
         Texture2D _mainMenuTexture;
-
-        GUIButton _buttonAdd;
-        GUIButton _buttonReturn;
-
         SoundEffect _effect;
+
         #endregion
 
         public AddServerScreen(GameClient gameClient)
@@ -25,16 +23,11 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
-
             _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
             _effect = Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonAdd = new Button(widgetsTexture, buttonFont, "Add", ScreenRectangle, ButtonEnum.Bottom2);
-            _buttonAdd.OnButtonPressed += OnAddButtonPressed;
-            _buttonReturn = new Button(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonEnum.Bottom);
-            _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
+            AddGUIButton("Add", GUIButtonNormalPos.Bottom2, OnAddButtonPressed);
+            AddGUIButton("Return", GUIButtonNormalPos.Bottom, OnReturnButtonPressed);
         }
 
         void OnAddButtonPressed()
@@ -52,14 +45,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsNewKeyPress(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            _buttonAdd.Update(gameTime);
-            _buttonReturn.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -69,10 +56,6 @@ namespace MineLib.GraphicClient.Screens
 
             // Background
             SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
-
-            // Buttons
-            _buttonAdd.Draw(ScreenManager.SpriteBatch);
-            _buttonReturn.Draw(ScreenManager.SpriteBatch);
 
             SpriteBatch.End();
         }

@@ -24,9 +24,8 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class GameScreen : InGameScreen
     {
-        InGameScreen GUIScreen;
-        InGameScreen InventoryScreen;
-        InGameScreen GameOptionScreen;
+        //InGameScreen GUIScreen;
+        //InGameScreen GameOptionScreen;
 
         public Minecraft Minecraft = null;
         public bool Connected = true;
@@ -38,14 +37,14 @@ namespace MineLib.GraphicClient.Screens
         {
             GameClient = gameClient;
 
-            //Minecraft = new Minecraft(username, password, onlineMode);
+            Minecraft = new Minecraft(username, password, onlineMode);
 
             Name = "GameScreen";
         }
 
         public bool Connect(string serverip, short port)
         {
-            try
+            //try
             {
                 Minecraft.Connect(serverip, port);
 
@@ -75,20 +74,20 @@ namespace MineLib.GraphicClient.Screens
 
                 return true;
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            //catch (Exception)
+            //{
+            //    return false;
+            //}
         }
 
         public override void LoadContent()
         {
-            GUIScreen = new GUIScreen(GameClient, Minecraft);
-            ScreenManager.AddScreen(GUIScreen);
+            //GUIScreen = new GUIScreen(GameClient, Minecraft);
+            ScreenManager.AddScreen(new GUIScreen(GameClient, Minecraft));
 
-            InventoryScreen = null;
+            //InventoryScreen = new PlayerInventory(GameClient, Minecraft);
 
-            GameOptionScreen = new GameOptionScreen(GameClient);
+            //GameOptionScreen = new GameOptionScreen(GameClient);
         }
 
         public override void UnloadContent()
@@ -125,10 +124,10 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsNewKeyPress(Keys.Escape))
-                ScreenManager.AddScreen(GameOptionScreen);        
+            //if (input.IsOncePressed(Keys.E))
+            //    ScreenManager.AddScreen(InventoryScreen);
 
-            if(input.IsNewKeyPress(Keys.W))
+            if(input.IsOncePressed(Keys.W))
                 PlayerMove(Vector3.Backward);
         }
 

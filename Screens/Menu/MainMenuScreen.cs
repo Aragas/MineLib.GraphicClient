@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,13 +10,13 @@ namespace MineLib.GraphicClient.Screens
     public sealed class MainMenuScreen : Screen
     {
         #region Resources
+
         Texture2D _mainMenuTexture;
 
-        GUIButton _buttonServerList;
-        GUIButton _buttonOption;
-        GUIButton _buttonExit;
+        Texture2D _xboxController;
 
         SoundEffect _effect;
+
         #endregion
 
         public MainMenuScreen(GameClient gameClient)
@@ -26,19 +27,15 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
-
             // Custom stuff TODO: Take from minecraft
             _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
             _effect = Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonServerList = new Button(widgetsTexture, buttonFont, "Search Server", ScreenRectangle, ButtonEnum.Top4);
-            _buttonServerList.OnButtonPressed += OnServerListButtonPressed;
-            _buttonOption = new Button(widgetsTexture, buttonFont, "Options", ScreenRectangle, ButtonEnum.Bottom4);
-            _buttonOption.OnButtonPressed += OnOptionButtonPressed;
-            _buttonExit = new Button(widgetsTexture, buttonFont, "Exit", ScreenRectangle, ButtonEnum.Bottom3);
-            _buttonExit.OnButtonPressed += OnExitButtonPressed;
+            _xboxController = Content.Load<Texture2D>("XboxControllerSpriteFont");
+
+            AddGUIButton("Search Server", GUIButtonNormalPos.Top4, OnServerListButtonPressed);
+            AddGUIButton("Options", GUIButtonNormalPos.Bottom4, OnOptionButtonPressed);
+            AddGUIButton("Exit", GUIButtonNormalPos.Bottom3, OnExitButtonPressed);
         }
 
         void OnServerListButtonPressed()
@@ -61,19 +58,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsNewKeyPress(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape))
                 Exit();
-
-            _buttonServerList.HandleInput(input);
-            _buttonOption.HandleInput(input);
-            _buttonExit.HandleInput(input);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            _buttonServerList.Update(gameTime);
-            _buttonOption.Update(gameTime);
-            _buttonExit.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -84,10 +70,67 @@ namespace MineLib.GraphicClient.Screens
             // Background
             SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
 
-            // Buttons
-            _buttonServerList.Draw(SpriteBatch);
-            _buttonOption.Draw(SpriteBatch);
-            _buttonExit.Draw(SpriteBatch);
+            SpriteBatch.End();
+
+            XboxButtonTest();
+        }
+
+        private void XboxButtonTest()
+        {
+            // X button (798, 55, 78, 78)
+            // A button (878, 55, 78, 78)
+            // Y button (958, 55, 78, 78)
+            // B button (1038, 55, 78, 78)
+
+            int x = ScreenManager.TitleSafeArea.Height;
+            int y = ScreenManager.TitleSafeArea.Width;
+
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
+
+            SpriteBatch.Draw(_xboxController,
+                new Vector2(y - 39 * 2, x - 39 * 1), // Center of screen
+                    new Rectangle(798, 55, 78, 78), // Source rectangle
+                    Color.White, // Color
+                    0f, // Rotation
+                    new Vector2(0), // Image center
+                    0.5f, // Scale
+                    SpriteEffects.None,
+                    0f // Depth
+                    );
+
+                        SpriteBatch.Draw(_xboxController,
+                new Vector2(y - 39 * 1, x), // Center of screen
+                    new Rectangle(878, 55, 78, 78), // Source rectangle
+                    Color.White, // Color
+                    0f, // Rotation
+                    new Vector2(0), // Image center
+                    0.5f, // Scale
+                    SpriteEffects.None,
+                    0f // Depth
+                    );
+
+                        SpriteBatch.Draw(_xboxController,
+                new Vector2(y - 39 * 1, x - 39 * 2), // Center of screen
+                    new Rectangle(958, 55, 78, 78), // Source rectangle
+                    Color.White, // Color
+                    0f, // Rotation
+                    new Vector2(0), // Image center
+                    0.5f, // Scale
+                    SpriteEffects.None,
+                    0f // Depth
+                    );
+
+                        SpriteBatch.Draw(_xboxController,
+                new Vector2(y, x - 39 * 1), // Center of screen
+                    new Rectangle(1038, 55, 78, 78), // Source rectangle
+                    Color.White, // Color
+                    0f, // Rotation
+                    new Vector2(0), // Image center
+                    0.5f, // Scale
+                    SpriteEffects.None,
+                    0f // Depth
+                    );
 
             SpriteBatch.End();
 

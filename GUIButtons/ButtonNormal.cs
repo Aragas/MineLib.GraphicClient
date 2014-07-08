@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MineLib.GraphicClient.GUIButtons
 {
-    public enum ButtonEnum
+    public enum GUIButtonNormalPos
     {
         LeftTop,        Top,        RightTop,
         LeftTop2,       Top2,       RightTop2,
@@ -18,26 +18,84 @@ namespace MineLib.GraphicClient.GUIButtons
         LeftBottom,     Bottom,     RightBottom,
     }
 
-    // Some shit is going on here
-    // TODO: Rewrite dat stuff
-    // Don't blame me, I'm in hell already.
-    class Button : GUIButton
+    sealed class Button : GUIButton
     {
         public override event Action OnButtonPressed;
 
-        public Button(Texture2D widgetsTexture, SpriteFont font, string text, Rectangle rectangle,
-            ButtonEnum level)
+        public Button(GameClient gameClient, string text, GUIButtonNormalPos pos)
         {
-            ButtonTexture = widgetsTexture;
-
-            ButtonFont = font;
+            GameClient = gameClient;
             ButtonText = text;
 
-            Vector2 buttonSize = new Vector2(rectangle.Width * 0.33f, (rectangle.Width * 0.33f * ButtonHeight) / ButtonWidth);
-            Vector2 buttonPosition = GetPosition(level, rectangle);
+            Vector2 buttonSize = new Vector2(ScreenRectangle.Width * 0.33f, (ScreenRectangle.Width * 0.33f * ButtonHeight) / ButtonWidth);
+            Vector2 buttonPosition = GetPosition(pos);
 
             ButtonRectangle = new Rectangle((int)(buttonPosition.X - buttonPosition.X * 0.33f),
                 (int) (buttonPosition.Y), (int) buttonSize.X, (int) buttonSize.Y);
+        }
+
+        protected override Vector2 GetPosition(GUIButtonNormalPos pos)
+        {
+            switch (pos)
+            {
+                case GUIButtonNormalPos.LeftTop:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 0.0f);
+                case GUIButtonNormalPos.Top:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 0.0f);
+                case GUIButtonNormalPos.RightTop:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 0.0f);
+
+                case GUIButtonNormalPos.LeftTop2:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 0.25f);
+                case GUIButtonNormalPos.Top2:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 0.25f);
+                case GUIButtonNormalPos.RightTop2:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 0.25f);
+
+                case GUIButtonNormalPos.LeftTop3:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 0.5f);
+                case GUIButtonNormalPos.Top3:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 0.5f);
+                case GUIButtonNormalPos.RightTop3:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 0.5f);
+
+                case GUIButtonNormalPos.LeftTop4:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 0.75f);
+                case GUIButtonNormalPos.Top4:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 0.75f);
+                case GUIButtonNormalPos.RightTop4:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 0.75f);
+
+                case GUIButtonNormalPos.LeftBottom4:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 1f);
+                case GUIButtonNormalPos.Bottom4:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 1f);
+                case GUIButtonNormalPos.RightBottom4:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 1f);
+
+
+                case GUIButtonNormalPos.LeftBottom3:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 1.25f);
+                case GUIButtonNormalPos.Bottom3:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 1.25f);
+                case GUIButtonNormalPos.RightBottom3:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 1.25f);
+
+                case GUIButtonNormalPos.LeftBottom2:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 1.5f);
+                case GUIButtonNormalPos.Bottom2:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 1.5f);
+                case GUIButtonNormalPos.RightBottom2:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 1.5f);
+
+                case GUIButtonNormalPos.LeftBottom:
+                    return new Vector2(0,                           ScreenRectangle.Center.Y * 1.75f);
+                case GUIButtonNormalPos.Bottom:
+                    return new Vector2(ScreenRectangle.Center.X,    ScreenRectangle.Center.Y * 1.75f);
+                case GUIButtonNormalPos.RightBottom:
+                    return new Vector2(ScreenRectangle.Width,       ScreenRectangle.Center.Y * 1.75f);
+            }
+            return new Vector2(0);
         }
 
         public override void HandleInput(InputState input)
@@ -45,60 +103,35 @@ namespace MineLib.GraphicClient.GUIButtons
             #region Mouse handling
 
             MouseState mouse = input.CurrentMouseState;
-            Rectangle mouseRectangle = new Rectangle(mouse.X, mouse.Y, 1, 1);
 
-            if (ButtonRectangle.Intersects(mouseRectangle))
+            if (ButtonRectangle.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)) && 
+                GUIButtonState != GUIButtonState.NonPressable)
             {
-                IsDown = true;
+                IsSelected = true;
 
-                if (mouse.LeftButton == ButtonState.Pressed)
+                if (input.CurrentMouseState.LeftButton == ButtonState.Pressed &&
+                    input.LastMouseState.LeftButton == ButtonState.Released)
                 {
-                    IsClicked = true;
-
-                    if (!EventCalled)
-                    {
-                        EventCalled = true;
-
-                        if (OnButtonPressed != null)
-                            OnButtonPressed();
-                    }
-                    else
-                        EventCalled = false;
+                    if (OnButtonPressed != null)
+                        OnButtonPressed();
                 }
-                else
-                    IsClicked = false;
             }
             else
-                IsDown = false;
+                IsSelected = false;
             #endregion
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Draw(GameTime gameTime)
         {
-            base.Update(gameTime);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                DepthStencilState.None, RasterizerState.CullNone);
 
-            #region Preventing too soon clicks on new screen on the same position that the old button was
-            if (JustCreated)
-            {
-                CreationTime = gameTime.TotalGameTime;
-                JustCreated = false;
-            }
+            SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, IsSelected ? ButtonPressedPosition : ButtonPosition,
+                Color.White);
 
-            if (!NoMoreChecks && gameTime.TotalGameTime - CreationTime < CoolDown)
-                return;
-            else
-                NoMoreChecks = true;
-            
-            #endregion
-        }
+            DrawString(SpriteBatch, ButtonFont, IsSelected ? Color.Yellow : Color.White, ButtonText, ButtonRectangle);
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-
-            spriteBatch.Draw(ButtonTexture, ButtonRectangle, IsDown ? ButtonPressedPosition : ButtonPosition, Color.White);
-
-            DrawString(spriteBatch, ButtonFont, IsDown ? Color.Yellow : Color.White, ButtonText, ButtonRectangle);
+            SpriteBatch.End();
         }
     }
 }

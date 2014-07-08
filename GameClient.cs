@@ -2,6 +2,7 @@
 using Ionic.Zip;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MineLib.GraphicClient.GUIButtons;
 using MineLib.GraphicClient.Screens;
 
 namespace MineLib.GraphicClient
@@ -14,6 +15,7 @@ namespace MineLib.GraphicClient
         FPSCounterComponent fps;
 
         public ScreenManagerComponent ScreenManager;
+        public GUIButtonManagerComponent GuiButtonManager;
 
         SpriteFont FPSFont;
 
@@ -38,6 +40,9 @@ namespace MineLib.GraphicClient
 
             ScreenManager = new ScreenManagerComponent(this);
             Components.Add(ScreenManager);
+
+            GuiButtonManager = new GUIButtonManagerComponent(this);
+            Components.Add(GuiButtonManager);
 
         }
 

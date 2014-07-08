@@ -9,16 +9,14 @@ namespace MineLib.GraphicClient.Screens
     sealed class DirectConnectionScreen : Screen
     {
         #region Resources
+
         Texture2D _mainMenuTexture;
-
-        GUIButton _buttonConnect;
-        GUIButton _buttonReturn;
-
         SoundEffect _effect;
+
         #endregion
 
-        string ServerIP;
-        short ServerPort;
+        string ServerIP = "127.0.0.1";
+        short ServerPort = 25565;
 
         public DirectConnectionScreen(GameClient gameClient)
         {
@@ -28,16 +26,11 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            Texture2D widgetsTexture = MinecraftTexturesStorage.GUITextures.Widgets;
-
             _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
             _effect = Content.Load<SoundEffect>("Button.Effect");
-            SpriteFont buttonFont = Content.Load<SpriteFont>("VolterGoldfish");
 
-            _buttonConnect = new Button(widgetsTexture, buttonFont, "Connect", ScreenRectangle, ButtonEnum.Bottom2);
-            _buttonConnect.OnButtonPressed += OnConnectButtonPressed;
-            _buttonReturn = new Button(widgetsTexture, buttonFont, "Return", ScreenRectangle, ButtonEnum.Bottom);
-            _buttonReturn.OnButtonPressed += OnReturnButtonPressed;
+            AddGUIButton("Connect", GUIButtonNormalPos.Bottom2, OnConnectButtonPressed);
+            AddGUIButton("Return", GUIButtonNormalPos.Bottom, OnReturnButtonPressed);
         }
 
         public override void UnloadContent()
@@ -64,14 +57,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
-            if (input.IsNewKeyPress(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            _buttonConnect.Update(gameTime);
-            _buttonReturn.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -81,10 +68,6 @@ namespace MineLib.GraphicClient.Screens
 
             // Background
             SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
-
-            // Buttons
-            _buttonConnect.Draw(SpriteBatch);
-            _buttonReturn.Draw(SpriteBatch);
 
             SpriteBatch.End();
         }

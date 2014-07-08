@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.GUIButtons
@@ -7,32 +8,45 @@ namespace MineLib.GraphicClient.GUIButtons
     // TODO: Create GUIButtonManager similar to ScreenManager
     public abstract class GUIButton
     {
-        public bool IsClicked;
-        public bool IsDown;
+        public GameClient GameClient { get; set; }
 
-        protected bool JustCreated = true;
-        protected bool NoMoreChecks;
-        protected bool EventCalled;
-
-        protected TimeSpan CreationTime;
-        protected TimeSpan CoolDown = new TimeSpan(0, 0, 0, 0, 200);
-
-        protected Texture2D ButtonTexture;
-        protected Rectangle ButtonRectangle;
-        protected SpriteFont ButtonFont;
-        protected string ButtonText;
-
-        protected Rectangle ButtonPosition = new Rectangle(0, 66, 200, 20);
-        protected Rectangle ButtonPressedPosition = new Rectangle(0, 86, 200, 20);
+        public string Name { get; set; }
 
         protected const int ButtonWidth = 200;
         protected const int ButtonHeight = 20;
 
+        protected string ButtonText;
+        protected Rectangle ButtonRectangle { get; set; }
+        protected Rectangle ButtonPosition = new Rectangle(0, 66, 200, 20);
+        protected Rectangle ButtonPressedPosition = new Rectangle(0, 86, 200, 20);
+        protected SpriteFont ButtonFont { get { return Content.Load<SpriteFont>("VolterGoldfish"); } }
+
+        public GUIButtonState GUIButtonState { get; set; }
+        public Texture2D WidgetsTexture { get { return GameClient.MinecraftTexturesStorage.GUITextures.Widgets; } }
+
+        public Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
+
+        public ContentManager Content { get { return GUIButtonManager.Content; } }
+
+        public GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
+        public SpriteBatch SpriteBatch { get { return GUIButtonManager.SpriteBatch; } }
+
+        protected void AddButton(GUIButton button) { GUIButtonManager.AddButton(button); }
+        protected virtual Vector2 GetPosition(GUIButtonNormalPos level) { return new Vector2(0); }
+
+        public virtual void LoadContent() { }
+        public virtual void UnloadContent() { }
         public virtual void HandleInput(InputState input) { }
-
         public virtual void Update(GameTime gameTime) { }
+        public virtual void Draw(GameTime gameTime) { }
 
-        public virtual void Draw(SpriteBatch spriteBatch) { }
+        public void ToActive() { GUIButtonState = GUIButtonState.JustNowActive; }
+        public void ToNonPressable() { GUIButtonState = GUIButtonState.NonPressable; }
+        public void ToHidden() { GUIButtonState = GUIButtonState.Hidden; }
+
+        public bool IsSelected;
+
+        protected bool EventCalled;
 
         // Some function from internet, forgot url.
         protected static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)
@@ -62,71 +76,6 @@ namespace MineLib.GraphicClient.GUIButtons
             spriteBatch.DrawString(font, strToDraw, position, color, rotation, spriteOrigin, scale, spriteEffects, spriteLayer);
         }
 
-        protected static Vector2 GetPosition(ButtonEnum level, Rectangle rectangle)
-        {
-            switch (level)
-            {
-                case ButtonEnum.LeftTop:
-                    return new Vector2(0,                   rectangle.Center.Y * 0.0f);
-                case ButtonEnum.Top:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 0.0f);
-                case ButtonEnum.RightTop:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 0.0f);
-
-                case ButtonEnum.LeftTop2:
-                    return new Vector2(0,                   rectangle.Center.Y * 0.25f);
-                case ButtonEnum.Top2:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 0.25f);
-                case ButtonEnum.RightTop2:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 0.25f);
-
-                case ButtonEnum.LeftTop3:
-                    return new Vector2(0,                   rectangle.Center.Y * 0.5f);
-                case ButtonEnum.Top3:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 0.5f);
-                case ButtonEnum.RightTop3:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 0.5f);
-
-                case ButtonEnum.LeftTop4:
-                    return new Vector2(0,                   rectangle.Center.Y * 0.75f);
-                case ButtonEnum.Top4:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 0.75f);
-                case ButtonEnum.RightTop4:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 0.75f);
-
-                case ButtonEnum.LeftBottom4:
-                    return new Vector2(0,                   rectangle.Center.Y * 1f);
-                case ButtonEnum.Bottom4:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 1f);
-                case ButtonEnum.RightBottom4:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 1f);
-
-
-                case ButtonEnum.LeftBottom3:
-                    return new Vector2(0,                   rectangle.Center.Y * 1.25f);
-                case ButtonEnum.Bottom3:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 1.25f);
-                case ButtonEnum.RightBottom3:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 1.25f);
-
-                case ButtonEnum.LeftBottom2:
-                    return new Vector2(0,                   rectangle.Center.Y * 1.5f);
-                case ButtonEnum.Bottom2:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 1.5f);
-                case ButtonEnum.RightBottom2:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 1.5f);
-
-                case ButtonEnum.LeftBottom:
-                    return new Vector2(0,                   rectangle.Center.Y * 1.75f);
-                case ButtonEnum.Bottom:
-                    return new Vector2(rectangle.Center.X,  rectangle.Center.Y * 1.75f);
-                case ButtonEnum.RightBottom:
-                    return new Vector2(rectangle.Width,     rectangle.Center.Y * 1.75f);
-            }
-            return new Vector2(0);
-        }
-
         public virtual event Action OnButtonPressed;
-
     }
 }

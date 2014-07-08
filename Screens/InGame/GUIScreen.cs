@@ -6,16 +6,24 @@ using MineLib.ClientWrapper;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class GUIScreen : InGameScreen
+    class GUIScreen : InGameScreen
     {
+        public bool WindowOpened { get; set; }
+
+        public bool WindowInventory { get; set; }
+
         #region Resources
+
         Texture2D _crosshairTexture;
 
         Texture2D _widgetTexture;
         Texture2D _iconsTexture;
+        Texture2D _inventoryTexture;
+
         #endregion
 
         #region Sprite rectangles
+
         Rectangle _itemListRectangle = new Rectangle(0, 0, 182, 22);
         Rectangle _selectedItemListRectangle = new Rectangle(0, 22, 24, 24);
 
@@ -29,6 +37,9 @@ namespace MineLib.GraphicClient.Screens
         Rectangle _foodEmptyRectangle = new Rectangle(16, 27, 9, 9);
         Rectangle _foodRectangle = new Rectangle(52, 27, 9, 9);
         Rectangle _foodHalfRectangle = new Rectangle(61, 27, 9, 9);
+
+        Rectangle _inventoryRectangle = new Rectangle(0, 0, 176, 166);
+
         #endregion
 
         int mousevalue = 1;
@@ -44,6 +55,8 @@ namespace MineLib.GraphicClient.Screens
             GameClient = gameClient;
             Minecraft = minecraft;
             Name = "GUIScreen";
+
+            WindowOpened = false;
         }
 
         public override void LoadContent()
@@ -54,10 +67,27 @@ namespace MineLib.GraphicClient.Screens
 
             _widgetTexture = guiTextures.Widgets;
             _iconsTexture = guiTextures.Icons;
+            _inventoryTexture = guiTextures.Inventory;
         }
 
         public override void HandleInput(InputState input)
         {
+            if (input.IsOncePressed(Keys.Escape) && !WindowOpened)
+                ScreenManager.AddScreen(new GameOptionScreen(GameClient));
+            else if (input.IsOncePressed(Keys.Escape) && WindowOpened)
+                CloseWindow();
+
+            if (input.IsOncePressed(Keys.E))
+            {
+                WindowInventory = !WindowInventory;
+
+                // For better understanding
+                if (WindowInventory)
+                    WindowOpened = true;
+                else
+                    WindowOpened = false;
+            }
+
             #region ItemList MouseScrollWheel
             if (input.MouseScrollDown)
             {
@@ -76,31 +106,31 @@ namespace MineLib.GraphicClient.Screens
             #endregion
 
             #region ItemList Keyboard
-            if (input.IsNewKeyPress(Keys.D1))
+            if (input.IsOncePressed(Keys.D1))
                 mousevalue = 1;
 
-            if (input.IsNewKeyPress(Keys.D2))
+            if (input.IsOncePressed(Keys.D2))
                 mousevalue = 2;
 
-            if (input.IsNewKeyPress(Keys.D3))
+            if (input.IsOncePressed(Keys.D3))
                 mousevalue = 3;
 
-            if (input.IsNewKeyPress(Keys.D4))
+            if (input.IsOncePressed(Keys.D4))
                 mousevalue = 4;
 
-            if (input.IsNewKeyPress(Keys.D5))
+            if (input.IsOncePressed(Keys.D5))
                 mousevalue = 5;
 
-            if (input.IsNewKeyPress(Keys.D6))
+            if (input.IsOncePressed(Keys.D6))
                 mousevalue = 6;
 
-            if (input.IsNewKeyPress(Keys.D7))
+            if (input.IsOncePressed(Keys.D7))
                 mousevalue = 7;
 
-            if (input.IsNewKeyPress(Keys.D8))
+            if (input.IsOncePressed(Keys.D8))
                 mousevalue = 8;
 
-            if (input.IsNewKeyPress(Keys.D9))
+            if (input.IsOncePressed(Keys.D9))
                 mousevalue = 9;
             #endregion
 
@@ -123,6 +153,16 @@ namespace MineLib.GraphicClient.Screens
             }
 
             #endregion
+
+        }
+
+        private void CloseWindow()
+        {
+            if (WindowInventory)
+            {
+                WindowInventory = false;
+                WindowOpened = false;
+            }
 
         }
 
@@ -344,6 +384,24 @@ namespace MineLib.GraphicClient.Screens
                     0f // Depth
                     );
             }
+            #endregion
+
+            #region Inventory
+
+            if (WindowInventory)
+            {
+                SpriteBatch.Draw(_inventoryTexture,
+                    new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y), // Center of screen
+                    _inventoryRectangle, // Source rectangle
+                    Color.White, // Color
+                    0f, // Rotation
+                    new Vector2(_inventoryRectangle.Width, _inventoryRectangle.Height) / 2, // Image center
+                    scale - 1f, // Scale
+                    SpriteEffects.None,
+                    0f // Depth
+                    );
+            }
+
             #endregion
 
             SpriteBatch.End();
