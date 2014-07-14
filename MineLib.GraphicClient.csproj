@@ -53,18 +53,18 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GUIButtons\ButtonMenuHalf.cs" />
-    <Compile Include="GUIButtons\ButtonNavigation.cs" />
-    <Compile Include="GUIButtons\ButtonNavigationHalf.cs" />
-    <Compile Include="InputBox\GUIItem.cs" />
-    <Compile Include="InputBox\GUIItemManagerComponent.cs" />
-    <Compile Include="InputBox\InputBoxMenu.cs" />
+    <Compile Include="GUIItems\Buttons\ButtonMenuHalf.cs" />
+    <Compile Include="GUIItems\Buttons\ButtonNavigation.cs" />
+    <Compile Include="GUIItems\Buttons\ButtonNavigationHalf.cs" />
+    <Compile Include="GUIItems\GUIItem.cs" />
+    <Compile Include="GUIItems\GUIItemManagerComponent.cs" />
+    <Compile Include="GUIItems\InputBox\GUIInputBox.cs" />
+    <Compile Include="GUIItems\InputBox\InputBoxMenu.cs" />
     <Compile Include="Localization.cs" />
     <Compile Include="Misc\AudioManagerComponent.cs" />
     <Compile Include="Misc\FPSCounterComponent.cs" />
     <Compile Include="GameClient.cs" />
-    <Compile Include="GUIButtons\GUIButton.cs" />
-    <Compile Include="GUIButtons\GUIButtonManagerComponent.cs" />
+    <Compile Include="GUIItems\Buttons\GUIButton.cs" />
     <Compile Include="MinecraftTexturesStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,7 +73,7 @@
     <Compile Include="Screens\ScreenManagerComponent.cs" />
     <Compile Include="Screens\InGameScreen.cs" />
     <Compile Include="Screens\Menu\AddServerScreen.cs" />
-    <Compile Include="GUIButtons\ButtonMenu.cs" />
+    <Compile Include="GUIItems\Buttons\ButtonMenu.cs" />
     <Compile Include="Screens\Menu\DirectConnectionScreen.cs" />
     <Compile Include="Screens\Menu\EditServerScreen.cs" />
     <Compile Include="Screens\InGame\GameOptionScreen.cs" />

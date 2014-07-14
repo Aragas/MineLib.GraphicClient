@@ -2,7 +2,7 @@
 using Ionic.Zip;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MineLib.GraphicClient.GUIButtons;
+using MineLib.GraphicClient.GUIItems;
 using MineLib.GraphicClient.Screens;
 
 namespace MineLib.GraphicClient
@@ -16,7 +16,7 @@ namespace MineLib.GraphicClient
 
         public AudioManagerComponent AudioManager;
         public ScreenManagerComponent ScreenManager;
-        public GUIButtonManagerComponent GuiButtonManager;
+        public GUIItemManagerComponent GUIItemManager;
 
         SpriteFont FPSFont;
 
@@ -46,8 +46,8 @@ namespace MineLib.GraphicClient
             ScreenManager = new ScreenManagerComponent(this);
             Components.Add(ScreenManager);
 
-            GuiButtonManager = new GUIButtonManagerComponent(this);
-            Components.Add(GuiButtonManager);
+            GUIItemManager = new GUIItemManagerComponent(this);
+            Components.Add(GUIItemManager);
 
         }
 

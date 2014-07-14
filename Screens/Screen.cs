@@ -2,7 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MineLib.GraphicClient.GUIButtons;
+using MineLib.GraphicClient.GUIItems;
+using MineLib.GraphicClient.GUIItems.Buttons;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -18,7 +19,8 @@ namespace MineLib.GraphicClient.Screens
 
         protected ContentManager Content { get { return ScreenManager.Content; } }
 
-        protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
+        //protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
+        protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
         protected ScreenManagerComponent ScreenManager { get { return GameClient.ScreenManager; } }
         protected SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; } }
         protected GraphicsDevice GraphicsDevice { get { return GameClient.GraphicsDevice; } }
@@ -27,19 +29,25 @@ namespace MineLib.GraphicClient.Screens
         protected static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
 
         protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
-        protected void AddScreenAndCloseOthers(Screen screen) { GUIButtonManager.Clear(); ScreenManager.CloseOtherScreens(screen); }
-        protected void AddScreenAndExit(Screen screen) { GUIButtonManager.Clear(); ScreenManager.AddScreen(screen); ExitScreen(); }
+        protected void AddScreenAndCloseOthers(Screen screen) { GUIItemManager.Clear(); ScreenManager.CloseOtherScreens(screen); }
+        protected void AddScreenAndExit(Screen screen) { GUIItemManager.Clear(); ScreenManager.AddScreen(screen); ExitScreen(); }
         protected void AddButtonMenu(string name, ButtonMenuPosition pos, Action action)
         {
             ButtonMenu button = new ButtonMenu(GameClient, name, pos);
             button.OnButtonPressed += action;
-            GUIButtonManager.AddButton(button);
+            GUIItemManager.AddGUIItem(button);
+        }
+        protected void AddButtonMenuHalf(string name, ButtonMenuHalfPosition pos, Action action)
+        {
+            ButtonMenuHalf button = new ButtonMenuHalf(GameClient, name, pos);
+            button.OnButtonPressed += action;
+            GUIItemManager.AddGUIItem(button);
         }
         protected void AddButtonNavigation(string name, ButtonNavigationPosition pos, Action action)
         {
             ButtonNavigation button = new ButtonNavigation(GameClient, name, pos);
             button.OnButtonPressed += action;
-            GUIButtonManager.AddButton(button);
+            GUIItemManager.AddGUIItem(button);
         }
 
         public virtual void LoadContent() { }
@@ -57,7 +65,7 @@ namespace MineLib.GraphicClient.Screens
 
         protected void ExitScreenAndClearButtons()
         {
-            GUIButtonManager.Clear();
+            GUIItemManager.Clear();
             Dispose();
             ExitScreen();
         }

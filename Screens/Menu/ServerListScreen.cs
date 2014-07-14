@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIButtons;
+using MineLib.GraphicClient.GUIItems.Buttons;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -35,18 +34,12 @@ namespace MineLib.GraphicClient.Screens
             _gradientDownTexture = CreateGradientDown();
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            //AddGUIButton("Connect", GUIButtonPosition.LeftBottom2, OnConnectButtonPressed);
             AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
-            //AddGUIButton("Refresh", GUIButtonPosition.Bottom2, OnRefreshButtonPressed);
             AddButtonNavigation("Refresh", ButtonNavigationPosition.Top, OnRefreshButtonPressed);
-            //AddGUIButton("Direct Connection", GUIButtonPosition.RightBottom2, OnDirectConnectionButtonPressed);
             AddButtonNavigation("Direct Connection", ButtonNavigationPosition.RightTop, OnDirectConnectionButtonPressed);
 
-            //AddGUIButton("Add Server", GUIButtonPosition.LeftBottom, OnAddServerButtonPressed);
             AddButtonNavigation("Add Server", ButtonNavigationPosition.LeftBottom, OnAddServerButtonPressed);
-            //AddGUIButton("Edit Server", GUIButtonPosition.Bottom, OnEditServerButtonPressed);
             AddButtonNavigation("Edit Server", ButtonNavigationPosition.Bottom, OnEditServerButtonPressed);
-            //AddGUIButton("Return", GUIButtonPosition.RightBottom, OnReturnButtonPressed);
             AddButtonNavigation("Return", ButtonNavigationPosition.RightBottom, OnReturnButtonPressed);
         }
 

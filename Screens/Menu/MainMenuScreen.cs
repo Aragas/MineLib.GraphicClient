@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIButtons;
+using MineLib.GraphicClient.GUIItems.Buttons;
+
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -18,8 +18,7 @@ namespace MineLib.GraphicClient.Screens
         private SoundEffect _effect;
 
         #endregion
-
-
+        
         public MainMenuScreen(GameClient gameClient)
         {
             GameClient = gameClient;
@@ -38,15 +37,9 @@ namespace MineLib.GraphicClient.Screens
 
             AddButtonMenu("Search Server", ButtonMenuPosition.Top4, OnServerListButtonPressed);
             AddButtonMenu("Options", ButtonMenuPosition.Bottom4, OnOptionButtonPressed);
-            //AddGUIButton("Exit", GUIButtonPosition.Bottom3, OnExitButtonPressed);
 
-            ButtonMenuHalf button1 = new ButtonMenuHalf(GameClient, "Language", ButtonMenuHalfPosition.LeftBottom3);
-            button1.OnButtonPressed += OnLanguageButtonPressed;
-            GUIButtonManager.AddButton(button1);
-
-            ButtonMenuHalf button2 = new ButtonMenuHalf(GameClient, "Exit", ButtonMenuHalfPosition.RightBottom3);
-            button2.OnButtonPressed += OnExitButtonPressed;
-            GUIButtonManager.AddButton(button2);
+            AddButtonMenuHalf("Language", ButtonMenuHalfPosition.LeftBottom3, OnLanguageButtonPressed);
+            AddButtonMenuHalf("Exit", ButtonMenuHalfPosition.RightBottom3, OnExitButtonPressed);
         }
 
         private void OnServerListButtonPressed()
@@ -97,6 +90,7 @@ namespace MineLib.GraphicClient.Screens
             //XboxButtonTest();
         }
 
+        // Just lame test for future gamepad support
         private void XboxButtonTest()
         {
             // X button (798, 55, 78, 78)

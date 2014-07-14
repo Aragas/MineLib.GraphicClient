@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.InputBox
+namespace MineLib.GraphicClient.GUIItems
 {
-    class GUIItemManagerComponent : DrawableGameComponent
+    public class GUIItemManagerComponent : DrawableGameComponent
     {
         #region Fields
 

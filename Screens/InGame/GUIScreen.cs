@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -47,9 +45,13 @@ namespace MineLib.GraphicClient.Screens
 
         #endregion
 
-        int mousevalue = 1;
+        #region Values
+
+        int mouseState = 1;
 
         float scale = 3f;
+
+        #endregion
 
         float exp = 0.4f;
         float health = 10f;
@@ -106,65 +108,65 @@ namespace MineLib.GraphicClient.Screens
             #region ItemList MouseScrollWheel
             if (input.MouseScrollDown)
             {
-                if (mousevalue < 9)
-                    mousevalue++;
+                if (mouseState < 9)
+                    mouseState++;
                 else
-                    mousevalue = 1;
+                    mouseState = 1;
             }
             else if (input.MouseScrollUp)
             {
-                if (mousevalue > 1)
-                    mousevalue--;
+                if (mouseState > 1)
+                    mouseState--;
                 else
-                    mousevalue = 9;
+                    mouseState = 9;
             }
             #endregion
 
             #region ItemList Keyboard
             if (input.IsOncePressed(Keys.D1))
-                mousevalue = 1;
+                mouseState = 1;
 
             if (input.IsOncePressed(Keys.D2))
-                mousevalue = 2;
+                mouseState = 2;
 
             if (input.IsOncePressed(Keys.D3))
-                mousevalue = 3;
+                mouseState = 3;
 
             if (input.IsOncePressed(Keys.D4))
-                mousevalue = 4;
+                mouseState = 4;
 
             if (input.IsOncePressed(Keys.D5))
-                mousevalue = 5;
+                mouseState = 5;
 
             if (input.IsOncePressed(Keys.D6))
-                mousevalue = 6;
+                mouseState = 6;
 
             if (input.IsOncePressed(Keys.D7))
-                mousevalue = 7;
+                mouseState = 7;
 
             if (input.IsOncePressed(Keys.D8))
-                mousevalue = 8;
+                mouseState = 8;
 
             if (input.IsOncePressed(Keys.D9))
-                mousevalue = 9;
+                mouseState = 9;
             #endregion
 
             #region ItemList GamepadShoulders
 
             if (input.GUIMenuRight)
             {
-                if (mousevalue < 9)
-                    mousevalue++;
+                if (mouseState < 9)
+                    mouseState++;
                 else
-                    mousevalue = 1;
+                    mouseState = 1;
             }
 
             if (input.GUIMenuLeft)
             {
-                if (mousevalue > 1)
-                    mousevalue--;
+                if (mouseState > 1)
+                    mouseState--;
                 else
-                    mousevalue = 9;
+                    mouseState = 9;
             }
 
             #endregion
@@ -258,7 +260,7 @@ namespace MineLib.GraphicClient.Screens
 
             // SelectedItem
             SpriteBatch.Draw(_widgetTexture,
-                    GetItemPosition(mousevalue, scale),
+                    GetItemPosition(mouseState, scale),
                     _selectedItemListRectangle, // Source rectangle
                     Color.White, // Color
                     0f, // Rotation

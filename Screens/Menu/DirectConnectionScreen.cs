@@ -2,7 +2,8 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIButtons;
+using MineLib.GraphicClient.GUIItems.Buttons;
+
 
 namespace MineLib.GraphicClient.Screens
 {

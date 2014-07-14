@@ -7,8 +7,12 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class OptionScreen : Screen
     {
+        #region Resources
+
         Texture2D _mainMenuTexture;
         SoundEffect _effect;
+
+        #endregion
 
         public OptionScreen(GameClient gameClient)
         {

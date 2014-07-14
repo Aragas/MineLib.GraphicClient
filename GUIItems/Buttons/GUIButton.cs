@@ -3,16 +3,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.GUIButtons
+namespace MineLib.GraphicClient.GUIItems.Buttons
 {
-    public abstract class GUIButton
+    public abstract class GUIButton : GUIItem
     {
         public virtual event Action OnButtonPressed;
 
         protected GameClient GameClient { get; set; }
-
-        public string Name { get; set; }
-        public GUIButtonState GUIButtonState { get; set; }
 
         protected string ButtonText;
         protected Rectangle ButtonRectangle { get; set; }
@@ -33,31 +30,19 @@ namespace MineLib.GraphicClient.GUIButtons
         //protected Color ButtonUnavailableColor = new Color(160, 160, 160, 255); // Vanilla
         protected Color ButtonUnavailableColor = Color.Gray; // Vanilla
 
-
         protected Texture2D WidgetsTexture { get { return GameClient.MinecraftTexturesStorage.GUITextures.Widgets; } }
 
         protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
 
-        protected ContentManager Content { get { return GUIButtonManager.Content; } }
+        protected ContentManager Content { get { return GUIItemManager.Content; } }
+        protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
+        protected SpriteBatch SpriteBatch { get { return GUIItemManager.SpriteBatch; } }
 
-        protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
-        protected SpriteBatch SpriteBatch { get { return GUIButtonManager.SpriteBatch; } }
-
-        protected void AddButton(GUIButton button) { GUIButtonManager.AddButton(button); }
-
-        public virtual void LoadContent() { }
-        public virtual void UnloadContent() { }
-        public virtual void HandleInput(InputState input) { }
-        public virtual void Update(GameTime gameTime) { }
-        public virtual void Draw(GameTime gameTime) { }
-
-        public void ToActive() { GUIButtonState = GUIButtonState.JustNowActive; }
-        public void ToNonPressable() { GUIButtonState = GUIButtonState.NonPressable; }
-        public void ToHidden() { GUIButtonState = GUIButtonState.Hidden; }
+        public void ToActive() { GUIItemState = GUIItemState.JustNowActive; }
+        public void ToNonPressable() { GUIItemState = GUIItemState.NonPressable; }
+        public void ToHidden() { GUIItemState = GUIItemState.Hidden; }
 
         protected bool IsSelected;
-
-        protected bool EventCalled;
 
         // Some function from internet, forgot url.
         protected static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)

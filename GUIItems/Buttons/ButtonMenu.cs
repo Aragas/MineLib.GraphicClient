@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MineLib.GraphicClient.GUIButtons
+namespace MineLib.GraphicClient.GUIItems.Buttons
 {
     public enum ButtonMenuPosition
     {
@@ -114,7 +114,7 @@ namespace MineLib.GraphicClient.GUIButtons
             MouseState mouse = input.CurrentMouseState;
 
             if (ButtonRectangle.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)) && 
-                GUIButtonState != GUIButtonState.NonPressable)
+                GUIItemState != GUIItemState.NonPressable)
             {
                 IsSelected = true;
 
