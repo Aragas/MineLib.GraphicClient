@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,14 +26,14 @@ namespace MineLib.GraphicClient.Screens
             ScreenManager.GetScreen("GameScreen").ToBackground();
             ScreenManager.GetScreen("GUIScreen").ToBackground();
 
-            _backgroundTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
+            _backgroundTexture = new Texture2D(GraphicsDevice, 1, 1);
             _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 170) });
 
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            AddGUIButton("Back To Game", GUIButtonNormalPos.Top3, OnBackToGameButtonPressed);
-            AddGUIButton("Options", GUIButtonNormalPos.Bottom4, OnOptionsButtonPressed);
-            AddGUIButton("Disconnect", GUIButtonNormalPos.Bottom2, OnDisconnectButtonPressed);
+            AddButtonMenu("Back To Game", ButtonMenuPosition.Top3, OnBackToGameButtonPressed);
+            AddButtonMenu("Options", ButtonMenuPosition.Bottom4, OnOptionsButtonPressed);
+            AddButtonMenu("Disconnect", ButtonMenuPosition.Bottom2, OnDisconnectButtonPressed);
         }
 
         void OnBackToGameButtonPressed()
@@ -66,8 +65,7 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
-                DepthStencilState.None, RasterizerState.CullNone);
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             // Backgroung
             SpriteBatch.Draw(_backgroundTexture, ScreenRectangle, Color.White);
@@ -75,7 +73,7 @@ namespace MineLib.GraphicClient.Screens
             SpriteBatch.End();
         }
 
-        public override void ExitScreen()
+        protected override void ExitScreen()
         {
             ScreenManager.GetScreen("GameScreen").ToActive();
             ScreenManager.GetScreen("GUIScreen").ToActive();

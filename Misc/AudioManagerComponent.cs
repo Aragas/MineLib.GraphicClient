@@ -13,12 +13,10 @@ namespace MineLib.GraphicClient
     {
         #region Singleton
 
-
         /// <summary>
         /// The singleton for this type
         /// </summary>
         private static AudioManagerComponent audioManager = null;
-
 
         #endregion
 
@@ -54,8 +52,8 @@ namespace MineLib.GraphicClient
         /// Constructs the manager for audio playback of all sound effects.
         /// </summary>
         /// <param name="game">The game that this component will be attached to.</param>
-        /// <param name="audioFolder">The directory containing audio files.</param>
-        private AudioManagerComponent(Game game, DirectoryInfo audioDirectory)
+        /// <param name="audioDirectory">The directory containing audio files.</param>
+        public AudioManagerComponent(Game game, DirectoryInfo audioDirectory)
             : base(game)
         {
             try
@@ -64,9 +62,9 @@ namespace MineLib.GraphicClient
                 audioFileList = audioFolder.GetFiles("*.xnb");
                 soundList = new Dictionary<string, SoundEffect>();
 
-                for (int i = 0; i < audioFileList.Length; i++)
+                foreach (FileInfo fileInfo in audioFileList)
                 {
-                    string soundName = Path.GetFileNameWithoutExtension(audioFileList[i].Name);
+                    string soundName = Path.GetFileNameWithoutExtension(fileInfo.Name);
                     soundList[soundName] = game.Content.Load<SoundEffect>("Audio\\wav\\" + soundName);
                     soundList[soundName].Name = soundName;
                 }

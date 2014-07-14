@@ -14,6 +14,7 @@ namespace MineLib.GraphicClient
     {
         FPSCounterComponent fps;
 
+        public AudioManagerComponent AudioManager;
         public ScreenManagerComponent ScreenManager;
         public GUIButtonManagerComponent GuiButtonManager;
 
@@ -37,6 +38,10 @@ namespace MineLib.GraphicClient
             //graphics.PreferredBackBufferWidth = 1280;
             //graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
+
+            // Not implemented
+            //AudioManager = new AudioManagerComponent(this, new DirectoryInfo(Content.RootDirectory + @"\Audio"));
+            //Components.Add(AudioManager);
 
             ScreenManager = new ScreenManagerComponent(this);
             Components.Add(ScreenManager);

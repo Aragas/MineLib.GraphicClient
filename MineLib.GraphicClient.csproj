@@ -53,8 +53,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AudioManagerComponent.cs" />
-    <Compile Include="FPSCounterComponent.cs" />
+    <Compile Include="GUIButtons\ButtonMenuHalf.cs" />
+    <Compile Include="GUIButtons\ButtonNavigation.cs" />
+    <Compile Include="GUIButtons\ButtonNavigationHalf.cs" />
+    <Compile Include="InputBox\GUIItem.cs" />
+    <Compile Include="InputBox\GUIItemManagerComponent.cs" />
+    <Compile Include="InputBox\InputBoxMenu.cs" />
+    <Compile Include="Localization.cs" />
+    <Compile Include="Misc\AudioManagerComponent.cs" />
+    <Compile Include="Misc\FPSCounterComponent.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GUIButtons\GUIButton.cs" />
     <Compile Include="GUIButtons\GUIButtonManagerComponent.cs" />
@@ -62,10 +69,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InputState.cs" />
+    <Compile Include="Screens\Menu\LanguageScreen.cs" />
     <Compile Include="Screens\ScreenManagerComponent.cs" />
     <Compile Include="Screens\InGameScreen.cs" />
     <Compile Include="Screens\Menu\AddServerScreen.cs" />
-    <Compile Include="GUIButtons\ButtonNormal.cs" />
+    <Compile Include="GUIButtons\ButtonMenu.cs" />
     <Compile Include="Screens\Menu\DirectConnectionScreen.cs" />
     <Compile Include="Screens\Menu\EditServerScreen.cs" />
     <Compile Include="Screens\InGame\GameOptionScreen.cs" />
@@ -94,13 +102,19 @@
     <Content Include="Content\MainMenu.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Panorama.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\SimpleColor.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\SimpleTexture.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Button.Effect.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Button.Font.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Crosshair.xnb">
@@ -124,6 +138,26 @@
     <Content Include="Content\XboxControllerSpriteFont.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Minecraftia.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\PF Arma Five.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Visitor TT1 %28BRK%29.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\SimpleTexture.mgfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

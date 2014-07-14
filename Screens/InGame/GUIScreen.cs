@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,6 +17,9 @@ namespace MineLib.GraphicClient.Screens
         #region Resources
 
         Texture2D _crosshairTexture;
+
+        Texture2D _backgroundTexture;
+        SpriteFont _font;
 
         Texture2D _widgetTexture;
         Texture2D _iconsTexture;
@@ -50,10 +55,11 @@ namespace MineLib.GraphicClient.Screens
         float health = 10f;
         short food = 10;
 
-        public GUIScreen(GameClient gameClient, Minecraft minecraft)
+        public GUIScreen(GameClient gameClient, Minecraft minecraft, PlayerInteractionValues playerInteractionValues)
         {
             GameClient = gameClient;
             Minecraft = minecraft;
+            PlayerInteractionValues = playerInteractionValues;
             Name = "GUIScreen";
 
             WindowOpened = false;
@@ -62,6 +68,11 @@ namespace MineLib.GraphicClient.Screens
         public override void LoadContent()
         {
             _crosshairTexture = Content.Load<Texture2D>("Crosshair");
+
+            _backgroundTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 150) });
+
+            _font = Content.Load<SpriteFont>("VolterGoldfish");
 
             GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
 
@@ -72,6 +83,10 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputState input)
         {
+            // Do not handle input if chat is used
+            if(PlayerInteractionValues.ChatOn)
+                return;
+            
             if (input.IsOncePressed(Keys.Escape) && !WindowOpened)
                 ScreenManager.AddScreen(new GameOptionScreen(GameClient));
             else if (input.IsOncePressed(Keys.Escape) && WindowOpened)
@@ -208,8 +223,9 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
-                DepthStencilState.None, RasterizerState.CullNone);
+            //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
+            //    DepthStencilState.None, RasterizerState.CullNone);
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             #region Crosshair
             SpriteBatch.Draw(_crosshairTexture,
@@ -404,7 +420,71 @@ namespace MineLib.GraphicClient.Screens
 
             #endregion
 
+            #region Chat
+
+            //Rectangle ChatWindow    = new Rectangle(10,   (int)(ScreenRectangle.Height * 0.25 - 45),  (int)(ScreenRectangle.Width * 0.75),    (int)(ScreenRectangle.Height * 0.75));
+            //Rectangle InputWindow   = new Rectangle(10,   (int)(ScreenRectangle.Height - 35)       ,  (int)(ScreenRectangle.Width - 20)  ,    (int)(25)                           );
+
+            Rectangle ChatWindow    = new Rectangle(10,   (int)(ScreenRectangle.Height - 400 - 45),   (int)(600)                       ,    (int)(400));
+            Rectangle InputWindow   = new Rectangle(10,   (int)(ScreenRectangle.Height - 35)      ,   (int)(ScreenRectangle.Width - 20),    (int)(25) );
+
+            string InputBox = "Aragas was here.";
+            string[] ChatBox = new string[16];
+            ChatBox[0] = "Test1";
+            ChatBox[1] = "Test2";
+            ChatBox[2] = "Test3";
+
+            // Visitor TT1 (BRK)
+            // PF Arma Five
+            // Minecraftia
+            // VolterGoldfish
+            if (!PlayerInteractionValues.ChatOn)
+            {
+                // Chat Box
+                SpriteBatch.Draw(_backgroundTexture, ChatWindow, Color.White);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (ChatBox[i] == null)
+                        break;
+
+                    DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.Black, ChatBox[i], new Rectangle(15 + 1, ScreenRectangle.Height - 400 - 45 + 1 + 25 * i, ChatWindow.Width, InputWindow.Height));
+                    DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, ChatBox[i], new Rectangle(15, ScreenRectangle.Height - 400 - 45 + 25 * i, ChatWindow.Width, InputWindow.Height));
+                }
+
+                // Input Box
+                SpriteBatch.Draw(_backgroundTexture, InputWindow, Color.White);
+                DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.Black, InputBox, new Rectangle(15 + 1, ScreenRectangle.Height - 35 + 1, InputWindow.Width, InputWindow.Height));
+                DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, InputBox, new Rectangle(15    , ScreenRectangle.Height - 35    , InputWindow.Width, InputWindow.Height));
+            }
+
+            #endregion
+
+            DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, Minecraft.Debug1, new Rectangle(500, 50, 100, 50));
+
             SpriteBatch.End();
         }
+
+        protected static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)
+        {
+            Vector2 size = font.MeasureString(strToDraw);
+
+            float xScale = (boundaries.Width / size.X);
+            float yScale = (boundaries.Height / size.Y);
+
+            // Taking the smaller scaling value will result in the text always fitting in the boundaries.
+            float scale = Math.Min(xScale, yScale);
+
+            Vector2 position = new Vector2 {X = boundaries.X, Y = boundaries.Y};
+
+            // A bunch of settings where we just want to use reasonable defaults.
+            float rotation = 0.0f;
+            Vector2 spriteOrigin = new Vector2(0, 0);
+            float spriteLayer = 0.0f; // all the way in the front
+            SpriteEffects spriteEffects = new SpriteEffects();
+
+            // Draw the string to the sprite batch!
+            spriteBatch.DrawString(font, strToDraw, position, color, rotation, spriteOrigin, scale, spriteEffects, spriteLayer);
+        }
+
     }
 }

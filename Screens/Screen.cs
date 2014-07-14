@@ -8,26 +8,36 @@ namespace MineLib.GraphicClient.Screens
 {
     public abstract class Screen
     {
-        public GameClient GameClient { get; set; }
+        protected GameClient GameClient { get; set; }
 
-        public string Name { get; set; }
-
-        public MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; }}
-        public Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; }}
-
-        public ContentManager Content { get { return ScreenManager.Content; }}
-
-        public GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
-        public ScreenManagerComponent ScreenManager { get { return GameClient.ScreenManager; } }
+        public string Name { get; protected set; }
         public ScreenState ScreenState { get; set; }
-        public SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; }}
+
+        protected MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; } }
+        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
+
+        protected ContentManager Content { get { return ScreenManager.Content; } }
+
+        protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
+        protected ScreenManagerComponent ScreenManager { get { return GameClient.ScreenManager; } }
+        protected SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; } }
+        protected GraphicsDevice GraphicsDevice { get { return GameClient.GraphicsDevice; } }
+
+        protected static Color MainBackgroundColor { get { return new Color(30, 30, 30, 255); } }
+        protected static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
 
         protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
         protected void AddScreenAndCloseOthers(Screen screen) { GUIButtonManager.Clear(); ScreenManager.CloseOtherScreens(screen); }
         protected void AddScreenAndExit(Screen screen) { GUIButtonManager.Clear(); ScreenManager.AddScreen(screen); ExitScreen(); }
-        protected void AddGUIButton(string name, GUIButtonNormalPos pos, Action action)
+        protected void AddButtonMenu(string name, ButtonMenuPosition pos, Action action)
         {
-            Button button = new Button(GameClient, name, pos);
+            ButtonMenu button = new ButtonMenu(GameClient, name, pos);
+            button.OnButtonPressed += action;
+            GUIButtonManager.AddButton(button);
+        }
+        protected void AddButtonNavigation(string name, ButtonNavigationPosition pos, Action action)
+        {
+            ButtonNavigation button = new ButtonNavigation(GameClient, name, pos);
             button.OnButtonPressed += action;
             GUIButtonManager.AddButton(button);
         }
@@ -43,14 +53,16 @@ namespace MineLib.GraphicClient.Screens
         public void ToBackground() { ScreenState = ScreenState.Background;}
         public void ToHidden() { ScreenState = ScreenState.Hidden;}
 
-        public void Exit() { GameClient.Exit(); }
+        protected void Exit() { GameClient.Exit(); }
 
-        public void ExitScreenAndClearButtons()
+        protected void ExitScreenAndClearButtons()
         {
             GUIButtonManager.Clear();
+            Dispose();
             ExitScreen();
         }
-        public virtual void ExitScreen()
+
+        protected virtual void ExitScreen()
         {
             // If the screen has a zero transition time, remove it immediately.
             ScreenManager.RemoveScreen(this);

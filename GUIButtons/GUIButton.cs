@@ -5,34 +5,45 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.GUIButtons
 {
-    // TODO: Create GUIButtonManager similar to ScreenManager
     public abstract class GUIButton
     {
-        public GameClient GameClient { get; set; }
+        public virtual event Action OnButtonPressed;
+
+        protected GameClient GameClient { get; set; }
 
         public string Name { get; set; }
-
-        protected const int ButtonWidth = 200;
-        protected const int ButtonHeight = 20;
+        public GUIButtonState GUIButtonState { get; set; }
 
         protected string ButtonText;
         protected Rectangle ButtonRectangle { get; set; }
-        protected Rectangle ButtonPosition = new Rectangle(0, 66, 200, 20);
-        protected Rectangle ButtonPressedPosition = new Rectangle(0, 86, 200, 20);
-        protected SpriteFont ButtonFont { get { return Content.Load<SpriteFont>("VolterGoldfish"); } }
+        protected Rectangle ButtonRectangleShadow { get { return new Rectangle(ButtonRectangle.X + 2, ButtonRectangle.Y + 2, ButtonRectangle.Width, ButtonRectangle.Height); } }
+        protected static Rectangle ButtonPosition = new Rectangle(0, 66, 200, 20);
+        protected static Rectangle ButtonPressedPosition = new Rectangle(0, 86, 200, 20);
+        protected static Rectangle ButtonUnavailablePosition = new Rectangle(0, 46, 200, 20);
+        protected SpriteFont ButtonFont { get { return Content.Load<SpriteFont>("Minecraftia"); } }
 
-        public GUIButtonState GUIButtonState { get; set; }
-        public Texture2D WidgetsTexture { get { return GameClient.MinecraftTexturesStorage.GUITextures.Widgets; } }
+        //protected Color ButtonColor = new Color(224, 224, 224, 255); // Vanilla
+        protected Color ButtonColor = Color.White;
+        //protected Color ButtonShadowColor = new Color(54, 54, 54, 255); // Vanilla
+        protected Color ButtonShadowColor = Color.Black;
+        //protected Color ButtonPressedColor = new Color(255, 255, 160, 255); // Vanilla
+        protected Color ButtonPressedColor = Color.Yellow;
+        //protected Color ButtonPressedShadowColor = new Color(63, 63, 40, 255); // Vanilla
+        protected Color ButtonPressedShadowColor = Color.Black;
+        //protected Color ButtonUnavailableColor = new Color(160, 160, 160, 255); // Vanilla
+        protected Color ButtonUnavailableColor = Color.Gray; // Vanilla
 
-        public Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
 
-        public ContentManager Content { get { return GUIButtonManager.Content; } }
+        protected Texture2D WidgetsTexture { get { return GameClient.MinecraftTexturesStorage.GUITextures.Widgets; } }
 
-        public GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
-        public SpriteBatch SpriteBatch { get { return GUIButtonManager.SpriteBatch; } }
+        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
+
+        protected ContentManager Content { get { return GUIButtonManager.Content; } }
+
+        protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
+        protected SpriteBatch SpriteBatch { get { return GUIButtonManager.SpriteBatch; } }
 
         protected void AddButton(GUIButton button) { GUIButtonManager.AddButton(button); }
-        protected virtual Vector2 GetPosition(GUIButtonNormalPos level) { return new Vector2(0); }
 
         public virtual void LoadContent() { }
         public virtual void UnloadContent() { }
@@ -44,7 +55,7 @@ namespace MineLib.GraphicClient.GUIButtons
         public void ToNonPressable() { GUIButtonState = GUIButtonState.NonPressable; }
         public void ToHidden() { GUIButtonState = GUIButtonState.Hidden; }
 
-        public bool IsSelected;
+        protected bool IsSelected;
 
         protected bool EventCalled;
 
@@ -75,7 +86,5 @@ namespace MineLib.GraphicClient.GUIButtons
             // Draw the string to the sprite batch!
             spriteBatch.DrawString(font, strToDraw, position, color, rotation, spriteOrigin, scale, spriteEffects, spriteLayer);
         }
-
-        public virtual event Action OnButtonPressed;
     }
 }

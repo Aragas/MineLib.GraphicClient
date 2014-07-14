@@ -26,11 +26,12 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
+            //_mainMenuTexture = Content.Load<Texture2D>("MainMenu");
+            _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            AddGUIButton("Connect", GUIButtonNormalPos.Bottom2, OnConnectButtonPressed);
-            AddGUIButton("Return", GUIButtonNormalPos.Bottom, OnReturnButtonPressed);
+            AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
+            AddButtonMenu("Return", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
         }
 
         public override void UnloadContent()
@@ -63,12 +64,13 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
-                DepthStencilState.None, RasterizerState.CullNone);
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             // Background
-            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
-
+            //SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
+                Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
+            
             SpriteBatch.End();
         }
     }
