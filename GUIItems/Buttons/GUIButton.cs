@@ -2,12 +2,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace MineLib.GraphicClient.GUIItems.Buttons
 {
     public abstract class GUIButton : GUIItem
     {
-        public virtual event Action OnButtonPressed;
+        public event Action OnButtonPressed;
 
         protected GameClient GameClient { get; set; }
 
@@ -18,6 +19,22 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
         protected static Rectangle ButtonPressedPosition = new Rectangle(0, 86, 200, 20);
         protected static Rectangle ButtonUnavailablePosition = new Rectangle(0, 46, 200, 20);
         protected SpriteFont ButtonFont { get { return Content.Load<SpriteFont>("Minecraftia"); } }
+
+        #region HalfButton
+
+        protected Rectangle ButtonFirstHalfPosition = new Rectangle(0, 66, 49, 20);
+        protected Rectangle ButtonSecondHalfPosition = new Rectangle(151, 66, 49, 20);
+
+        protected Rectangle ButtonPressedFirstHalfPosition = new Rectangle(0, 86, 49, 20);
+        protected Rectangle ButtonPressedSecondHalfPosition = new Rectangle(151, 86, 49, 20);
+
+        protected Rectangle ButtonUnavailableFirstHalfPosition = new Rectangle(0, 46, 49, 20);
+        protected Rectangle ButtonUnavailableSecondHalfPosition = new Rectangle(151, 46, 49, 20);
+
+        protected Rectangle ButtonRectangleFirstHalf;
+        protected Rectangle ButtonRectangleSecondHalf;
+
+        #endregion
 
         //protected Color ButtonColor = new Color(224, 224, 224, 255); // Vanilla
         protected Color ButtonColor = Color.White;
@@ -38,11 +55,31 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
         protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
         protected SpriteBatch SpriteBatch { get { return GUIItemManager.SpriteBatch; } }
 
-        public void ToActive() { GUIItemState = GUIItemState.JustNowActive; }
-        public void ToNonPressable() { GUIItemState = GUIItemState.NonPressable; }
-        public void ToHidden() { GUIItemState = GUIItemState.Hidden; }
+        // Handle is same for all buttons, so it can be moved here instead of copying in each implementation
+        public override void HandleInput(InputState input)
+        {
 
-        protected bool IsSelected;
+            #region Mouse handling
+
+            MouseState mouse = input.CurrentMouseState;
+
+            if (ButtonRectangle.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)) && !IsNonPressable)
+            {
+                ToSelected();
+
+                if (input.CurrentMouseState.LeftButton == ButtonState.Pressed &&
+                    input.LastMouseState.LeftButton == ButtonState.Released)
+                {
+                    if (OnButtonPressed != null)
+                        OnButtonPressed();
+                }
+            }
+            else
+                ToActive();
+
+            #endregion
+
+        }
 
         // Some function from internet, forgot url.
         protected static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)

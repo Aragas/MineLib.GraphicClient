@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace MineLib.GraphicClient.GUIItems.Buttons
 {
@@ -18,10 +16,8 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
         LeftBottom,     Bottom,     RightBottom,
     }
 
-    sealed class ButtonMenu : GUIButton
+    public sealed class ButtonMenu : GUIButton
     {
-        public override event Action OnButtonPressed;
-
         Vector2 ButtonSize = new Vector2(350, 35);
         //Vector2 ButtonSize = new Vector2(400, 40); // Vanilla settings
 
@@ -106,41 +102,30 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
             }    
         }
 
-        public override void HandleInput(InputState input)
-        {
-
-            #region Mouse handling
-
-            MouseState mouse = input.CurrentMouseState;
-
-            if (ButtonRectangle.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)) && 
-                GUIItemState != GUIItemState.NonPressable)
-            {
-                IsSelected = true;
-
-                if (input.CurrentMouseState.LeftButton == ButtonState.Pressed &&
-                    input.LastMouseState.LeftButton == ButtonState.Released)
-                {
-                    if (OnButtonPressed != null)
-                        OnButtonPressed();
-                }
-            }
-            else
-                IsSelected = false;
-
-            #endregion
-
-        }
-
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
-            SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, IsSelected ? ButtonPressedPosition : ButtonPosition,
-                Color.White);
+            if (IsNonPressable)
+            {
+                SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonUnavailablePosition, Color.White);
+                // Drawing without shadows
+                DrawString(SpriteBatch, ButtonFont, ButtonUnavailableColor, ButtonText, ButtonRectangle);
+            }
 
-            DrawString(SpriteBatch, ButtonFont, IsSelected ? ButtonPressedShadowColor : ButtonShadowColor, ButtonText, ButtonRectangleShadow);
-            DrawString(SpriteBatch, ButtonFont, IsSelected ? ButtonPressedColor : ButtonColor, ButtonText, ButtonRectangle);
+            if (IsSelected)
+            {
+                SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPressedPosition, Color.White);
+                DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
+
+            }
+            if (IsActive)
+            {
+                SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPosition, Color.White);
+                DrawString(SpriteBatch, ButtonFont, ButtonShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, ButtonFont, ButtonColor, ButtonText, ButtonRectangle);
+            }
 
             SpriteBatch.End();
         }

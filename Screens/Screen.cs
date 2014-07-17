@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.GUIItems;
 using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.InputBox;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -29,25 +30,35 @@ namespace MineLib.GraphicClient.Screens
         protected static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
 
         protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
+        protected void AddScreenAndHideThis(Screen screen) { ScreenManager.AddScreen(screen); ToHidden();}
         protected void AddScreenAndCloseOthers(Screen screen) { GUIItemManager.Clear(); ScreenManager.CloseOtherScreens(screen); }
         protected void AddScreenAndExit(Screen screen) { GUIItemManager.Clear(); ScreenManager.AddScreen(screen); ExitScreen(); }
-        protected void AddButtonMenu(string name, ButtonMenuPosition pos, Action action)
+        protected ButtonMenu AddButtonMenu(string name, ButtonMenuPosition pos, Action action)
         {
             ButtonMenu button = new ButtonMenu(GameClient, name, pos);
             button.OnButtonPressed += action;
             GUIItemManager.AddGUIItem(button);
+            return button;
         }
-        protected void AddButtonMenuHalf(string name, ButtonMenuHalfPosition pos, Action action)
+        protected ButtonMenuHalf AddButtonMenuHalf(string name, ButtonMenuHalfPosition pos, Action action)
         {
             ButtonMenuHalf button = new ButtonMenuHalf(GameClient, name, pos);
             button.OnButtonPressed += action;
             GUIItemManager.AddGUIItem(button);
+            return button;
         }
-        protected void AddButtonNavigation(string name, ButtonNavigationPosition pos, Action action)
+        protected ButtonNavigation AddButtonNavigation(string name, ButtonNavigationPosition pos, Action action)
         {
             ButtonNavigation button = new ButtonNavigation(GameClient, name, pos);
             button.OnButtonPressed += action;
             GUIItemManager.AddGUIItem(button);
+            return button;
+        }
+        protected InputBoxMenu AddInputBoxMenu(InputBoxMenuPosition pos)
+        {
+            InputBoxMenu inputBox = new InputBoxMenu(GameClient, pos);
+            GUIItemManager.AddGUIItem(inputBox);
+            return inputBox;
         }
 
         public virtual void LoadContent() { }

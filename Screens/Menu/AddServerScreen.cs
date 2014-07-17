@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.InputBox;
 
 
 namespace MineLib.GraphicClient.Screens
@@ -16,6 +17,10 @@ namespace MineLib.GraphicClient.Screens
 
         #endregion
 
+        ButtonMenu AddButton;
+        InputBoxMenu ServerNameInputBox;
+        InputBoxMenu ServerAdressInputBox;
+
         public AddServerScreen(GameClient gameClient)
         {
             GameClient = gameClient;
@@ -28,15 +33,21 @@ namespace MineLib.GraphicClient.Screens
             _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            AddButtonMenu("Add", ButtonMenuPosition.Bottom2, OnAddButtonPressed);
+            AddButton = AddButtonMenu("Add", ButtonMenuPosition.Bottom2, OnAddButtonPressed);
+            AddButton.ToNonPressable();
             AddButtonMenu("Return", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
+            ServerNameInputBox   = AddInputBoxMenu(InputBoxMenuPosition.Top4);
+            ServerAdressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Bottom4);
         }
 
         void OnAddButtonPressed()
         {
             _effect.Play();
+
+            string ServerName = ServerNameInputBox.InputBoxText;
+            string ServerAddress = ServerAdressInputBox.InputBoxText;
+
             //_client.CurrentScreen = new ServerListScreen(_client);
-            // TODO : Check if data is correct
         }
 
         void OnReturnButtonPressed()
@@ -45,10 +56,34 @@ namespace MineLib.GraphicClient.Screens
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            if (ServerAdressInputBox.InputBoxText.Length <= 0)
+                AddButton.ToNonPressable();
+            else
+                AddButton.ToActive();
+        }
+
         public override void HandleInput(InputState input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
+
+            if (input.IsOncePressed(Keys.Tab))
+            {
+                if (ServerNameInputBox.IsSelected)
+                {
+                    ServerNameInputBox.ToUnfocused();
+                    ServerAdressInputBox.ToSelected();
+                }
+
+                else if (ServerAdressInputBox.IsSelected)
+                {
+                    ServerAdressInputBox.ToUnfocused();
+                    ServerNameInputBox.ToSelected();
+                }
+
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -56,7 +91,6 @@ namespace MineLib.GraphicClient.Screens
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             // Background
-            //SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
             SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
                 Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
 

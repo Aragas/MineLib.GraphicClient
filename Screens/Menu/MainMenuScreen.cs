@@ -35,7 +35,12 @@ namespace MineLib.GraphicClient.Screens
 
             _xboxController = Content.Load<Texture2D>("XboxControllerSpriteFont");
 
-            AddButtonMenu("Search Server", ButtonMenuPosition.Top4, OnServerListButtonPressed);
+            //AddButtonMenu("Search Server", ButtonMenuPosition.Top4, OnServerListButtonPressed);
+            ButtonMenu button = new ButtonMenu(GameClient, "Search Server", ButtonMenuPosition.Top4);
+            button.OnButtonPressed += OnServerListButtonPressed;
+            GUIItemManager.AddGUIItem(button);
+            //button.ToNonPressable();
+
             AddButtonMenu("Options", ButtonMenuPosition.Bottom4, OnOptionButtonPressed);
 
             AddButtonMenuHalf("Language", ButtonMenuHalfPosition.LeftBottom3, OnLanguageButtonPressed);

@@ -357,8 +357,6 @@ namespace MineLib.GraphicClient.Screens
         {
             if (Crashed)
                 AddScreenAndCloseOthers(new ServerListScreen(GameClient));
-
-            Minecraft.Debug1 = PlayerInteractionValues.PlayerMoving.ToString();
         }
 
         public override void Draw(GameTime gameTime)

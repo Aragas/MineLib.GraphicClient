@@ -461,8 +461,6 @@ namespace MineLib.GraphicClient.Screens
 
             #endregion
 
-            DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, Minecraft.Debug1, new Rectangle(500, 50, 100, 50));
-
             SpriteBatch.End();
         }
 

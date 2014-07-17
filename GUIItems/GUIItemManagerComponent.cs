@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MineLib.GraphicClient.GUIItems.InputBox;
 
 namespace MineLib.GraphicClient.GUIItems
 {
@@ -112,8 +113,8 @@ namespace MineLib.GraphicClient.GUIItems
             // Read the keyboard, gamepad and mouse.
             input.Update();
 
-            // Make a copy of the master screen list, to avoid confusion if
-            // the process of updating one screen adds or removes others
+            // Make a copy of the master guiItem list, to avoid confusion if
+            // the process of updating one guiItem adds or removes others
             // (or it happens on another thread)
             guiItemsToUpdate.Clear();
 
@@ -123,29 +124,32 @@ namespace MineLib.GraphicClient.GUIItems
             // Loop as long as there are screens waiting to be updated.
             while (guiItemsToUpdate.Count > 0)
             {
-                // Pop the topmost screen off the waiting list.
+                // Pop the topmost guiItem off the waiting list.
                 GUIItem guiItem = guiItemsToUpdate[guiItemsToUpdate.Count - 1];
 
                 guiItemsToUpdate.RemoveAt(guiItemsToUpdate.Count - 1);
 
-                // Update the screen.
+                // Update the guiItem.
                 guiItem.Update(gameTime);
 
                 if (guiItem.GUIItemState == GUIItemState.JustNowActive)
-                 {
-                     // Skip one HandleInput, now we won't get a ESC button loop
-                     guiItem.GUIItemState = GUIItemState.Active;
-                     continue;
-                 }
+                {
+                    // Skip one HandleInput, now we won't get press loop.
+                    guiItem.GUIItemState = GUIItemState.Active;
+                    continue;
+                }
 
-                if (guiItem.GUIItemState == GUIItemState.Active)
-                    guiItem.HandleInput(input);
-                
+                if (guiItem.GUIItemState == GUIItemState.Hidden || 
+                    guiItem.GUIItemState == GUIItemState.NonPressable)
+                    continue;
+
+                guiItem.HandleInput(input);
+
             }
 
             // Print debug trace?
-            if (traceEnabled)
-                TraceScreens();
+            //if (traceEnabled)
+            //    TraceScreens();
         }
 
         void TraceScreens()
@@ -206,7 +210,12 @@ namespace MineLib.GraphicClient.GUIItems
             guiItemsToUpdate.Remove(guiItem);
         }
 
-        public GUIItem GetGUIItem(string name)
+        /// <summary>
+        /// Returns only if GUIItem was named.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public GUIItem GetGUIItemByName(string name)
         {
             foreach (GUIItem guiItem in guiItems)
             {
@@ -221,6 +230,30 @@ namespace MineLib.GraphicClient.GUIItems
             return guiItems.ToArray();
         }
 
+        public void UnFocusOtherInputTextBoxes(GUIInputBox currentInputBox)
+        {
+            foreach (GUIItem guiItem in guiItems)
+            {
+                GUIInputBox inputBox = guiItem as GUIInputBox;
+                if (inputBox != null && inputBox != currentInputBox)
+                {
+                    inputBox.ToUnfocused();
+                }
+            }
+        }
+
+        public void UnFocusAllInputTextBoxes()
+        {
+            foreach (GUIItem guiItem in guiItems)
+            {
+                GUIInputBox inputBox = guiItem as GUIInputBox;
+                if (inputBox != null)
+                {
+                    inputBox.ToUnfocused();
+                }
+            }
+        }
+
         public void Clear()
         {
             foreach (GUIItem guiItem in guiItems)
@@ -232,6 +265,6 @@ namespace MineLib.GraphicClient.GUIItems
             guiItemsToUpdate.Clear();
         }
 
-        #endregion
+        #endregion          
     }
 }

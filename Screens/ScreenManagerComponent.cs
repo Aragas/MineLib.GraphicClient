@@ -157,8 +157,11 @@ namespace MineLib.GraphicClient.Screens
                      return;
                  }
 
-                if (screen.ScreenState == ScreenState.Active)
-                    screen.HandleInput(input);
+                 if (screen.ScreenState == ScreenState.Hidden || 
+                     screen.ScreenState == ScreenState.Background)
+                   continue;
+
+                screen.HandleInput(input);
                 
             }
 

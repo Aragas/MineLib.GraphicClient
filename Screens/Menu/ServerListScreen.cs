@@ -1,14 +1,28 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Net;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.Network.BaseClients;
 
 namespace MineLib.GraphicClient.Screens
 {
+    public struct Server
+    {
+        public string Name;
+        public IPEndPoint IPEndPoint;
+        public ResponseData ServerResponse;
+    }
+
     sealed class ServerListScreen : Screen
     {
-        #region Resources
+        StatusClient ServerParser;
+        const int networkProtocol = 5;
+
+        Server[] Servers;
+
+            #region Resources
 
         Texture2D _mainMenuTexture;
         Texture2D _gradientUpTexture;
@@ -16,6 +30,9 @@ namespace MineLib.GraphicClient.Screens
         SoundEffect _effect;
 
         #endregion
+
+        ButtonNavigation ConnectButton;
+        ButtonNavigation EditServerButton;
 
         string ServerIP = "127.0.0.1";
         short ServerPort = 25565;
@@ -34,13 +51,31 @@ namespace MineLib.GraphicClient.Screens
             _gradientDownTexture = CreateGradientDown();
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
+            ConnectButton = AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
+            ConnectButton.ToNonPressable();
             AddButtonNavigation("Refresh", ButtonNavigationPosition.Top, OnRefreshButtonPressed);
             AddButtonNavigation("Direct Connection", ButtonNavigationPosition.RightTop, OnDirectConnectionButtonPressed);
 
             AddButtonNavigation("Add Server", ButtonNavigationPosition.LeftBottom, OnAddServerButtonPressed);
-            AddButtonNavigation("Edit Server", ButtonNavigationPosition.Bottom, OnEditServerButtonPressed);
+            EditServerButton = AddButtonNavigation("Edit Server", ButtonNavigationPosition.Bottom, OnEditServerButtonPressed);
+            EditServerButton.ToNonPressable();
             AddButtonNavigation("Return", ButtonNavigationPosition.RightBottom, OnReturnButtonPressed);
+
+
+
+            Servers = new Server[0]; // TODO: Load saved list
+            ServerParser = new StatusClient();
+
+            if (Servers.Length > 0)
+            {
+                // Getting info for each saved server
+                for (int i = 0; i < Servers.Length; ++i)
+                {
+                    Servers[i].ServerResponse = ServerParser.GetServerInfo(Servers[i].IPEndPoint.Address.ToString(),
+                        (short) Servers[i].IPEndPoint.Port, networkProtocol);
+                }
+            }
+
         }
 
         public override void UnloadContent()
@@ -55,14 +90,24 @@ namespace MineLib.GraphicClient.Screens
         {
             _effect.Play();
 
-            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
-            bool status = gameScreen.Connect(ServerIP, ServerPort);
-            AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
+            //GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
+            //bool status = gameScreen.Connect(ServerIP, ServerPort);
+            //AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
         }
 
         void OnRefreshButtonPressed()
         {
             _effect.Play();
+
+            if (Servers.Length > 0)
+            {
+                // Getting info for each saved server
+                for (int i = 0; i < Servers.Length; ++i)
+                {
+                    Servers[i].ServerResponse = ServerParser.GetServerInfo(Servers[i].IPEndPoint.Address.ToString(),
+                        (short)Servers[i].IPEndPoint.Port, networkProtocol);
+                }
+            }
         }
 
         void OnDirectConnectionButtonPressed()

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.InputBox;
 
 
 namespace MineLib.GraphicClient.Screens
@@ -16,6 +17,9 @@ namespace MineLib.GraphicClient.Screens
 
         #endregion
 
+        ButtonMenu ConnectButton;
+        InputBoxMenu ServerAdressInputBox;
+
         string ServerIP = "127.0.0.1";
         short ServerPort = 25565;
 
@@ -27,12 +31,14 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            //_mainMenuTexture = Content.Load<Texture2D>("MainMenu");
             _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
             _effect = Content.Load<SoundEffect>("Button.Effect");
 
-            AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
+            ConnectButton = AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
+            ConnectButton.ToNonPressable();
             AddButtonMenu("Return", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
+
+            ServerAdressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Center);
         }
 
         public override void UnloadContent()
@@ -46,9 +52,11 @@ namespace MineLib.GraphicClient.Screens
         {
             _effect.Play();
 
-            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
-            bool status = gameScreen.Connect(ServerIP, ServerPort);
-            AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
+            string ServerAddress = ServerAdressInputBox.InputBoxText;
+
+            //GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
+            //bool status = gameScreen.Connect(ServerIP, ServerPort);
+            //AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
@@ -57,10 +65,21 @@ namespace MineLib.GraphicClient.Screens
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            if (ServerAdressInputBox.InputBoxText.Length <= 0)
+                ConnectButton.ToNonPressable();
+            else
+                ConnectButton.ToActive();
+        }
+
         public override void HandleInput(InputState input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
+
+            if (input.IsOncePressed(Keys.Enter))
+                OnConnectButtonPressed();
         }
 
         public override void Draw(GameTime gameTime)
