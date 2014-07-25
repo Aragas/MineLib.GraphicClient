@@ -1,41 +1,27 @@
-﻿using System.Net;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIItems.Buttons;
-using MineLib.Network.BaseClients;
+using MineLib.GraphicClient.GUIItems.Button;
+using MineLib.GraphicClient.Misc;
+using MineLib.GraphicClient.Screens.InServerList.ServerEntry;
 
 namespace MineLib.GraphicClient.Screens
 {
-    public struct Server
+    sealed class ServerListScreen : InServerListScreen
     {
-        public string Name;
-        public IPEndPoint IPEndPoint;
-        public ResponseData ServerResponse;
-    }
 
-    sealed class ServerListScreen : Screen
-    {
-        StatusClient ServerParser;
-        const int networkProtocol = 5;
+        #region Resources
 
-        Server[] Servers;
-
-            #region Resources
-
-        Texture2D _mainMenuTexture;
         Texture2D _gradientUpTexture;
         Texture2D _gradientDownTexture;
-        SoundEffect _effect;
 
         #endregion
 
         ButtonNavigation ConnectButton;
         ButtonNavigation EditServerButton;
 
-        string ServerIP = "127.0.0.1";
-        short ServerPort = 25565;
+        ServerEntryDrawer ServerEntryDrawer;
+        private int SelectedServerIndex;
 
         public ServerListScreen(GameClient gameClient)
         {
@@ -45,11 +31,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            //_mainMenuTexture = Content.Load<Texture2D>("MainMenu");
-            _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
             _gradientUpTexture = CreateGradientUp();
             _gradientDownTexture = CreateGradientDown();
-            _effect = Content.Load<SoundEffect>("Button.Effect");
 
             ConnectButton = AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
             ConnectButton.ToNonPressable();
@@ -61,25 +44,19 @@ namespace MineLib.GraphicClient.Screens
             EditServerButton.ToNonPressable();
             AddButtonNavigation("Return", ButtonNavigationPosition.RightBottom, OnReturnButtonPressed);
 
+            // TODO: Better improve dat shiet
+            LoadServerList();
+            ParseServerEntries();
 
-
-            Servers = new Server[0]; // TODO: Load saved list
-            ServerParser = new StatusClient();
-
-            if (Servers.Length > 0)
-            {
-                // Getting info for each saved server
-                for (int i = 0; i < Servers.Length; ++i)
-                {
-                    Servers[i].ServerResponse = ServerParser.GetServerInfo(Servers[i].IPEndPoint.Address.ToString(),
-                        (short) Servers[i].IPEndPoint.Port, networkProtocol);
-                }
-            }
-
+            ServerEntryDrawer = new ServerEntryDrawer(this, Servers);
+            ServerEntryDrawer.LoadContent();
+            ServerEntryDrawer.OnClickedPressed += OnClickedServerEntry;
         }
 
         public override void UnloadContent()
         {
+            SaveServerList(Servers);
+
             // Unload content only if we are in game
             if (ScreenManager.GetScreen("GameScreen") != null)
                 ScreenManager.Content.Unload();
@@ -88,84 +65,78 @@ namespace MineLib.GraphicClient.Screens
 
         void OnConnectButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
 
-            //GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
-            //bool status = gameScreen.Connect(ServerIP, ServerPort);
-            //AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
+            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Player, Servers[SelectedServerIndex]);
+            bool status = gameScreen.Connect();
+            AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
         }
-
         void OnRefreshButtonPressed()
         {
-            _effect.Play();
-
-            if (Servers.Length > 0)
-            {
-                // Getting info for each saved server
-                for (int i = 0; i < Servers.Length; ++i)
-                {
-                    Servers[i].ServerResponse = ServerParser.GetServerInfo(Servers[i].IPEndPoint.Address.ToString(),
-                        (short)Servers[i].IPEndPoint.Port, networkProtocol);
-                }
-            }
+            ButtonEffect.Play();
+            ParseServerEntries();
         }
-
         void OnDirectConnectionButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
             AddScreenAndExit(new DirectConnectionScreen(GameClient));
         }
 
-
         void OnAddServerButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
             AddScreenAndExit(new AddServerScreen(GameClient));
         }
-
         void OnEditServerButtonPressed()
         {
-            _effect.Play();
-            AddScreenAndExit(new EditServerScreen(GameClient));
+            ButtonEffect.Play();
+            AddScreenAndExit(new EditServerScreen(GameClient, Servers, SelectedServerIndex));
         }
-
         void OnReturnButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
             AddScreenAndExit(new MainMenuScreen(GameClient));
         }
 
-        public override void HandleInput(InputState input)
+        void OnClickedServerEntry(int index)
+        {
+            SelectedServerIndex = index;
+
+            ConnectButton.ToActive();
+            EditServerButton.ToActive();
+        }
+        
+
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new MainMenuScreen(GameClient));
+
+            ServerEntryDrawer.HandleInput(input);
         }
 
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
-            // Background
-            SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
+            // We can't handle ServerEntryDrawer as a GUIItem, drawing order is important. We draw it in mid-cycle ot this draw call
+            ServerEntryDrawer.Draw(gameTime);
 
-            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, MainBackgroundColor, 0.0f, Vector2.Zero, 4.0f,
-                SpriteEffects.None, 0f);
+            #region Background
 
             Rectangle gradientUp = new Rectangle(0, 0, ScreenRectangle.Width, 8);
-            SpriteBatch.Draw(_gradientUpTexture, new Vector2(0, 63), gradientUp,
-                Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
+            SpriteBatch.Draw(_gradientUpTexture, new Vector2(0, 63), gradientUp, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
 
             Rectangle backgroundUp = new Rectangle(0, 0, ScreenRectangle.Width, 16);
-            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, backgroundUp, 
-                SecondaryBackgroundColor, 0.0f,  Vector2.Zero, 4.0f, SpriteEffects.None, 0f);
+            SpriteBatch.Draw(MainBackgroundTexture, Vector2.Zero, backgroundUp, SecondaryBackgroundColor, 0.0f, Vector2.Zero, 4.0f, SpriteEffects.None, 0f);
 
             Rectangle gradientDown = new Rectangle(0, 0, ScreenRectangle.Width, 8);
-            SpriteBatch.Draw(_gradientDownTexture, new Vector2(0, ScreenRectangle.Height - 128 - 8), gradientDown,
-                Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
+            SpriteBatch.Draw(_gradientDownTexture, new Vector2(0, ScreenRectangle.Height - 128 - 8), gradientDown, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
 
             Rectangle backgroundDown = new Rectangle(0, 0, ScreenRectangle.Width, 32);
-            SpriteBatch.Draw(_mainMenuTexture, new Vector2(0, ScreenRectangle.Height - 128), backgroundDown, 
-                SecondaryBackgroundColor, 0.0f, Vector2.Zero, 4.0f, SpriteEffects.None, 0f);
+            SpriteBatch.Draw(MainBackgroundTexture, new Vector2(0, ScreenRectangle.Height - 128), backgroundDown, SecondaryBackgroundColor, 0.0f, Vector2.Zero, 4.0f, SpriteEffects.None, 0f);
+
+            #endregion
 
             SpriteBatch.End();
         }
@@ -235,22 +206,6 @@ namespace MineLib.GraphicClient.Screens
 
                 if ((float)i / ScreenRectangle.Width > 8f)
                     bgc[i - 1] = new Color(0, 0, 0, 255);
-            }
-            backgroundTex.SetData(bgc);
-            return backgroundTex;
-        }
-
-        private Texture2D CreateBG1()
-        {
-            Texture2D backgroundTex = new Texture2D(GraphicsDevice, ScreenRectangle.Width, ScreenRectangle.Height);
-            Color[] bgc = new Color[ScreenRectangle.Width * ScreenRectangle.Height];
-            int texColour = 0;          // Defines the colour of the gradient.
-            int gradientThickness = 16;  // Defines how "diluted" the gradient gets. I've found 2 works great, and 16 is a very fine gradient.
-
-            for (int i = 0; i < bgc.Length; i++)
-            {
-                texColour = (i / (ScreenRectangle.Height * gradientThickness));
-                bgc[i] = new Color(texColour, texColour, texColour, 0);
             }
             backgroundTex.SetData(bgc);
             return backgroundTex;

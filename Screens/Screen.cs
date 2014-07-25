@@ -3,8 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.GUIItems;
-using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.Button;
 using MineLib.GraphicClient.GUIItems.InputBox;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -15,19 +16,18 @@ namespace MineLib.GraphicClient.Screens
         public string Name { get; protected set; }
         public ScreenState ScreenState { get; set; }
 
-        protected MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; } }
-        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
+        internal MinecraftTexturesStorage MinecraftTexturesStorage { get { return GameClient.MinecraftTexturesStorage; } }
+        internal Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
 
-        protected ContentManager Content { get { return ScreenManager.Content; } }
+        internal ContentManager Content { get { return ScreenManager.Content; } }
 
-        //protected GUIButtonManagerComponent GUIButtonManager { get { return GameClient.GuiButtonManager; } }
         protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
         protected ScreenManagerComponent ScreenManager { get { return GameClient.ScreenManager; } }
-        protected SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; } }
-        protected GraphicsDevice GraphicsDevice { get { return GameClient.GraphicsDevice; } }
+        internal SpriteBatch SpriteBatch { get { return ScreenManager.SpriteBatch; } }
+        internal GraphicsDevice GraphicsDevice { get { return GameClient.GraphicsDevice; } }
 
-        protected static Color MainBackgroundColor { get { return new Color(30, 30, 30, 255); } }
-        protected static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
+        internal static Color MainBackgroundColor { get { return new Color(30, 30, 30, 255); } }
+        internal static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
 
         protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
         protected void AddScreenAndHideThis(Screen screen) { ScreenManager.AddScreen(screen); ToHidden();}
@@ -63,7 +63,7 @@ namespace MineLib.GraphicClient.Screens
 
         public virtual void LoadContent() { }
         public virtual void UnloadContent() { }
-        public virtual void HandleInput(InputState input) { }
+        public virtual void HandleInput(InputManager input) { }
         public virtual void Update(GameTime gameTime) { }
         public virtual void Draw(GameTime gameTime) { }
         public virtual void Dispose() { }
@@ -87,6 +87,4 @@ namespace MineLib.GraphicClient.Screens
             ScreenManager.RemoveScreen(this);
         }
     }
-
-
 }

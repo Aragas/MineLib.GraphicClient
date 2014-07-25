@@ -1,25 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.Button;
 using MineLib.GraphicClient.GUIItems.InputBox;
-
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class AddServerScreen : Screen
+    sealed class AddServerScreen : InServerListScreen
     {
-        #region Resources
-
-        Texture2D _mainMenuTexture;
-        SoundEffect _effect;
-
-        #endregion
-
         ButtonMenu AddButton;
         InputBoxMenu ServerNameInputBox;
-        InputBoxMenu ServerAdressInputBox;
+        InputBoxMenu ServerAddressInputBox;
 
         public AddServerScreen(GameClient gameClient)
         {
@@ -29,42 +21,45 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            //_mainMenuTexture = Content.Load<Texture2D>("MainMenu");
-            _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
-            _effect = Content.Load<SoundEffect>("Button.Effect");
-
             AddButton = AddButtonMenu("Add", ButtonMenuPosition.Bottom2, OnAddButtonPressed);
             AddButton.ToNonPressable();
-            AddButtonMenu("Return", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
+            AddButtonMenu("Cancel", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
+
             ServerNameInputBox   = AddInputBoxMenu(InputBoxMenuPosition.Top4);
-            ServerAdressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Bottom4);
+            ServerAddressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Bottom4);
         }
+
 
         void OnAddButtonPressed()
         {
-            _effect.Play();
+            Server server = new Server
+            {
+                Name = ServerNameInputBox.InputBoxText,
+                Address = StringToAddress(ServerAddressInputBox.InputBoxText)
+            };
 
-            string ServerName = ServerNameInputBox.InputBoxText;
-            string ServerAddress = ServerAdressInputBox.InputBoxText;
+            AddServerAndSaveServerList(server);
 
-            //_client.CurrentScreen = new ServerListScreen(_client);
+            ButtonEffect.Play();
+            AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
+
         public override void Update(GameTime gameTime)
         {
-            if (ServerAdressInputBox.InputBoxText.Length <= 0)
+            if (ServerAddressInputBox.InputBoxText.Length <= 0)
                 AddButton.ToNonPressable();
             else
                 AddButton.ToActive();
         }
 
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
@@ -74,15 +69,14 @@ namespace MineLib.GraphicClient.Screens
                 if (ServerNameInputBox.IsSelected)
                 {
                     ServerNameInputBox.ToUnfocused();
-                    ServerAdressInputBox.ToSelected();
+                    ServerAddressInputBox.ToSelected();
                 }
 
-                else if (ServerAdressInputBox.IsSelected)
+                else if (ServerAddressInputBox.IsSelected)
                 {
-                    ServerAdressInputBox.ToUnfocused();
+                    ServerAddressInputBox.ToUnfocused();
                     ServerNameInputBox.ToSelected();
                 }
-
             }
         }
 
@@ -91,8 +85,7 @@ namespace MineLib.GraphicClient.Screens
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             // Background
-            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
-                Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
+            SpriteBatch.Draw(MainBackgroundTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f, Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
 
             SpriteBatch.End();
         }

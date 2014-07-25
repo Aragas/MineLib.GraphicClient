@@ -2,17 +2,18 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIItems.Buttons;
-
+using MineLib.GraphicClient.GUIItems.Button;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
     sealed class GameOptionScreen : InGameScreen
     {
+
         #region Resources
 
         Texture2D _backgroundTexture;
-        SoundEffect _effect;
+        SoundEffect _buttonEffect;
 
         #endregion
 
@@ -30,7 +31,7 @@ namespace MineLib.GraphicClient.Screens
             _backgroundTexture = new Texture2D(GraphicsDevice, 1, 1);
             _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 170) });
 
-            _effect = Content.Load<SoundEffect>("Button.Effect");
+            _buttonEffect = Content.Load<SoundEffect>("ButtonEffect");
 
             AddButtonMenu("Back To Game", ButtonMenuPosition.Top3, OnBackToGameButtonPressed);
             AddButtonMenu("Options", ButtonMenuPosition.Bottom4, OnOptionsButtonPressed);
@@ -39,29 +40,25 @@ namespace MineLib.GraphicClient.Screens
 
         void OnBackToGameButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             ExitScreenAndClearButtons();
         }
 
         void OnOptionsButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
         }
 
         void OnDisconnectButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             AddScreenAndCloseOthers(new ServerListScreen(GameClient));
         }
 
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 ExitScreenAndClearButtons();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
         }
 
         public override void Draw(GameTime gameTime)

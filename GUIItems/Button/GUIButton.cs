@@ -1,16 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MineLib.GraphicClient.Misc;
 
-namespace MineLib.GraphicClient.GUIItems.Buttons
+namespace MineLib.GraphicClient.GUIItems.Button
 {
     public abstract class GUIButton : GUIItem
     {
         public event Action OnButtonPressed;
-
-        protected GameClient GameClient { get; set; }
 
         protected string ButtonText;
         protected Rectangle ButtonRectangle { get; set; }
@@ -49,14 +47,8 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
 
         protected Texture2D WidgetsTexture { get { return GameClient.MinecraftTexturesStorage.GUITextures.Widgets; } }
 
-        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
-
-        protected ContentManager Content { get { return GUIItemManager.Content; } }
-        protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
-        protected SpriteBatch SpriteBatch { get { return GUIItemManager.SpriteBatch; } }
-
         // Handle is same for all buttons, so it can be moved here instead of copying in each implementation
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
 
             #region Mouse handling

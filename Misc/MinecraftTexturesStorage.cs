@@ -3,7 +3,7 @@ using System.IO;
 using Ionic.Zip;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient
+namespace MineLib.GraphicClient.Misc
 {
     public struct GUITextures
     {
@@ -57,26 +57,26 @@ namespace MineLib.GraphicClient
     public class MinecraftTexturesStorage
     {
         // -- Debugging
-        public List<string> UnhandledFiles = new List<string>();
+        public readonly List<string> UnhandledFiles = new List<string>();
         // -- Debugging
-
-        GameClient Client;
-        ZipFile MinecraftJar;
 
         public GUITextures GUITextures;
 
-        public MinecraftTexturesStorage(GameClient client,ZipFile minecraft)
+        readonly GameClient _client;
+        readonly ZipFile _minecraftJar;
+
+        public MinecraftTexturesStorage(GameClient client, ZipFile minecraft)
         {
-            Client = client;
-            MinecraftJar = minecraft;
+            _client = client;
+            _minecraftJar = minecraft;
         }
 
-        public GUITextures GetGUITextures()
+        public void ParseGUITextures()
         {
             GUITextures =  new GUITextures();
             MemoryStream ms = new MemoryStream();
             string selectCriteria = "name = assets/minecraft/textures/gui/*";
-            foreach (ZipEntry entry in MinecraftJar.SelectEntries(selectCriteria))
+            foreach (ZipEntry entry in _minecraftJar.SelectEntries(selectCriteria))
             {
                 switch (entry.FileName)
                 {
@@ -84,37 +84,37 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/title/background/panorama_0.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama0 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama0 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/background/panorama_1.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama1 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama1 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/background/panorama_2.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama2 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama2 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/background/panorama_3.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama3 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama3 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/background/panorama_4.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama4 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama4 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/background/panorama_5.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Panorama5 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Panorama5 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -122,13 +122,13 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/title/mojang.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Mojang = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Mojang = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/title/minecraft.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Minecraft = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Minecraft = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -136,25 +136,25 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/container/creative_inventory/tabs.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Tabs = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Tabs = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/creative_inventory/tab_items.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.TabItems = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.TabItems = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/creative_inventory/tab_item_search.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.TabItemSearch = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.TabItemSearch = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/creative_inventory/tab_inventory.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.TabInventory = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.TabInventory = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -162,79 +162,79 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/container/villager.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Villager = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Villager = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/stats_icons.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.StatsIcons = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.StatsIcons = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/inventory.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Inventory = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Inventory = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/horse.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Horse = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Horse = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/hopper.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Hopper = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Hopper = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/generic_54.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Generic54 = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Generic54 = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/furnace.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Furnace = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Furnace = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/enchanting_table.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.EnchantingTable = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.EnchantingTable = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/dispenser.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Dispenser = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Dispenser = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/crafting_table.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.CraftingTable = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.CraftingTable = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/brewing_stand.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.BrewingStand = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.BrewingStand = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/beacon.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Beacon = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Beacon = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/container/anvil.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Anvil = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Anvil = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -242,13 +242,13 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/achievement/achievement_icons.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.AchievementIcons = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.AchievementIcons = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/achievement/achievement_background.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.AchievementBackground = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.AchievementBackground = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -256,43 +256,43 @@ namespace MineLib.GraphicClient
                     case "assets/minecraft/textures/gui/widgets.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Widgets = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Widgets = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/stream_indicator.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.StreamIndicator = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.StreamIndicator = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/resource_packs.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.ResourcePacks = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.ResourcePacks = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/options_background.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.OptionsBackground = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.OptionsBackground = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/icons.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Icons = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Icons = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/demo_background.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.DemoBackground = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.DemoBackground = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
 
                     case "assets/minecraft/textures/gui/book.png":
                         ms = new MemoryStream();
                         entry.Extract(ms);
-                        GUITextures.Book = Texture2D.FromStream(Client.GraphicsDevice, ms);
+                        GUITextures.Book = Texture2D.FromStream(_client.GraphicsDevice, ms);
                         break;
                     #endregion
 
@@ -301,7 +301,6 @@ namespace MineLib.GraphicClient
                         break;
                 }
             }
-            return GUITextures;
         }
     }
 }

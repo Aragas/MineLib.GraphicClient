@@ -3,6 +3,7 @@ using Ionic.Zip;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.GUIItems;
+using MineLib.GraphicClient.Misc;
 using MineLib.GraphicClient.Screens;
 
 namespace MineLib.GraphicClient
@@ -12,12 +13,11 @@ namespace MineLib.GraphicClient
     /// </summary>
     public class GameClient : Game
     {
-        FPSCounterComponent fps;
-
         public AudioManagerComponent AudioManager;
         public ScreenManagerComponent ScreenManager;
         public GUIItemManagerComponent GUIItemManager;
 
+        FPSCounterComponent FPS;
         SpriteFont FPSFont;
 
         GraphicsDeviceManager graphics;
@@ -26,9 +26,16 @@ namespace MineLib.GraphicClient
         public MinecraftTexturesStorage MinecraftTexturesStorage;
 
         // Client settings, temporary storage
-        public string Login = "TestBot";
-        public string Password = "";
-        public bool OnlineMode = false;
+        public static string Login = "TestBot";
+        public static string Password = "";
+        public static bool OnlineMode = false;
+
+        public PlayerData Player = new PlayerData
+        {
+            Username = Login,
+            Password = Password,
+            OnlineMode = OnlineMode
+        };
 
         public GameClient()
         {
@@ -43,12 +50,12 @@ namespace MineLib.GraphicClient
             //AudioManager = new AudioManagerComponent(this, new DirectoryInfo(Content.RootDirectory + @"\Audio"));
             //Components.Add(AudioManager);
 
+            // Order is important
             ScreenManager = new ScreenManagerComponent(this);
             Components.Add(ScreenManager);
 
             GUIItemManager = new GUIItemManagerComponent(this);
             Components.Add(GUIItemManager);
-
         }
 
         protected override void Initialize()
@@ -56,7 +63,6 @@ namespace MineLib.GraphicClient
             base.Initialize();
 
             ScreenManager.AddScreen(new MainMenuScreen(this));
-
         }
 
         protected override void LoadContent()
@@ -68,9 +74,8 @@ namespace MineLib.GraphicClient
 
             FPSFont = Content.Load<SpriteFont>("VolterGoldfish");
 
-            fps = new FPSCounterComponent(this, spriteBatch, FPSFont);
-            Components.Add(fps);
-
+            FPS = new FPSCounterComponent(this, spriteBatch, FPSFont);
+            Components.Add(FPS);
 
             #region Load resources from minecraft.jar
             string path = Content.RootDirectory;
@@ -80,7 +85,7 @@ namespace MineLib.GraphicClient
                 MinecraftTexturesStorage = new MinecraftTexturesStorage(this, minecraftFiles);
 
                 // Load textures or somethin'
-                MinecraftTexturesStorage.GetGUITextures();
+                MinecraftTexturesStorage.ParseGUITextures();
             }
             #endregion
 
@@ -88,6 +93,8 @@ namespace MineLib.GraphicClient
 
         protected override void UnloadContent()
         {
+            base.UnloadContent();
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -107,6 +114,5 @@ namespace MineLib.GraphicClient
             spriteBatch.End();
 
         }
-
     }
 }

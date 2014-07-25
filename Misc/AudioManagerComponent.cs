@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
-namespace MineLib.GraphicClient
+namespace MineLib.GraphicClient.Misc
 {
     /// <summary>
     /// Component that manages audio playback for all sound effects.

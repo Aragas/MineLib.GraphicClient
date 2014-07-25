@@ -23,7 +23,7 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
     {
         //Vector2 InputBoxSize = new Vector2(400, 44);
         Vector2 InputBoxSize = new Vector2(404, 44); // Vanilla settings
-        Vector2 WhiteFrameSize = new Vector2(2);
+        Vector2 FrameSize = new Vector2(2);
      
         public InputBoxMenu(GameClient gameClient, InputBoxMenuPosition pos)
         {
@@ -73,20 +73,15 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
         {
             Vector2 inputBoxPosition = GetPosition(Position);
 
-            InputBoxRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f),
-                (int)(inputBoxPosition.Y), (int)InputBoxSize.X, (int)InputBoxSize.Y);
+            InputBoxRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f), (int)(inputBoxPosition.Y), (int)InputBoxSize.X, (int)InputBoxSize.Y);
 
-            WhiteFrameTopRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f),
-                (int)(inputBoxPosition.Y), (int)InputBoxSize.X, (int)WhiteFrameSize.Y);
+            WhiteFrameTopRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f), (int)(inputBoxPosition.Y), (int)InputBoxSize.X, (int)FrameSize.Y);
 
-            WhiteFrameBottomRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f),
-                (int)(inputBoxPosition.Y + InputBoxSize.Y - WhiteFrameSize.Y), (int)InputBoxSize.X, (int)WhiteFrameSize.Y);
+            WhiteFrameBottomRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f), (int)(inputBoxPosition.Y + InputBoxSize.Y - FrameSize.Y), (int)InputBoxSize.X, (int)FrameSize.Y);
 
-            WhiteFrameLeftRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f),
-                (int)(inputBoxPosition.Y), (int)WhiteFrameSize.X, (int)InputBoxSize.Y);
+            WhiteFrameLeftRectangle = new Rectangle((int)(inputBoxPosition.X - InputBoxSize.X * 0.5f), (int)(inputBoxPosition.Y), (int)FrameSize.X, (int)InputBoxSize.Y);
 
-            WhiteFrameRightRectangle = new Rectangle((int)(inputBoxPosition.X + InputBoxSize.X * 0.5f - WhiteFrameSize.X),
-                (int)(inputBoxPosition.Y), (int)WhiteFrameSize.X, (int)InputBoxSize.Y);
+            WhiteFrameRightRectangle = new Rectangle((int)(inputBoxPosition.X + InputBoxSize.X * 0.5f - FrameSize.X), (int)(inputBoxPosition.Y), (int)FrameSize.X, (int)InputBoxSize.Y);
 
             BlackTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
             BlackTexture.SetData(new[] { new Color(0, 0, 0, 255) });
@@ -104,7 +99,6 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
 
             // Taking the smaller scaling value will result in the text always fitting in the boundaries.
             TextScale = Math.Min(xScale, yScale);
-
         }
 
         public override void Update(GameTime gameTime)
@@ -126,26 +120,18 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
 
             SpriteBatch.Draw(BlackTexture, InputBoxRectangle, Rectangle.Empty, Color.White);
 
-            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameTopRectangle,
-                new Rectangle(0, 0, (int) InputBoxSize.X, (int) WhiteFrameSize.Y), Color.White);
-            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameBottomRectangle,
-                new Rectangle(0, 0, (int) InputBoxSize.X, (int) WhiteFrameSize.Y), Color.White);
-            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameLeftRectangle,
-                new Rectangle(0, 0, (int) InputBoxSize.Y, (int) WhiteFrameSize.X), Color.White);
-            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameRightRectangle,
-                new Rectangle(0, 0, (int) InputBoxSize.Y, (int) WhiteFrameSize.X), Color.White);
+            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameTopRectangle, new Rectangle(0, 0, (int) InputBoxSize.X, (int) FrameSize.Y), Color.White);
+            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameBottomRectangle, new Rectangle(0, 0, (int) InputBoxSize.X, (int) FrameSize.Y), Color.White);
+            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameLeftRectangle, new Rectangle(0, 0, (int) InputBoxSize.Y, (int) FrameSize.X), Color.White);
+            SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameRightRectangle, new Rectangle(0, 0, (int) InputBoxSize.Y, (int) FrameSize.X), Color.White);
 
-            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextShadowVector, TextShadowColor, 0.0f,
-                Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
-            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextVector, TextColor, 0.0f, 
-                Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
 
             if (IsSelected && ShowInput)
             {
-                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextShadowVector, TextShadowColor, 0.0f,
-                    Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
-                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextVector, TextColor, 0.0f, 
-                    Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
             }
 
             SpriteBatch.End();

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MineLib.GraphicClient.GUIItems.InputBox;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.GUIItems
 {
@@ -17,13 +18,12 @@ namespace MineLib.GraphicClient.GUIItems
         List<GUIItem> guiItemsToDraw = new List<GUIItem>();
 
         // TODO: Maybe make one (global?) input manager
-        InputState input = new InputState();
+        InputManager input = new InputManager();
 
         IGraphicsDeviceService graphicsDeviceService;
 
         ContentManager content;
         SpriteBatch spriteBatch;
-        SpriteFont font;
         Rectangle titleSafeArea;
 
         bool traceEnabled;

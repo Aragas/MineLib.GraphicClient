@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.GUIItems.Buttons
+namespace MineLib.GraphicClient.GUIItems.Button
 {
     public enum ButtonMenuPosition
     {
@@ -28,15 +28,14 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
 
             Vector2 buttonPosition = GetPosition(pos);
 
-            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f),
-                (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
+            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f), (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
         }
 
-        private Vector2 GetPosition(ButtonMenuPosition pos)
+        Vector2 GetPosition(ButtonMenuPosition pos)
         {
             float leftTopX = (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
             float topX = ScreenRectangle.Center.X;
-            float rightTopX = ScreenRectangle.Width - (ScreenRectangle.Width - ButtonSize.X) * 0.25f; ;
+            float rightTopX = ScreenRectangle.Width - (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
 
             switch (pos)
             {
@@ -74,8 +73,7 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                     return new Vector2(topX,        ScreenRectangle.Center.Y * 1f);
                 case ButtonMenuPosition.RightBottom4:
                     return new Vector2(rightTopX,   ScreenRectangle.Center.Y * 1f);
-
-
+                    
                 case ButtonMenuPosition.LeftBottom3:
                     return new Vector2(leftTopX,    ScreenRectangle.Center.Y * 1.25f);
                 case ButtonMenuPosition.Bottom3:
@@ -118,8 +116,8 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPressedPosition, Color.White);
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
-
             }
+
             if (IsActive)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPosition, Color.White);

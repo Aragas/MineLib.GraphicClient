@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.GUIItems.Buttons
+namespace MineLib.GraphicClient.GUIItems.Button
 {
     public enum ButtonNavigationPosition
     {
@@ -21,8 +21,7 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
 
             Vector2 buttonPosition = GetPosition(pos);
 
-            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f),
-                (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
+            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f), (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
 
             ButtonRectangleFirstHalf = ButtonRectangle;
             ButtonRectangleFirstHalf.Width -= (int)(ButtonRectangleFirstHalf.Width * 0.5f);
@@ -32,14 +31,14 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
             ButtonRectangleSecondHalf.Width -= (int)(ButtonRectangleSecondHalf.Width * 0.5f);
         }
 
-        private Vector2 GetPosition(ButtonNavigationPosition pos)
+        Vector2 GetPosition(ButtonNavigationPosition pos)
         {
-            float top = (ScreenRectangle.Height - 128) + 128 * 0.25f - ButtonSize.Y * 0.5f;
-            float bottom = (ScreenRectangle.Height - 128) + 128 * 0.75f - ButtonSize.Y * 0.5f;
+            float top       = (ScreenRectangle.Height - 128) + 128 * 0.25f - ButtonSize.Y * 0.5f;
+            float bottom    = (ScreenRectangle.Height - 128) + 128 * 0.75f - ButtonSize.Y * 0.5f;
 
-            float leftTopX      = (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
-            float topX          = ScreenRectangle.Center.X;
-            float rightTopX     = ScreenRectangle.Width - (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
+            float leftTopX  = (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
+            float topX      = ScreenRectangle.Center.X;
+            float rightTopX = ScreenRectangle.Width - (ScreenRectangle.Width - ButtonSize.X) * 0.25f;
 
             switch (pos)
             {
@@ -49,19 +48,17 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                     return new Vector2(topX,        top);
                 case ButtonNavigationPosition.RightTop:
                     return new Vector2(rightTopX,   top);
-
-
+                    
                     case ButtonNavigationPosition.LeftBottom:
                     return new Vector2(leftTopX,    bottom);
                 case ButtonNavigationPosition.Bottom:
                     return new Vector2(topX,        bottom);
                 case ButtonNavigationPosition.RightBottom:
                     return new Vector2(rightTopX,   bottom);
-
+                    
                 default:
                     return new Vector2(0);
             }
-            
         }
 
         public override void Draw(GameTime gameTime)
@@ -82,8 +79,8 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleSecondHalf, ButtonPressedSecondHalfPosition, Color.White);
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
-
             }
+
             if (IsActive)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleFirstHalf, ButtonFirstHalfPosition, Color.White);

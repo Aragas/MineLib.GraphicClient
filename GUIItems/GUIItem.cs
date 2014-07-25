@@ -1,4 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.GUIItems
 {
@@ -14,6 +17,15 @@ namespace MineLib.GraphicClient.GUIItems
 
     public abstract class GUIItem
     {
+        protected GameClient GameClient { get; set; }
+
+        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
+
+        protected ContentManager Content { get { return GUIItemManager.Content; } }
+        protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
+        protected SpriteBatch SpriteBatch { get { return GUIItemManager.SpriteBatch; } }
+
+
         public string Name { get; set; }
         public GUIItemState GUIItemState { get; set; }
 
@@ -27,7 +39,7 @@ namespace MineLib.GraphicClient.GUIItems
         public virtual void LoadContent() {}
         public virtual void UnloadContent() {}
         public virtual void Update(GameTime gameTime) {}
-        public virtual void HandleInput(InputState input) {}
+        public virtual void HandleInput(InputManager input) {}
         public virtual void Draw(GameTime gameTime) {}
 
         public void ToActive() { GUIItemState = GUIItemState.Active; }

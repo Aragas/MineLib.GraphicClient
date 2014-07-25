@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -23,7 +24,7 @@ namespace MineLib.GraphicClient.Screens
         List<Screen> screensToUpdate = new List<Screen>();
         List<Screen> screensToDraw = new List<Screen>();
 
-        InputState input = new InputState();
+        InputManager input = new InputManager();
 
         IGraphicsDeviceService graphicsDeviceService;
 

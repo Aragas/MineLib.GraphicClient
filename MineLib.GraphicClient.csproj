@@ -53,36 +53,38 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GUIItems\Buttons\ButtonMenuHalf.cs" />
-    <Compile Include="GUIItems\Buttons\ButtonNavigation.cs" />
-    <Compile Include="GUIItems\Buttons\ButtonNavigationHalf.cs" />
+    <Compile Include="GUIItems\Button\ButtonMenuHalf.cs" />
+    <Compile Include="GUIItems\Button\ButtonNavigation.cs" />
+    <Compile Include="GUIItems\Button\ButtonNavigationHalf.cs" />
     <Compile Include="GUIItems\GUIItem.cs" />
     <Compile Include="GUIItems\GUIItemManagerComponent.cs" />
     <Compile Include="GUIItems\InputBox\GUIInputBox.cs" />
     <Compile Include="GUIItems\InputBox\InputBoxMenu.cs" />
+    <Compile Include="Screens\InServerList\ServerEntry\ServerEntryDrawer.cs" />
     <Compile Include="Localization.cs" />
     <Compile Include="Misc\AudioManagerComponent.cs" />
     <Compile Include="Misc\FPSCounterComponent.cs" />
     <Compile Include="GameClient.cs" />
-    <Compile Include="GUIItems\Buttons\GUIButton.cs" />
-    <Compile Include="MinecraftTexturesStorage.cs" />
+    <Compile Include="GUIItems\Button\GUIButton.cs" />
+    <Compile Include="Misc\MinecraftTexturesStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="InputState.cs" />
-    <Compile Include="Screens\Menu\LanguageScreen.cs" />
+    <Compile Include="Misc\InputManager.cs" />
+    <Compile Include="Screens\InMenu\LanguageScreen.cs" />
     <Compile Include="Screens\ScreenManagerComponent.cs" />
     <Compile Include="Screens\InGameScreen.cs" />
-    <Compile Include="Screens\Menu\AddServerScreen.cs" />
-    <Compile Include="GUIItems\Buttons\ButtonMenu.cs" />
-    <Compile Include="Screens\Menu\DirectConnectionScreen.cs" />
-    <Compile Include="Screens\Menu\EditServerScreen.cs" />
+    <Compile Include="Screens\InServerList\AddServerScreen.cs" />
+    <Compile Include="GUIItems\Button\ButtonMenu.cs" />
+    <Compile Include="Screens\InServerList\DirectConnectionScreen.cs" />
+    <Compile Include="Screens\InServerList\EditServerScreen.cs" />
     <Compile Include="Screens\InGame\GameOptionScreen.cs" />
     <Compile Include="Screens\InGame\GameScreen.cs" />
     <Compile Include="Screens\InGame\GUIScreen.cs" />
-    <Compile Include="Screens\Menu\OptionScreen.cs" />
+    <Compile Include="Screens\InMenu\OptionScreen.cs" />
     <Compile Include="Screens\Screen.cs" />
-    <Compile Include="Screens\Menu\MainMenuScreen.cs" />
-    <Compile Include="Screens\Menu\ServerListScreen.cs" />
+    <Compile Include="Screens\InMenu\MainMenuScreen.cs" />
+    <Compile Include="Screens\InServerList\ServerListScreen.cs" />
+    <Compile Include="Screens\InServerListScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
@@ -92,39 +94,20 @@
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>MineLib.ClientWrapper\Network\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\minecraft.jar">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\MainMenu.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Panorama.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\SimpleColor.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\SimpleTexture.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Button.Effect.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Crosshair.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\VolterGoldfish.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="ContentBuilder\MineLib.GraphicClient.ContentBuilder.csproj">
+      <Project>{ab3c1082-7b9b-4281-a646-040187bc9366}</Project>
+      <Name>MineLib.GraphicClient.ContentBuilder</Name>
+    </ProjectReference>
     <ProjectReference Include="MineLib.ClientWrapper\MineLib.ClientWrapper.csproj">
       <Project>{ce1d9fc2-2cbf-432f-9ba6-69d79cf870ea}</Project>
       <Name>MineLib.ClientWrapper</Name>
@@ -133,31 +116,6 @@
       <Project>{e7c8320e-49a4-4187-afe3-15c814201e1e}</Project>
       <Name>MineLib.Network</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\XboxControllerSpriteFont.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\Minecraftia.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\PF Arma Five.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\Visitor TT1 %28BRK%29.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Content\SimpleTexture.mgfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

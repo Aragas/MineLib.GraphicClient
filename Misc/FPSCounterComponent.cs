@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient
+namespace MineLib.GraphicClient.Misc
 {
     public class FPSCounterComponent : DrawableGameComponent
     {

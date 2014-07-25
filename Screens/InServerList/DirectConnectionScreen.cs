@@ -1,27 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIItems.Buttons;
+using MineLib.GraphicClient.GUIItems.Button;
 using MineLib.GraphicClient.GUIItems.InputBox;
-
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class DirectConnectionScreen : Screen
+    sealed class DirectConnectionScreen : InServerListScreen
     {
-        #region Resources
-
-        Texture2D _mainMenuTexture;
-        SoundEffect _effect;
-
-        #endregion
-
         ButtonMenu ConnectButton;
-        InputBoxMenu ServerAdressInputBox;
-
-        string ServerIP = "127.0.0.1";
-        short ServerPort = 25565;
+        InputBoxMenu ServerAddressInputBox;
 
         public DirectConnectionScreen(GameClient gameClient)
         {
@@ -31,14 +20,11 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
-            _effect = Content.Load<SoundEffect>("Button.Effect");
-
             ConnectButton = AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
             ConnectButton.ToNonPressable();
-            AddButtonMenu("Return", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
+            AddButtonMenu("Cancel", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
 
-            ServerAdressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Center);
+            ServerAddressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Center);
         }
 
         public override void UnloadContent()
@@ -48,32 +34,38 @@ namespace MineLib.GraphicClient.Screens
                 ScreenManager.Content.Unload();
         }
 
+
         void OnConnectButtonPressed()
         {
-            _effect.Play();
+            Server server = new Server
+            {
+                Name = "Minecraft Server",
+                Address = StringToAddress(ServerAddressInputBox.InputBoxText)
+            };
 
-            string ServerAddress = ServerAdressInputBox.InputBoxText;
+            ButtonEffect.Play();
 
-            //GameScreen gameScreen = new GameScreen(GameClient, GameClient.Login, GameClient.Password, GameClient.OnlineMode);
-            //bool status = gameScreen.Connect(ServerIP, ServerPort);
-            //AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
+            GameScreen gameScreen = new GameScreen(GameClient, GameClient.Player, server);
+            bool status = gameScreen.Connect();
+            AddScreenAndExit(status ? (Screen)gameScreen : new ServerListScreen(GameClient));
         }
 
         void OnReturnButtonPressed()
         {
-            _effect.Play();
+            ButtonEffect.Play();
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
+
         public override void Update(GameTime gameTime)
         {
-            if (ServerAdressInputBox.InputBoxText.Length <= 0)
+            if (ServerAddressInputBox.InputBoxText.Length <= 0)
                 ConnectButton.ToNonPressable();
             else
                 ConnectButton.ToActive();
         }
 
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new ServerListScreen(GameClient));
@@ -87,9 +79,7 @@ namespace MineLib.GraphicClient.Screens
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
             // Background
-            //SpriteBatch.Draw(_mainMenuTexture, ScreenRectangle, Color.White);
-            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
-                Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
+            SpriteBatch.Draw(MainBackgroundTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f, Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
             
             SpriteBatch.End();
         }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.ClientWrapper;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
@@ -12,12 +13,17 @@ namespace MineLib.GraphicClient.Screens
 
         public bool WindowInventory { get; set; }
 
+        public bool ChatInputBoxEnabled { get; set; }
+
+        public string ChatInputBoxText { get; set; }
+
+        Rectangle ChatWindow { get; set; }
+        Rectangle InputWindow { get; set; }
+
         #region Resources
 
-        Texture2D _crosshairTexture;
-
         Texture2D _backgroundTexture;
-        SpriteFont _font;
+        SpriteFont _font { get { return Content.Load<SpriteFont>("Minecraftia"); }}
 
         Texture2D _widgetTexture;
         Texture2D _iconsTexture;
@@ -26,6 +32,8 @@ namespace MineLib.GraphicClient.Screens
         #endregion
 
         #region Sprite rectangles
+
+        Rectangle _crosshairRectangle = new Rectangle(0, 0, 16, 16);
 
         Rectangle _itemListRectangle = new Rectangle(0, 0, 182, 22);
         Rectangle _selectedItemListRectangle = new Rectangle(0, 22, 24, 24);
@@ -47,15 +55,12 @@ namespace MineLib.GraphicClient.Screens
 
         #region Values
 
-        int mouseState = 1;
+        int _mouseState = 1;
 
-        float scale = 3f;
+        float _scale = 3f;
 
         #endregion
 
-        float exp = 0.4f;
-        float health = 10f;
-        short food = 10;
 
         public GUIScreen(GameClient gameClient, Minecraft minecraft, PlayerInteractionValues playerInteractionValues)
         {
@@ -69,26 +74,58 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            _crosshairTexture = Content.Load<Texture2D>("Crosshair");
-
             _backgroundTexture = new Texture2D(GraphicsDevice, 1, 1);
             _backgroundTexture.SetData(new[] { new Color(0, 0, 0, 150) });
-
-            _font = Content.Load<SpriteFont>("VolterGoldfish");
 
             GUITextures guiTextures = MinecraftTexturesStorage.GUITextures;
 
             _widgetTexture = guiTextures.Widgets;
             _iconsTexture = guiTextures.Icons;
             _inventoryTexture = guiTextures.Inventory;
+
+            ChatInputBoxText = "";
+
+            ChatWindow = new Rectangle(10, (ScreenRectangle.Height - 400 - 45), 600, 400);
+            InputWindow = new Rectangle(10, (ScreenRectangle.Height - 35), (ScreenRectangle.Width - 20), 25);
         }
 
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
+
+            #region Message handling
+
             // Do not handle input if chat is used
-            if(PlayerInteractionValues.ChatOn)
+            if (PlayerInteractionValues.ChatOn)
+            {
+                foreach (Keys key in input.CurrentKeyboardState.GetPressedKeys())
+                {
+                    if (input.LastKeyboardState.IsKeyUp(key))
+                    {
+                        switch (key)
+                        {
+                            case Keys.Back:
+                                if (ChatInputBoxText.Length == 0) continue;
+                                ChatInputBoxText = ChatInputBoxText.Remove(ChatInputBoxText.Length - 1, 1);
+                                break;
+
+                            case Keys.Enter:
+                                Minecraft.SendChatMessage(ChatInputBoxText);
+                                ChatInputBoxText = "";
+                                PlayerInteractionValues.ChatOn = false;
+                                break;
+
+                            default:
+                                ChatInputBoxText += ConvertKeyboardInput(input.CurrentKeyboardState, key);
+                                break;
+                        }
+                    }
+                }
+
                 return;
-            
+            }
+
+            #endregion
+
             if (input.IsOncePressed(Keys.Escape) && !WindowOpened)
                 ScreenManager.AddScreen(new GameOptionScreen(GameClient));
             else if (input.IsOncePressed(Keys.Escape) && WindowOpened)
@@ -105,90 +142,238 @@ namespace MineLib.GraphicClient.Screens
                     WindowOpened = false;
             }
 
+            if (input.IsOncePressed(Keys.Enter))
+                PlayerInteractionValues.ChatOn = !PlayerInteractionValues.ChatOn;
+            
+
             #region ItemList MouseScrollWheel
             if (input.MouseScrollDown)
             {
-                if (mouseState < 9)
-                    mouseState++;
+                if (_mouseState < 9)
+                    _mouseState++;
                 else
-                    mouseState = 1;
+                    _mouseState = 1;
             }
             else if (input.MouseScrollUp)
             {
-                if (mouseState > 1)
-                    mouseState--;
+                if (_mouseState > 1)
+                    _mouseState--;
                 else
-                    mouseState = 9;
+                    _mouseState = 9;
             }
             #endregion
 
             #region ItemList Keyboard
             if (input.IsOncePressed(Keys.D1))
-                mouseState = 1;
+                _mouseState = 1;
 
             if (input.IsOncePressed(Keys.D2))
-                mouseState = 2;
+                _mouseState = 2;
 
             if (input.IsOncePressed(Keys.D3))
-                mouseState = 3;
+                _mouseState = 3;
 
             if (input.IsOncePressed(Keys.D4))
-                mouseState = 4;
+                _mouseState = 4;
 
             if (input.IsOncePressed(Keys.D5))
-                mouseState = 5;
+                _mouseState = 5;
 
             if (input.IsOncePressed(Keys.D6))
-                mouseState = 6;
+                _mouseState = 6;
 
             if (input.IsOncePressed(Keys.D7))
-                mouseState = 7;
+                _mouseState = 7;
 
             if (input.IsOncePressed(Keys.D8))
-                mouseState = 8;
+                _mouseState = 8;
 
             if (input.IsOncePressed(Keys.D9))
-                mouseState = 9;
+                _mouseState = 9;
             #endregion
 
             #region ItemList GamepadShoulders
 
             if (input.GUIMenuRight)
             {
-                if (mouseState < 9)
-                    mouseState++;
+                if (_mouseState < 9)
+                    _mouseState++;
                 else
-                    mouseState = 1;
+                    _mouseState = 1;
             }
 
             if (input.GUIMenuLeft)
             {
-                if (mouseState > 1)
-                    mouseState--;
+                if (_mouseState > 1)
+                    _mouseState--;
                 else
-                    mouseState = 9;
+                    _mouseState = 9;
             }
 
             #endregion
 
         }
 
-        private void CloseWindow()
+        public override void Draw(GameTime gameTime)
+        {
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
+
+            float startXPos = ScreenRectangle.Center.X - _itemListRectangle.Center.X * _scale;
+            float endXPos = ScreenRectangle.Center.X + _itemListRectangle.Center.X * _scale;
+
+            #region Crosshair
+
+            Vector2 crosshairVector = new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y);
+            Vector2 crosshairOrigin = new Vector2(_crosshairRectangle.Width, _crosshairRectangle.Height) / 2;
+
+            SpriteBatch.Draw(_iconsTexture, crosshairVector, _crosshairRectangle, Color.White, 0f, crosshairOrigin, 1f, SpriteEffects.None, 0f);
+
+            #endregion
+
+            #region ItemList
+
+            // ItemList
+            Vector2 itemListVector = new Vector2(startXPos, ScreenRectangle.Height - _itemListRectangle.Height * _scale);
+
+            SpriteBatch.Draw(_widgetTexture, itemListVector, _itemListRectangle, Color.White, 0f, new Vector2(0), _scale, SpriteEffects.None, 0f);
+
+            // SelectedItem
+            SpriteBatch.Draw(_widgetTexture, GetItemPosition(_mouseState, _scale), _selectedItemListRectangle, Color.White, 0f, new Vector2(0), _scale, SpriteEffects.None, 0f);
+
+            #endregion
+
+            #region Exp
+
+            // EmptyExp
+            Vector2 emptyExpVector = new Vector2(startXPos, ScreenRectangle.Height - _expEmptyRectangle.Height * _scale - _itemListRectangle.Height * _scale - 2 * _scale);
+
+            SpriteBatch.Draw(_iconsTexture, emptyExpVector, _expEmptyRectangle, Color.White, 0f, new Vector2(0), _scale, SpriteEffects.None, 0f);
+
+            // Exp
+            _expRectangle.Width = (int)(_expRectangle.Width * Minecraft.Player.Experience.ExperienceBar);
+            Vector2 expVector = new Vector2(startXPos, ScreenRectangle.Height - _expRectangle.Height * _scale - _itemListRectangle.Height * _scale - 2 * _scale);
+
+            SpriteBatch.Draw(_iconsTexture, expVector, _expRectangle, Color.White,  0f, new Vector2(0), _scale, SpriteEffects.None, 0f);
+
+            #endregion
+
+            #region Heart
+
+            // Draw base
+            float heartScale = _scale * 0.80f;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 baseHeartVector = new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale);
+
+                SpriteBatch.Draw(_iconsTexture, baseHeartVector, _heartEmptyRectangle, Color.White, 0f, new Vector2(0), heartScale, SpriteEffects.None, 0f);
+            }
+
+            // Draw Heart
+            int fullHearts = (int)Math.Floor(Minecraft.Player.Health.Health * 0.5f);
+            int fullHearts1 = (int)Math.Ceiling(Minecraft.Player.Health.Health * 0.5f);
+
+            for (int i = 0; i < fullHearts; i++)
+            {
+                Vector2 heartVector = new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale);
+
+                SpriteBatch.Draw(_iconsTexture, heartVector, _heartRectangle, Color.White, 0f, new Vector2(0), heartScale, SpriteEffects.None, 0f);
+            }
+
+            // Draw HalfHeart
+            if (fullHearts1 > fullHearts)
+            {
+                Vector2 halfHeartVector = new Vector2(startXPos + _heartEmptyRectangle.Width * fullHearts * heartScale, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale);
+
+                SpriteBatch.Draw(_iconsTexture, halfHeartVector, _heartHalfRectangle, Color.White,  0f, new Vector2(0), heartScale, SpriteEffects.None, 0f);
+            }
+
+            #endregion
+
+            #region Food
+
+            // Draw base
+            float foodScale = _scale * 0.80f;
+            float foodXPos = endXPos - _foodEmptyRectangle.Width * 10 * foodScale;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 baseFoodVector = new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale);
+                
+                SpriteBatch.Draw(_iconsTexture, baseFoodVector, _foodEmptyRectangle, Color.White, 0f, new Vector2(0), foodScale, SpriteEffects.None, 0f);
+            }
+
+            // Draw Food
+            // TODO: short food = Minecraft.Player.Health.Food;
+            int fullFood = (int)Math.Floor(Minecraft.Player.Health.Food * 0.5f);
+            int fullFood1 = (int)Math.Ceiling(Minecraft.Player.Health.Food * 0.5f);
+
+            for (int i = 0; i < fullFood; i++)
+            {
+                Vector2 foodVector = new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale);
+
+                SpriteBatch.Draw(_iconsTexture, foodVector, _foodRectangle, Color.White, 0f, new Vector2(0), foodScale, SpriteEffects.None, 0f);
+            }
+
+            // Draw HalfFood
+            if (fullFood1 > fullFood)
+            {
+                Vector2 halfFoodVector = new Vector2(foodXPos + _foodEmptyRectangle.Width * fullHearts * foodScale, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * _scale - 2 * _scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale);
+
+                SpriteBatch.Draw(_iconsTexture, halfFoodVector, _foodHalfRectangle, Color.White, 0f, new Vector2(0), foodScale, SpriteEffects.None, 0f);
+            }
+
+            #endregion
+
+            #region Inventory
+
+            if (WindowInventory)
+            {
+                Vector2 inventoryPosition = new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y);
+                Vector2 inventoryOrigin = new Vector2(_inventoryRectangle.Width, _inventoryRectangle.Height)/2;
+
+                SpriteBatch.Draw(_inventoryTexture, inventoryPosition, _inventoryRectangle, Color.White, 0f, inventoryOrigin, _scale - 1f, SpriteEffects.None, 0f);
+            }
+
+            #endregion
+
+            #region Chat
+
+            if (PlayerInteractionValues.ChatOn)
+            {
+                // Chat Box
+                SpriteBatch.Draw(_backgroundTexture, ChatWindow, Color.White);
+                for (int i = 0; i < Minecraft.ChatHistory.Count; i++)
+                {
+                    if (i >= 16)
+                        break;
+
+                    DrawString(SpriteBatch, _font, Color.Black, Minecraft.ChatHistory[i], new Rectangle(15 + 1, ScreenRectangle.Height - 45 - 25 - 25 * i, ChatWindow.Width + 1, InputWindow.Height));
+                    DrawString(SpriteBatch, _font, Color.White, Minecraft.ChatHistory[i], new Rectangle(15, ScreenRectangle.Height - 45 - 25 - 25 * i, ChatWindow.Width, InputWindow.Height));
+                }
+
+                // Chat Input Box
+                SpriteBatch.Draw(_backgroundTexture, InputWindow, Color.White);
+                DrawString(SpriteBatch, _font, Color.Black, ChatInputBoxText, new Rectangle(15 + 1, ScreenRectangle.Height - 35 + 1, InputWindow.Width, InputWindow.Height));
+                DrawString(SpriteBatch, _font, Color.White, ChatInputBoxText, new Rectangle(15, ScreenRectangle.Height - 35, InputWindow.Width, InputWindow.Height));
+            }
+
+            #endregion
+
+            SpriteBatch.End();
+        }
+        
+
+        void CloseWindow()
         {
             if (WindowInventory)
             {
                 WindowInventory = false;
                 WindowOpened = false;
             }
-
         }
 
-        public override void Update(GameTime gameTime)
-        {
-
-        }
-
-        Vector2 GetItemPosition(int position, float scale )
+        Vector2 GetItemPosition(int position, float scale)
         {
             switch (position)
             {
@@ -223,248 +408,85 @@ namespace MineLib.GraphicClient.Screens
             return Vector2.Zero;
         }
 
-        public override void Draw(GameTime gameTime)
+        // Some function from internet, heavy modified.
+        static char? ConvertKeyboardInput(KeyboardState keyboard, Keys key)
         {
-            //SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp,
-            //    DepthStencilState.None, RasterizerState.CullNone);
-            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
+            bool shift = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
 
-            #region Crosshair
-            SpriteBatch.Draw(_crosshairTexture,
-                    new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y), // Center of screen
-                    null, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(_crosshairTexture.Width, _crosshairTexture.Height) / 2, // Image center
-                    1f, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            #endregion
-
-            float startXPos = ScreenRectangle.Center.X - _itemListRectangle.Center.X * scale;
-            float endXPos = ScreenRectangle.Center.X + _itemListRectangle.Center.X * scale;
-
-            #region ItemList
-            // ItemList
-            SpriteBatch.Draw(_widgetTexture,
-                    new Vector2(startXPos, ScreenRectangle.Height - _itemListRectangle.Height * scale), // Center of screen
-                    _itemListRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    scale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-
-            // SelectedItem
-            SpriteBatch.Draw(_widgetTexture,
-                    GetItemPosition(mouseState, scale),
-                    _selectedItemListRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    scale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            #endregion
-
-            #region Exp
-            // EmptyExp
-            SpriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos, ScreenRectangle.Height - _expEmptyRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
-                    _expEmptyRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    scale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-
-            // Exp
-            // TODO: float exp = Minecraft.Player.Experience.ExperienceBar;
-            _expRectangle.Width = (int)(_expRectangle.Width * exp);
-            SpriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos, ScreenRectangle.Height - _expRectangle.Height * scale - _itemListRectangle.Height * scale - 2 * scale), // Center of screen
-                    _expRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    scale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            #endregion
-
-            #region Heart
-            // Draw base
-            float heartScale = scale * 0.80f;
-            for (int i = 0; i < 10; i++)
+            switch (key)
             {
-                SpriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
-                    _heartEmptyRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    heartScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
+                //Alphabet keys
+                case Keys.A: return shift ? 'A' : 'a';
+                case Keys.B: return shift ? 'B' : 'b';
+                case Keys.C: return shift ? 'C' : 'c';
+                case Keys.D: return shift ? 'D' : 'd';
+                case Keys.E: return shift ? 'E' : 'e';
+                case Keys.F: return shift ? 'F' : 'f';
+                case Keys.G: return shift ? 'G' : 'g';
+                case Keys.H: return shift ? 'H' : 'h';
+                case Keys.I: return shift ? 'I' : 'i';
+                case Keys.J: return shift ? 'J' : 'j';
+                case Keys.K: return shift ? 'K' : 'k';
+                case Keys.L: return shift ? 'L' : 'l';
+                case Keys.M: return shift ? 'M' : 'm';
+                case Keys.N: return shift ? 'N' : 'n';
+                case Keys.O: return shift ? 'O' : 'o';
+                case Keys.P: return shift ? 'P' : 'p';
+                case Keys.Q: return shift ? 'Q' : 'q';
+                case Keys.R: return shift ? 'R' : 'r';
+                case Keys.S: return shift ? 'S' : 's';
+                case Keys.T: return shift ? 'T' : 't';
+                case Keys.U: return shift ? 'U' : 'u';
+                case Keys.V: return shift ? 'V' : 'v';
+                case Keys.W: return shift ? 'W' : 'w';
+                case Keys.X: return shift ? 'X' : 'x';
+                case Keys.Y: return shift ? 'Y' : 'y';
+                case Keys.Z: return shift ? 'Z' : 'z';
+
+                //Decimal keys
+                case Keys.D0: return shift ? ')' : '0';
+                case Keys.D1: return shift ? '!' : '1';
+                case Keys.D2: return shift ? '@' : '2';
+                case Keys.D3: return shift ? '#' : '3';
+                case Keys.D4: return shift ? '$' : '4';
+                case Keys.D5: return shift ? '%' : '5';
+                case Keys.D6: return shift ? '^' : '6';
+                case Keys.D7: return shift ? '&' : '7';
+                case Keys.D8: return shift ? '*' : '8';
+                case Keys.D9: return shift ? '(' : '9';
+
+                //Decimal numpad keys
+                case Keys.NumPad0: return '0';
+                case Keys.NumPad1: return '1';
+                case Keys.NumPad2: return '2';
+                case Keys.NumPad3: return '3';
+                case Keys.NumPad4: return '4';
+                case Keys.NumPad5: return '5';
+                case Keys.NumPad6: return '6';
+                case Keys.NumPad7: return '7';
+                case Keys.NumPad8: return '8';
+                case Keys.NumPad9: return '9';
+
+                //Special keys
+                case Keys.OemTilde: return shift ? '~' : '`';
+                case Keys.OemSemicolon: return shift ? ':' : ';';
+                case Keys.OemQuotes: return shift ? '"' : '\'';
+                case Keys.OemQuestion: return shift ? '?' : '/';
+                case Keys.OemPlus: return shift ? '+' : '=';
+                case Keys.OemPipe: return shift ? '|' : '\\';
+                case Keys.OemPeriod: return shift ? '>' : '.';
+                case Keys.OemOpenBrackets: return shift ? '{' : '[';
+                case Keys.OemCloseBrackets: return shift ? '}' : ']';
+                case Keys.OemMinus: return shift ? '_' : '-';
+                case Keys.OemComma: return shift ? '<' : ',';
+                case Keys.Space: return ' ';
+
             }
 
-            // Draw Heart
-            // TODO: float health = Minecraft.Player.Health.Health;
-            int fullHearts = (int)Math.Floor(health*0.5f);
-            int fullHearts1 = (int)Math.Ceiling(health * 0.5f);
-
-            for (int i = 0; i < fullHearts; i++)
-            {
-                SpriteBatch.Draw(_iconsTexture,
-                new Vector2(startXPos + _heartEmptyRectangle.Width * heartScale * i, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
-                    _heartRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    heartScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-
-            // Draw HalfHeart
-            if (fullHearts1 > fullHearts)
-            {
-                SpriteBatch.Draw(_iconsTexture,
-                    new Vector2(startXPos + _heartEmptyRectangle.Width * fullHearts * heartScale, ScreenRectangle.Height - _heartEmptyRectangle.Height * heartScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * heartScale - 2 * heartScale), // Center of screen
-                    _heartHalfRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    heartScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-            #endregion
-
-            #region Food
-            // Draw base
-            float foodScale = scale * 0.80f;
-            float foodXPos = endXPos - _foodEmptyRectangle.Width * 10 * foodScale;
-            for (int i = 0; i < 10; i++)
-            {
-                SpriteBatch.Draw(_iconsTexture,
-                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
-                    _foodEmptyRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    foodScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-
-            // Draw Food
-            // TODO: short food = Minecraft.Player.Health.Food;
-            int fullFood = (int)Math.Floor(food * 0.5f);
-            int fullFood1 = (int)Math.Ceiling(food * 0.5f);
-
-            for (int i = 0; i < fullFood; i++)
-            {
-                SpriteBatch.Draw(_iconsTexture,
-                new Vector2(foodXPos + _foodEmptyRectangle.Width * foodScale * i, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
-                    _foodRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    foodScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-
-            // Draw HalfFood
-            if (fullFood1 > fullFood)
-            {
-                SpriteBatch.Draw(_iconsTexture,
-                    new Vector2(foodXPos + _foodEmptyRectangle.Width * fullHearts * foodScale, ScreenRectangle.Height - _foodEmptyRectangle.Height * foodScale - _itemListRectangle.Height * scale - 2 * scale - _expEmptyRectangle.Height * foodScale - 2 * foodScale), // Center of screen
-                    _foodHalfRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(0), // Image center
-                    foodScale, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-            #endregion
-
-            #region Inventory
-
-            if (WindowInventory)
-            {
-                SpriteBatch.Draw(_inventoryTexture,
-                    new Vector2(ScreenRectangle.Center.X, ScreenRectangle.Center.Y), // Center of screen
-                    _inventoryRectangle, // Source rectangle
-                    Color.White, // Color
-                    0f, // Rotation
-                    new Vector2(_inventoryRectangle.Width, _inventoryRectangle.Height) / 2, // Image center
-                    scale - 1f, // Scale
-                    SpriteEffects.None,
-                    0f // Depth
-                    );
-            }
-
-            #endregion
-
-            #region Chat
-
-            //Rectangle ChatWindow    = new Rectangle(10,   (int)(ScreenRectangle.Height * 0.25 - 45),  (int)(ScreenRectangle.Width * 0.75),    (int)(ScreenRectangle.Height * 0.75));
-            //Rectangle InputWindow   = new Rectangle(10,   (int)(ScreenRectangle.Height - 35)       ,  (int)(ScreenRectangle.Width - 20)  ,    (int)(25)                           );
-
-            Rectangle ChatWindow    = new Rectangle(10,   (int)(ScreenRectangle.Height - 400 - 45),   (int)(600)                       ,    (int)(400));
-            Rectangle InputWindow   = new Rectangle(10,   (int)(ScreenRectangle.Height - 35)      ,   (int)(ScreenRectangle.Width - 20),    (int)(25) );
-
-            string InputBox = "Aragas was here.";
-            string[] ChatBox = new string[16];
-            ChatBox[0] = "Test1";
-            ChatBox[1] = "Test2";
-            ChatBox[2] = "Test3";
-
-            // Visitor TT1 (BRK)
-            // PF Arma Five
-            // Minecraftia
-            // VolterGoldfish
-            if (!PlayerInteractionValues.ChatOn)
-            {
-                // Chat Box
-                SpriteBatch.Draw(_backgroundTexture, ChatWindow, Color.White);
-                for (int i = 0; i < 16; i++)
-                {
-                    if (ChatBox[i] == null)
-                        break;
-
-                    DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.Black, ChatBox[i], new Rectangle(15 + 1, ScreenRectangle.Height - 400 - 45 + 1 + 25 * i, ChatWindow.Width, InputWindow.Height));
-                    DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, ChatBox[i], new Rectangle(15, ScreenRectangle.Height - 400 - 45 + 25 * i, ChatWindow.Width, InputWindow.Height));
-                }
-
-                // Input Box
-                SpriteBatch.Draw(_backgroundTexture, InputWindow, Color.White);
-                DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.Black, InputBox, new Rectangle(15 + 1, ScreenRectangle.Height - 35 + 1, InputWindow.Width, InputWindow.Height));
-                DrawString(SpriteBatch, Content.Load<SpriteFont>("Minecraftia"), Color.White, InputBox, new Rectangle(15    , ScreenRectangle.Height - 35    , InputWindow.Width, InputWindow.Height));
-            }
-
-            #endregion
-
-            SpriteBatch.End();
+            return null;
         }
 
-        protected static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)
+        static void DrawString(SpriteBatch spriteBatch, SpriteFont font, Color color, string strToDraw, Rectangle boundaries)
         {
             Vector2 size = font.MeasureString(strToDraw);
 
@@ -485,6 +507,5 @@ namespace MineLib.GraphicClient.Screens
             // Draw the string to the sprite batch!
             spriteBatch.DrawString(font, strToDraw, position, color, rotation, spriteOrigin, scale, spriteEffects, spriteLayer);
         }
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.GUIItems.InputBox
 {
@@ -9,8 +9,6 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
     {
         public delegate void InputBoxEventHandler(string text);
         public event InputBoxEventHandler OnEnterPressed;
-
-        protected GameClient GameClient { get; set; }
 
         protected InputBoxMenuPosition Position { get; set; }
 
@@ -38,16 +36,11 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
         protected const int CycleNumb = 40;
         protected int CycleCount = CycleNumb;
 
+        protected void UnFocusOtherInputTextBoxes() { CycleCount = CycleNumb; GUIItemManager.UnFocusOtherInputTextBoxes(this); }
 
-        protected Rectangle ScreenRectangle { get { return GameClient.Window.ClientBounds; } }
-        protected ContentManager Content { get { return GUIItemManager.Content; } }
-        protected GUIItemManagerComponent GUIItemManager { get { return GameClient.GUIItemManager; } }
-        protected SpriteBatch SpriteBatch { get { return GUIItemManager.SpriteBatch; } }
-
-        public void UnFocusOtherInputTextBoxes() { CycleCount = CycleNumb; GUIItemManager.UnFocusOtherInputTextBoxes(this); }
-
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
+
             #region Mouse handling
 
             MouseState mouse = input.CurrentMouseState;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MineLib.GraphicClient.GUIItems.Buttons
+namespace MineLib.GraphicClient.GUIItems.Button
 {
     public enum ButtonMenuHalfPosition
     {
@@ -29,8 +29,7 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
 
             Vector2 buttonPosition = GetPosition(pos);
 
-            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f),
-                (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
+            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f), (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
 
             ButtonRectangleFirstHalf = ButtonRectangle;
             ButtonRectangleFirstHalf.Width -= (int)(ButtonRectangleFirstHalf.Width * 0.5f);
@@ -41,7 +40,7 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
 
         }
 
-        private Vector2 GetPosition(ButtonMenuHalfPosition pos)
+        Vector2 GetPosition(ButtonMenuHalfPosition pos)
         {
             float leftTopX  = ScreenRectangle.Center.X - 5 - ButtonSize.X * 0.5f;
             float rightTopX = ScreenRectangle.Center.X + 5 + ButtonSize.X * 0.5f;
@@ -73,8 +72,7 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                 case ButtonMenuHalfPosition.RightBottom4:
                     return new Vector2(rightTopX,  ScreenRectangle.Center.Y * 1f);
 
-
-                case ButtonMenuHalfPosition.LeftBottom3:
+                    case ButtonMenuHalfPosition.LeftBottom3:
                     return new Vector2(leftTopX,   ScreenRectangle.Center.Y * 1.25f);
                 case ButtonMenuHalfPosition.RightBottom3:
                     return new Vector2(rightTopX,  ScreenRectangle.Center.Y * 1.25f);
@@ -112,8 +110,8 @@ namespace MineLib.GraphicClient.GUIItems.Buttons
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleSecondHalf, ButtonPressedSecondHalfPosition, Color.White); 
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
                 DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
-
             }
+
             if (IsActive)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleFirstHalf, ButtonFirstHalfPosition, Color.White);

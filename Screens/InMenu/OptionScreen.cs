@@ -2,32 +2,34 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
-    sealed class LanguageScreen : Screen
+    sealed class OptionScreen : Screen
     {
+
         #region Resources
 
-        Texture2D _mainMenuTexture;
-        SoundEffect _effect;
+        Texture2D _mainBackgroundTexture;
+
+        SoundEffect _buttonEffect;
 
         #endregion
 
-        public LanguageScreen(GameClient gameClient)
+        public OptionScreen(GameClient gameClient)
         {
             GameClient = gameClient;
-            Name = "LanguageScreen";
+            Name = "OptionScreen";
         }
 
         public override void LoadContent()
         {
-            _mainMenuTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
-            _effect = Content.Load<SoundEffect>("Button.Effect");
-
+            _mainBackgroundTexture = MinecraftTexturesStorage.GUITextures.OptionsBackground;
+            _buttonEffect = Content.Load<SoundEffect>("ButtonEffect");
         }
 
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 AddScreenAndExit(new MainMenuScreen(GameClient));
@@ -37,7 +39,7 @@ namespace MineLib.GraphicClient.Screens
         {
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 
-            SpriteBatch.Draw(_mainMenuTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
+            SpriteBatch.Draw(_mainBackgroundTexture, Vector2.Zero, ScreenRectangle, SecondaryBackgroundColor, 0.0f,
                 Vector2.Zero, 4.0f, SpriteEffects.None, 0.5f);
 
             SpriteBatch.End();

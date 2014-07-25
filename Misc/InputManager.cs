@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace MineLib.GraphicClient
+namespace MineLib.GraphicClient.Misc
 {
     /// <summary>
     /// Helper for reading input from keyboard, gamepad and mouse. This public class tracks
@@ -12,7 +12,7 @@ namespace MineLib.GraphicClient
     /// <remarks>
     /// This public class is similar to one in the GameStateManagement sample.
     /// </remarks>
-    public class InputState
+    public class InputManager
     {
         #region Fields
 
@@ -41,6 +41,28 @@ namespace MineLib.GraphicClient
             get
             {
                 return CurrentMouseState.ScrollWheelValue < LastMouseState.ScrollWheelValue;
+            }
+        }
+
+        public bool MenuUp
+        {
+            get
+            {
+                return (CurrentGamePadState.DPad.Up == ButtonState.Pressed &&
+                       LastGamePadState.DPad.Up == ButtonState.Released) ||
+                       (CurrentKeyboardState.IsKeyUp(Keys.Up) &&
+                       LastKeyboardState.IsKeyDown(Keys.Up));
+            }
+        }
+
+        public bool MenuDown
+        {
+            get
+            {
+                return (CurrentGamePadState.DPad.Down == ButtonState.Pressed &&
+                       LastGamePadState.DPad.Down == ButtonState.Released) ||
+                       (CurrentKeyboardState.IsKeyUp(Keys.Down) &&
+                       LastKeyboardState.IsKeyDown(Keys.Down));
             }
         }
 

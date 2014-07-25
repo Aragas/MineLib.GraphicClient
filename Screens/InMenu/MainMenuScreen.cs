@@ -2,20 +2,21 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MineLib.GraphicClient.GUIItems.Buttons;
-
+using MineLib.GraphicClient.GUIItems.Button;
+using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens
 {
     public sealed class MainMenuScreen : Screen
     {
+
         #region Resources
 
         private Texture2D _mainMenuTexture;
 
-        private Texture2D _xboxController;
+        //private Texture2D _xboxController;
 
-        private SoundEffect _effect;
+        private SoundEffect _buttonEffect;
 
         #endregion
         
@@ -31,55 +32,47 @@ namespace MineLib.GraphicClient.Screens
             _mainMenuTexture = Content.Load<Texture2D>("MainMenu");
             //_mainMenuTexture = new Texture2D(GameClient.GraphicsDevice, 1, 1);
             //_mainMenuTexture.SetData(new[] { new Color(255, 255, 255, 170) });
-            _effect = Content.Load<SoundEffect>("Button.Effect");
+            _buttonEffect = Content.Load<SoundEffect>("ButtonEffect");
 
-            _xboxController = Content.Load<Texture2D>("XboxControllerSpriteFont");
+            //_xboxController = Content.Load<Texture2D>("XboxControllerSpriteFont");
 
-            //AddButtonMenu("Search Server", ButtonMenuPosition.Top4, OnServerListButtonPressed);
-            ButtonMenu button = new ButtonMenu(GameClient, "Search Server", ButtonMenuPosition.Top4);
-            button.OnButtonPressed += OnServerListButtonPressed;
-            GUIItemManager.AddGUIItem(button);
-            //button.ToNonPressable();
-
+            AddButtonMenu("Search Server", ButtonMenuPosition.Top4, OnServerListButtonPressed);
             AddButtonMenu("Options", ButtonMenuPosition.Bottom4, OnOptionButtonPressed);
 
             AddButtonMenuHalf("Language", ButtonMenuHalfPosition.LeftBottom3, OnLanguageButtonPressed);
             AddButtonMenuHalf("Exit", ButtonMenuHalfPosition.RightBottom3, OnExitButtonPressed);
         }
 
+
         private void OnServerListButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
         private void OnOptionButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             AddScreenAndExit(new OptionScreen(GameClient));
         }
 
         private void OnLanguageButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             AddScreenAndExit(new LanguageScreen(GameClient));
         }
 
         private void OnExitButtonPressed()
         {
-            _effect.Play();
+            _buttonEffect.Play();
             Exit();
         }
 
-        public override void HandleInput(InputState input)
+
+        public override void HandleInput(InputManager input)
         {
             if (input.IsOncePressed(Keys.Escape))
                 Exit();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -95,6 +88,7 @@ namespace MineLib.GraphicClient.Screens
             //XboxButtonTest();
         }
 
+        /*
         // Just lame test for future gamepad support
         private void XboxButtonTest()
         {
@@ -153,7 +147,7 @@ namespace MineLib.GraphicClient.Screens
                 );
 
             SpriteBatch.End();
-
         }
+        */
     }
 }

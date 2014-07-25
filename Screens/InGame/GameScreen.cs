@@ -1,22 +1,24 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.ClientWrapper;
+using MineLib.GraphicClient.Misc;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client;
 using MineLib.Network.Packets.Client.Login;
+using MineLib.Network.Packets.Server.Login;
 
 public static class Vector3Converter
 {
-    public static Vector3 GetVector3Standart(MineLib.Network.Data.Vector3 vector3)
+    public static Vector3 ToXnaVector3(MineLib.Network.Data.Vector3 vector3)
     {
         return new Vector3((float)vector3.X, (float)vector3.Y, (float)vector3.Z);
     }
 
-    public static MineLib.Network.Data.Vector3 GetVector3Standart(Vector3 vector3)
+    public static MineLib.Network.Data.Vector3 ToMineLibVector3(Vector3 vector3)
     {
         return new MineLib.Network.Data.Vector3(vector3.X, vector3.Y, vector3.Z);
     }
@@ -24,6 +26,13 @@ public static class Vector3Converter
 
 namespace MineLib.GraphicClient.Screens
 {
+    public struct PlayerData
+    {
+        public string Username;
+        public string Password;
+        public bool OnlineMode;
+    }
+
     public enum PlayerDestination
     {
         None,
@@ -66,13 +75,18 @@ namespace MineLib.GraphicClient.Screens
 
         public void Start()
         {
-            while (!_minecraft.Crashed)
+            while (_minecraft != null && !_minecraft.Crashed)
             {
                 //if (_playerInteractionValues.PlayerMoving)
                 if (_playerInteractionValues.PressedKeys != null)
                 {
                     // Handle player moving every 50 mc (Moving speed is based on that)
-                    PlayerMove(_playerInteractionValues.PressedKeys);
+                    try
+                    {
+                        PlayerMove(_playerInteractionValues.PressedKeys);
+                    }
+                    catch (NullReferenceException) { break; }
+                        
                     Thread.Sleep(50);
                 }
             }
@@ -95,7 +109,7 @@ namespace MineLib.GraphicClient.Screens
             if (_playerInteractionValues.PlayerCannotMove)
                             return;
 
-            Vector3 previousPos = Vector3Converter.GetVector3Standart(_minecraft.Player.Position.Vector3);
+            Vector3 previousPos = Vector3Converter.ToXnaVector3(_minecraft.Player.Position.Vector3);
 
             double crouch = 0;
             double x = 0, y = 0, z = 0;
@@ -211,7 +225,7 @@ namespace MineLib.GraphicClient.Screens
             _minecraft.Player.Position.Vector3.X += x;
             _minecraft.Player.Position.Vector3.Z += z;
 
-            Vector3 currentPos = Vector3Converter.GetVector3Standart(_minecraft.Player.Position.Vector3);
+            Vector3 currentPos = Vector3Converter.ToXnaVector3(_minecraft.Player.Position.Vector3);
 
             _playerInteractionValues.PlayerMoving = previousPos != currentPos;
         }
@@ -258,45 +272,61 @@ namespace MineLib.GraphicClient.Screens
 
     sealed class GameScreen : InGameScreen
     {
-        public PlayerInteractionHandler PlayerInteractionHandler;
-        public Thread PlayerThread;
+        PlayerInteractionHandler PlayerInteractionHandler;
+        Thread PlayerThread;
+        PlayerData Player;
+        Server Server;
 
-        bool disposed;
-        private Texture2D _backgroundTexture;
-
-        public GameScreen(GameClient gameClient, string username, string password, bool onlineMode = false)
+        public GameScreen(GameClient gameClient, PlayerData player, Server server)
         {
             GameClient = gameClient;
+            Player = player;
+            Server = server;
 
-            Minecraft = new Minecraft(username, password, onlineMode);
+            Minecraft = new Minecraft(Player.Username, Player.Password, Player.OnlineMode);
 
             Name = "GameScreen";
         }
 
-        public bool Connect(string serverip, short port)
+        public bool Connect()
         {
-            Minecraft.Connect(serverip, port);
+            Minecraft.Connect(Server.Address.IP, Server.Address.Port);
 
+            Stopwatch time = Stopwatch.StartNew();
             while (!Minecraft.Connected)
             {
-                if (Minecraft.Crashed)
-                    throw new Exception("Connection error");
+                if (Minecraft.Crashed || time.ElapsedMilliseconds > 2000)
+                    return false;
+                    //throw new Exception("Connection error");
             }
 
             Minecraft.SendPacket(new HandshakePacket
             {
                 ProtocolVersion = 5,
-                ServerAddress = Minecraft.ServerIP,
+                ServerAddress = Minecraft.ServerHost,
                 ServerPort = Minecraft.ServerPort,
                 NextState = NextState.Login,
             });
 
-            Minecraft.SendPacket(new LoginStartPacket {Name = Minecraft.ClientName});
+            Minecraft.SendPacket(new LoginStartPacket { Name = Minecraft.ClientUsername });
 
+            time = Stopwatch.StartNew();
             while (Minecraft.State != ServerState.Play)
             {
-                if (Minecraft.Crashed)
-                    throw new Exception("Connection error");
+                if (Minecraft.Crashed || time.ElapsedMilliseconds > 2000)
+                {
+                    foreach (IPacket packet in Minecraft.Packets)
+                    {
+                        EncryptionRequestPacket? encryptionRequest = packet as EncryptionRequestPacket?;
+
+                        if(encryptionRequest != null && !Minecraft.VerifyNames)
+                            return false;
+                            //throw new Exception("Only online mode aailable");
+                    }
+
+                    return false;
+                    //throw new Exception("Connection error");
+                }
             }
 
             Minecraft.SendPacket(new ClientStatusPacket {Status = ClientStatus.Respawn});
@@ -316,13 +346,14 @@ namespace MineLib.GraphicClient.Screens
 
         public override void UnloadContent()
         {
+            Dispose();
             Content.Unload();
         }
 
         void PlayerMove(Vector3 position, double crouch = 1.62, bool onGround = true)
         {
             // -- Debugging
-            position = Vector3Converter.GetVector3Standart(Minecraft.Player.Position.Vector3);
+            position = Vector3Converter.ToXnaVector3(Minecraft.Player.Position.Vector3);
             // -- Debugging
 
             Minecraft.SendPacket(new PlayerPositionPacket
@@ -347,10 +378,9 @@ namespace MineLib.GraphicClient.Screens
         }
 
         // Handle Player-with-world interaction here. Player-with-game in GUIScreen
-        public override void HandleInput(InputState input)
+        public override void HandleInput(InputManager input)
         {
             PlayerInteractionValues.PressedKeys = input.CurrentKeyboardState.GetPressedKeys();
-
         }
 
         public override void Update(GameTime gameTime)
@@ -361,14 +391,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            // Draw previous screen unless we are connected.
-            if (Connected)
-            {
-                if (!disposed)
-                {
-                    disposed = true;
-                }
-            }
+            base.Draw(gameTime);
+
         }
 
         public override void Dispose()
@@ -376,6 +400,7 @@ namespace MineLib.GraphicClient.Screens
             base.Dispose();
 
             Minecraft.Dispose();
+            Minecraft = null;
             
             // Get rid of tons of trash!
             GC.Collect();
