@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.GUIItems.Button
@@ -25,6 +26,18 @@ namespace MineLib.GraphicClient.GUIItems.Button
         {
             GameClient = gameClient;
             ButtonText = text;
+
+            Vector2 buttonPosition = GetPosition(pos);
+
+            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f), (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
+        }
+
+        public ButtonMenu(GameClient gameClient, string text, ButtonMenuPosition pos, Action action)
+        {
+            GameClient = gameClient;
+            ButtonText = text;
+
+            OnButtonPressed += action;
 
             Vector2 buttonPosition = GetPosition(pos);
 
@@ -108,21 +121,21 @@ namespace MineLib.GraphicClient.GUIItems.Button
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonUnavailablePosition, Color.White);
                 // Drawing without shadows
-                DrawString(SpriteBatch, ButtonFont, ButtonUnavailableColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonUnavailableColor, ButtonText, ButtonRectangle);
             }
 
-            if (IsSelected)
+            if (IsSelected || IsSelectedMouseHover)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPressedPosition, Color.White);
-                DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
-                DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, MainFont, ButtonPressedColor, ButtonText, ButtonRectangle);
             }
 
             if (IsActive)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangle, ButtonPosition, Color.White);
-                DrawString(SpriteBatch, ButtonFont, ButtonShadowColor, ButtonText, ButtonRectangleShadow);
-                DrawString(SpriteBatch, ButtonFont, ButtonColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, MainFont, ButtonColor, ButtonText, ButtonRectangle);
             }
 
             SpriteBatch.End();

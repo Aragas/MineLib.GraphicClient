@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Button;
@@ -9,7 +10,6 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class DirectConnectionScreen : InServerListScreen
     {
-        ButtonMenu ConnectButton;
         InputBoxMenu ServerAddressInputBox;
 
         public DirectConnectionScreen(GameClient gameClient)
@@ -20,11 +20,10 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            ConnectButton = AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
-            ConnectButton.ToNonPressable();
+            GUIButton connectButton = AddButtonMenu("Connect", ButtonMenuPosition.Bottom2, OnConnectButtonPressed);
             AddButtonMenu("Cancel", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
 
-            ServerAddressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Center);
+            ServerAddressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Center, new List<GUIButton>{connectButton});
         }
 
         public override void UnloadContent()
@@ -56,18 +55,10 @@ namespace MineLib.GraphicClient.Screens
             AddScreenAndExit(new ServerListScreen(GameClient));
         }
 
-
-        public override void Update(GameTime gameTime)
-        {
-            if (ServerAddressInputBox.InputBoxText.Length <= 0)
-                ConnectButton.ToNonPressable();
-            else
-                ConnectButton.ToActive();
-        }
-
         public override void HandleInput(InputManager input)
         {
-            if (input.IsOncePressed(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape) ||
+                (input.IsOncePressed(Buttons.B) && input.CurrentGamePadState.IsButtonUp(Buttons.LeftTrigger) && input.CurrentGamePadState.ThumbSticks.Left == Vector2.Zero))
                 AddScreenAndExit(new ServerListScreen(GameClient));
 
             if (input.IsOncePressed(Keys.Enter))

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MineLib.GraphicClient.GUIItems.Button
@@ -26,6 +27,26 @@ namespace MineLib.GraphicClient.GUIItems.Button
         {
             GameClient = gameClient;
             ButtonText = text;
+
+            Vector2 buttonPosition = GetPosition(pos);
+
+            ButtonRectangle = new Rectangle((int)(buttonPosition.X - ButtonSize.X * 0.5f), (int)(buttonPosition.Y), (int)ButtonSize.X, (int)ButtonSize.Y);
+
+            ButtonRectangleFirstHalf = ButtonRectangle;
+            ButtonRectangleFirstHalf.Width -= (int)(ButtonRectangleFirstHalf.Width * 0.5f);
+
+            ButtonRectangleSecondHalf = ButtonRectangle;
+            ButtonRectangleSecondHalf.X += (int)(ButtonRectangleSecondHalf.Width * 0.5f);
+            ButtonRectangleSecondHalf.Width -= (int)(ButtonRectangleSecondHalf.Width * 0.5f);
+
+        }
+
+        public ButtonMenuHalf(GameClient gameClient, string text, ButtonMenuHalfPosition pos, Action action)
+        {
+            GameClient = gameClient;
+            ButtonText = text;
+
+            OnButtonPressed += action;
 
             Vector2 buttonPosition = GetPosition(pos);
 
@@ -101,23 +122,23 @@ namespace MineLib.GraphicClient.GUIItems.Button
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleFirstHalf, ButtonUnavailableFirstHalfPosition, Color.White);
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleSecondHalf, ButtonUnavailableSecondHalfPosition, Color.White);
                 // Drawing without shadows
-                DrawString(SpriteBatch, ButtonFont, ButtonUnavailableColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonUnavailableColor, ButtonText, ButtonRectangle);
             }
 
-            if (IsSelected)
+            if (IsSelected || IsSelectedMouseHover)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleFirstHalf, ButtonPressedFirstHalfPosition, Color.White);
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleSecondHalf, ButtonPressedSecondHalfPosition, Color.White); 
-                DrawString(SpriteBatch, ButtonFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
-                DrawString(SpriteBatch, ButtonFont, ButtonPressedColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonPressedShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, MainFont, ButtonPressedColor, ButtonText, ButtonRectangle);
             }
 
             if (IsActive)
             {
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleFirstHalf, ButtonFirstHalfPosition, Color.White);
                 SpriteBatch.Draw(WidgetsTexture, ButtonRectangleSecondHalf, ButtonSecondHalfPosition, Color.White); 
-                DrawString(SpriteBatch, ButtonFont, ButtonShadowColor, ButtonText, ButtonRectangleShadow);
-                DrawString(SpriteBatch, ButtonFont, ButtonColor, ButtonText, ButtonRectangle);
+                DrawString(SpriteBatch, MainFont, ButtonShadowColor, ButtonText, ButtonRectangleShadow);
+                DrawString(SpriteBatch, MainFont, ButtonColor, ButtonText, ButtonRectangle);
             }
 
             SpriteBatch.End();

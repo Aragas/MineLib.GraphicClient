@@ -56,9 +56,12 @@
     <Compile Include="GUIItems\Button\ButtonMenuHalf.cs" />
     <Compile Include="GUIItems\Button\ButtonNavigation.cs" />
     <Compile Include="GUIItems\Button\ButtonNavigationHalf.cs" />
+    <Compile Include="GUIItems\Button\GUIButtonMultiController.cs" />
+    <Compile Include="GUIItems\GamePad\GamePadKeyboard.cs" />
     <Compile Include="GUIItems\GUIItem.cs" />
     <Compile Include="GUIItems\GUIItemManagerComponent.cs" />
     <Compile Include="GUIItems\InputBox\GUIInputBox.cs" />
+    <Compile Include="GUIItems\InputBox\GUIInputBoxMultiController.cs" />
     <Compile Include="GUIItems\InputBox\InputBoxMenu.cs" />
     <Compile Include="Screens\InServerList\ServerEntry\ServerEntryDrawer.cs" />
     <Compile Include="Localization.cs" />

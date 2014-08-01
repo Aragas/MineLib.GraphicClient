@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Button;
@@ -9,7 +10,6 @@ namespace MineLib.GraphicClient.Screens
 {
     sealed class AddServerScreen : InServerListScreen
     {
-        ButtonMenu AddButton;
         InputBoxMenu ServerNameInputBox;
         InputBoxMenu ServerAddressInputBox;
 
@@ -21,11 +21,10 @@ namespace MineLib.GraphicClient.Screens
 
         public override void LoadContent()
         {
-            AddButton = AddButtonMenu("Add", ButtonMenuPosition.Bottom2, OnAddButtonPressed);
-            AddButton.ToNonPressable();
+            GUIButton addButton = AddButtonMenu("Add", ButtonMenuPosition.Bottom2, OnAddButtonPressed);
             AddButtonMenu("Cancel", ButtonMenuPosition.Bottom, OnReturnButtonPressed);
 
-            ServerNameInputBox   = AddInputBoxMenu(InputBoxMenuPosition.Top4);
+            ServerNameInputBox = AddInputBoxMenu(InputBoxMenuPosition.Top4, new List<GUIButton>{addButton});
             ServerAddressInputBox = AddInputBoxMenu(InputBoxMenuPosition.Bottom4);
         }
 
@@ -51,17 +50,10 @@ namespace MineLib.GraphicClient.Screens
         }
 
 
-        public override void Update(GameTime gameTime)
-        {
-            if (ServerAddressInputBox.InputBoxText.Length <= 0)
-                AddButton.ToNonPressable();
-            else
-                AddButton.ToActive();
-        }
-
         public override void HandleInput(InputManager input)
         {
-            if (input.IsOncePressed(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape) ||
+                (input.IsOncePressed(Buttons.B) && input.CurrentGamePadState.IsButtonUp(Buttons.LeftTrigger) && input.CurrentGamePadState.ThumbSticks.Left == Vector2.Zero))
                 AddScreenAndExit(new ServerListScreen(GameClient));
 
             if (input.IsOncePressed(Keys.Tab))

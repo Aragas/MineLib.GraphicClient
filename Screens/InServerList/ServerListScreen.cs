@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.GUIItems.Button;
@@ -17,9 +18,6 @@ namespace MineLib.GraphicClient.Screens
 
         #endregion
 
-        ButtonNavigation ConnectButton;
-        ButtonNavigation EditServerButton;
-
         ServerEntryDrawer ServerEntryDrawer;
         private int SelectedServerIndex;
 
@@ -34,21 +32,19 @@ namespace MineLib.GraphicClient.Screens
             _gradientUpTexture = CreateGradientUp();
             _gradientDownTexture = CreateGradientDown();
 
-            ConnectButton = AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
-            ConnectButton.ToNonPressable();
+            GUIButton connectButton = AddButtonNavigation("Connect", ButtonNavigationPosition.LeftTop, OnConnectButtonPressed);
             AddButtonNavigation("Refresh", ButtonNavigationPosition.Top, OnRefreshButtonPressed);
             AddButtonNavigation("Direct Connection", ButtonNavigationPosition.RightTop, OnDirectConnectionButtonPressed);
 
             AddButtonNavigation("Add Server", ButtonNavigationPosition.LeftBottom, OnAddServerButtonPressed);
-            EditServerButton = AddButtonNavigation("Edit Server", ButtonNavigationPosition.Bottom, OnEditServerButtonPressed);
-            EditServerButton.ToNonPressable();
+            GUIButton editServerButton = AddButtonNavigation("Edit Server", ButtonNavigationPosition.Bottom, OnEditServerButtonPressed);
             AddButtonNavigation("Return", ButtonNavigationPosition.RightBottom, OnReturnButtonPressed);
 
             // TODO: Better improve dat shiet
             LoadServerList();
             ParseServerEntries();
 
-            ServerEntryDrawer = new ServerEntryDrawer(this, Servers);
+            ServerEntryDrawer = new ServerEntryDrawer(this, Servers, new List<GUIButton> { connectButton, editServerButton });
             ServerEntryDrawer.LoadContent();
             ServerEntryDrawer.OnClickedPressed += OnClickedServerEntry;
         }
@@ -101,15 +97,13 @@ namespace MineLib.GraphicClient.Screens
         void OnClickedServerEntry(int index)
         {
             SelectedServerIndex = index;
-
-            ConnectButton.ToActive();
-            EditServerButton.ToActive();
         }
         
 
         public override void HandleInput(InputManager input)
         {
-            if (input.IsOncePressed(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape) ||
+                (input.IsOncePressed(Buttons.B) && input.CurrentGamePadState.IsButtonUp(Buttons.LeftTrigger) && input.CurrentGamePadState.ThumbSticks.Left == Vector2.Zero))
                 AddScreenAndExit(new MainMenuScreen(GameClient));
 
             ServerEntryDrawer.HandleInput(input);

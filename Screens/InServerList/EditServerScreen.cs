@@ -68,7 +68,8 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputManager input)
         {
-            if (input.IsOncePressed(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape) ||
+                (input.IsOncePressed(Buttons.B) && input.CurrentGamePadState.IsButtonUp(Buttons.LeftTrigger) && input.CurrentGamePadState.ThumbSticks.Left == Vector2.Zero))
                 AddScreenAndExit(new ServerListScreen(GameClient));
         }
 

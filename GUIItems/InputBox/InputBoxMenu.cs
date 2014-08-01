@@ -92,7 +92,7 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
             TextVector = new Vector2(InputBoxRectangle.X + 5, InputBoxRectangle.Y);
             TextShadowVector = new Vector2(TextVector.X + 1, TextVector.Y + 1);
 
-            Vector2 size = ButtonFont.MeasureString(InputBoxText + " ");
+            Vector2 size = MainFont.MeasureString(InputBoxText + " ");
 
             float xScale = (InputBoxRectangle.Width / size.X);
             float yScale = (InputBoxRectangle.Height / size.Y);
@@ -125,13 +125,13 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
             SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameLeftRectangle, new Rectangle(0, 0, (int) InputBoxSize.Y, (int) FrameSize.X), Color.White);
             SpriteBatch.Draw(WhiteFrameTexture, WhiteFrameRightRectangle, new Rectangle(0, 0, (int) InputBoxSize.Y, (int) FrameSize.X), Color.White);
 
-            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
-            SpriteBatch.DrawString(ButtonFont, InputBoxText, TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+            SpriteBatch.DrawString(MainFont, InputBoxText, TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+            SpriteBatch.DrawString(MainFont, InputBoxText, TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
 
             if (IsSelected && ShowInput)
             {
-                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
-                SpriteBatch.DrawString(ButtonFont, InputBoxText + "_", TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+                SpriteBatch.DrawString(MainFont, InputBoxText + "_", TextShadowVector, TextShadowColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
+                SpriteBatch.DrawString(MainFont, InputBoxText + "_", TextVector, TextColor, 0.0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.0f);
             }
 
             SpriteBatch.End();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,35 +30,72 @@ namespace MineLib.GraphicClient.Screens
         internal static Color MainBackgroundColor { get { return new Color(30, 30, 30, 255); } }
         internal static Color SecondaryBackgroundColor { get { return new Color(75, 75, 75, 255); } }
 
+        private GUIButtonMultiController GUIButtonMultiController { get; set; }
+        private GUIInputBoxMultiController GUIInputBoxMultiController { get; set; }
+
         protected void AddScreen(Screen screen) { ScreenManager.AddScreen(screen); }
         protected void AddScreenAndHideThis(Screen screen) { ScreenManager.AddScreen(screen); ToHidden();}
         protected void AddScreenAndCloseOthers(Screen screen) { GUIItemManager.Clear(); ScreenManager.CloseOtherScreens(screen); }
         protected void AddScreenAndExit(Screen screen) { GUIItemManager.Clear(); ScreenManager.AddScreen(screen); ExitScreen(); }
-        protected ButtonMenu AddButtonMenu(string name, ButtonMenuPosition pos, Action action)
+
+        protected ButtonMenu AddButtonMenu(string text, ButtonMenuPosition pos, Action action)
         {
-            ButtonMenu button = new ButtonMenu(GameClient, name, pos);
-            button.OnButtonPressed += action;
-            GUIItemManager.AddGUIItem(button);
+            if (GUIButtonMultiController == null)
+            {
+                GUIButtonMultiController = new GUIButtonMultiController();
+                GUIItemManager.AddGUIItem(GUIButtonMultiController);
+            }
+
+            ButtonMenu button = new ButtonMenu(GameClient, text, pos, action);
+            GUIButtonMultiController.AddGUIButton(button);
             return button;
         }
-        protected ButtonMenuHalf AddButtonMenuHalf(string name, ButtonMenuHalfPosition pos, Action action)
+        protected ButtonMenuHalf AddButtonMenuHalf(string text, ButtonMenuHalfPosition pos, Action action)
         {
-            ButtonMenuHalf button = new ButtonMenuHalf(GameClient, name, pos);
-            button.OnButtonPressed += action;
-            GUIItemManager.AddGUIItem(button);
+            if (GUIButtonMultiController == null)
+            {
+                GUIButtonMultiController = new GUIButtonMultiController();
+                GUIItemManager.AddGUIItem(GUIButtonMultiController);
+            }
+
+            ButtonMenuHalf button = new ButtonMenuHalf(GameClient, text, pos, action);
+            GUIButtonMultiController.AddGUIButton(button);
             return button;
         }
-        protected ButtonNavigation AddButtonNavigation(string name, ButtonNavigationPosition pos, Action action)
+        protected ButtonNavigation AddButtonNavigation(string text, ButtonNavigationPosition pos, Action action)
         {
-            ButtonNavigation button = new ButtonNavigation(GameClient, name, pos);
-            button.OnButtonPressed += action;
-            GUIItemManager.AddGUIItem(button);
+            if (GUIButtonMultiController == null)
+            {
+                GUIButtonMultiController = new GUIButtonMultiController();
+                GUIItemManager.AddGUIItem(GUIButtonMultiController);
+            }
+
+            ButtonNavigation button = new ButtonNavigation(GameClient, text, pos, action);
+            GUIButtonMultiController.AddGUIButton(button);
             return button;
         }
         protected InputBoxMenu AddInputBoxMenu(InputBoxMenuPosition pos)
         {
+            if (GUIInputBoxMultiController == null)
+            {
+                GUIInputBoxMultiController = new GUIInputBoxMultiController(GameClient);
+                GUIItemManager.AddGUIItem(GUIInputBoxMultiController);
+            }
+
             InputBoxMenu inputBox = new InputBoxMenu(GameClient, pos);
-            GUIItemManager.AddGUIItem(inputBox);
+            GUIInputBoxMultiController.AddGUIInputBox(inputBox);
+            return inputBox;
+        }
+        protected InputBoxMenu AddInputBoxMenu(InputBoxMenuPosition pos, List<GUIButton> button)
+        {
+            if (GUIInputBoxMultiController == null)
+            {
+                GUIInputBoxMultiController = new GUIInputBoxMultiController(GameClient);
+                GUIItemManager.AddGUIItem(GUIInputBoxMultiController);
+            }
+
+            InputBoxMenu inputBox = new InputBoxMenu(GameClient, pos);
+            GUIInputBoxMultiController.AddGUIInputBox(inputBox, button);
             return inputBox;
         }
 

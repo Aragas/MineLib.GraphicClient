@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MineLib.GraphicClient.GUIItems.Button;
 using MineLib.GraphicClient.Misc;
 
 namespace MineLib.GraphicClient.Screens.InServerList.ServerEntry
@@ -13,6 +14,8 @@ namespace MineLib.GraphicClient.Screens.InServerList.ServerEntry
     {
         public delegate void ServerEntryEventHandler(int index);
         public event ServerEntryEventHandler OnClickedPressed;
+
+        Action OnEntryClicked;
 
         readonly InServerListScreen _screen;
 
@@ -108,6 +111,41 @@ namespace MineLib.GraphicClient.Screens.InServerList.ServerEntry
             ServerPlayersVectors = new Vector2[Servers.Count];
             ServerAddressVectors = new Vector2[Servers.Count];
             ServerPingVectors = new Vector2[Servers.Count];
+        }
+
+        /// <summary>
+        /// Link GUIButtons to ServerEntryDrawer.
+        /// </summary>
+        /// <param name="screen">Screen</param>
+        /// <param name="server">Server list</param>
+        /// <param name="buttons">GUIButtons</param>
+        public ServerEntryDrawer(InServerListScreen screen, List<Server> server, IEnumerable<GUIButton> buttons)
+        {
+            _screen = screen;
+            Servers = server;
+
+            ServerSelected = new bool[Servers.Count];
+
+            ServerEntryRectangles = new Rectangle[Servers.Count];
+
+            ServerEntryImageTextures = new Texture2D[Servers.Count];
+            ServerEntryImageRectangles = new Rectangle[Servers.Count];
+
+            WhiteFrameTopRectangles = new Rectangle[Servers.Count];
+            WhiteFrameBottomRectangles = new Rectangle[Servers.Count];
+            WhiteFrameLeftRectangles = new Rectangle[Servers.Count];
+            WhiteFrameRightRectangles = new Rectangle[Servers.Count];
+
+            ServerNameVectors = new Vector2[Servers.Count];
+            ServerPlayersVectors = new Vector2[Servers.Count];
+            ServerAddressVectors = new Vector2[Servers.Count];
+            ServerPingVectors = new Vector2[Servers.Count];
+
+            foreach (GUIButton guiButton in buttons)
+            {
+                guiButton.ToNonPressable();
+                OnEntryClicked += guiButton.ToActive;
+            }
         }
 
         public void LoadContent()
@@ -294,6 +332,9 @@ namespace MineLib.GraphicClient.Screens.InServerList.ServerEntry
 
                     ServerSelected[i] = true;
                     OnClickedPressed(i);
+
+                    if (OnEntryClicked != null)
+                        OnEntryClicked();
                 }
             }
 
@@ -301,20 +342,24 @@ namespace MineLib.GraphicClient.Screens.InServerList.ServerEntry
 
             #region Keyboard and Gamepad
 
-            if (Array.IndexOf(ServerSelected, true) == -1 && input.MenuDown)
+            if (Array.IndexOf(ServerSelected, true) == -1 && (input.IsOncePressed(Keys.Down) || input.IsOncePressed(Buttons.LeftTrigger, Buttons.DPadDown)))
             {
                 ServerSelected[0] = true;
                 OnClickedPressed(0);
+
+                if (OnEntryClicked != null)
+                    OnEntryClicked();
+
                 return;
             }
 
             // Server entry was selected
             if (Array.IndexOf(ServerSelected, true) != -1)
             {
-                if (input.MenuUp)
+                if (input.IsOncePressed(Keys.Up) || input.IsOncePressed(Buttons.LeftTrigger, Buttons.DPadUp))
                     MenuUp();
 
-                if (input.MenuDown)
+                if (input.IsOncePressed(Keys.Down) || input.IsOncePressed(Buttons.LeftTrigger, Buttons.DPadDown))
                     MenuDown();
             }
 

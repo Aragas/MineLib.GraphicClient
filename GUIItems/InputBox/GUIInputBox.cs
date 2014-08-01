@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MineLib.GraphicClient.Misc;
@@ -10,6 +11,9 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
         public delegate void InputBoxEventHandler(string text);
         public event InputBoxEventHandler OnEnterPressed;
 
+        public event Action OnEmpty;
+        public event Action OnNonEmpty;
+
         protected InputBoxMenuPosition Position { get; set; }
 
         protected Rectangle InputBoxRectangle { get; set; }
@@ -18,7 +22,6 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
         protected Rectangle WhiteFrameBottomRectangle { get; set; }
         protected Rectangle WhiteFrameLeftRectangle { get; set; }
         protected Rectangle WhiteFrameRightRectangle { get; set; }
-        protected SpriteFont ButtonFont { get { return Content.Load<SpriteFont>("Minecraftia"); } }
 
         public string InputBoxText = "";
 
@@ -66,8 +69,12 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
                         switch (key)
                         {
                             case Keys.Back:
-                                if (InputBoxText.Length == 0) continue;
+                                if (InputBoxText.Length == 0)
+                                    continue;
+                                
                                 InputBoxText = InputBoxText.Remove(InputBoxText.Length - 1, 1);
+
+
                                 break;
 
                             case Keys.Enter:
@@ -83,6 +90,11 @@ namespace MineLib.GraphicClient.GUIItems.InputBox
             }
 
             #endregion
+
+            if (InputBoxText.Length == 0 && OnEmpty != null)
+                OnEmpty();
+            else if (OnNonEmpty != null)
+                OnNonEmpty();
 
         }
 

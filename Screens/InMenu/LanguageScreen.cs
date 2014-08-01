@@ -31,7 +31,7 @@ namespace MineLib.GraphicClient.Screens
 
         public override void HandleInput(InputManager input)
         {
-            if (input.IsOncePressed(Keys.Escape))
+            if (input.IsOncePressed(Keys.Escape) || input.IsOncePressed(Buttons.B))
                 AddScreenAndExit(new MainMenuScreen(GameClient));
         }
 

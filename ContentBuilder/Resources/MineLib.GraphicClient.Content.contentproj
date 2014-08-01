@@ -66,10 +66,20 @@
       <Importer>TextureImporter</Importer>
       <Processor>MGTextureProcessor</Processor>
     </Compile>
+    <Compile Include="XboxControllerRightButtons.png">
+      <Name>XboxControllerRightButtons</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>MGTextureProcessor</Processor>
+    </Compile>
     <Content Include="minecraft.jar">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Name>minecraft</Name>
     </Content>
+    <Compile Include="XboxControllerSpriteFont.png">
+      <Name>XboxControllerSpriteFont</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--
